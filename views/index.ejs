@@ -9,43 +9,31 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         body { background: #f1f5f9; font-family: 'Inter', sans-serif; color: #1e293b; padding-bottom: 30px; }
         .container { max-width: 900px; padding: 10px; }
-        
         .nav-custom { background: white; border-radius: 50px; padding: 4px; border: 1px solid #e2e8f0; display: inline-flex; }
         .nav-link { border-radius: 50px; color: #64748b; font-weight: 700; padding: 6px 14px; font-size: 0.7rem; border: none; }
         .nav-link.active { background: #2563eb !important; color: white !important; }
         .card-main { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 15px; overflow: hidden; }
         .content-section { display: none; } .content-section.active { display: block; }
-
         .head-stok { background: #1d4ed8; color: white; }
         .head-ship { background: #334155; color: white; }
-        .head-kas { background: #2563eb; color: white; }
+        /* HEADER KAS ABU-ABU GELAP */
+        .head-kas-dark { background: #cbd5e1 !important; color: #1e293b !important; border-bottom: 2px solid #94a3b8; }
         .bg-normal { background: linear-gradient(135deg, #1e293b, #475569); }
         .bg-minus { background: #dc2626 !important; } 
-
-        th { font-size: 0.6rem; padding: 8px !important; text-transform: uppercase; letter-spacing: 0.5px; }
+        th { font-size: 0.6rem; padding: 10px !important; text-transform: uppercase; letter-spacing: 0.5px; }
         td { padding: 8px !important; vertical-align: middle; }
-
-        /* FIX TANGGAL & NOMINAL (ANTI-WRAP) */
         .tgl-fix { white-space: nowrap !important; width: 65px !important; font-size: 0.6rem !important; font-weight: 700; }
-        .nowrap-cell { white-space: nowrap !important; min-width: 90px !important; }
-        
-        /* WARNA STATUS STOK (FIXED) */
+        .nowrap-cell { white-space: nowrap !important; min-width: 95px !important; }
         .badge-status { padding: 3px 8px; border-radius: 50px; font-size: 0.55rem; font-weight: 800; display: inline-block; }
-        .bg-out { background: #fee2e2; color: #dc2626; } /* HABIS = MERAH */
-        .bg-low { background: #fef3c7; color: #d97706; } /* LOW = KUNING */
-        .bg-ok { background: #dcfce7; color: #16a34a; }  /* OK = HIJAU */
-
+        .bg-out { background: #fee2e2; color: #dc2626; }
+        .bg-low { background: #fef3c7; color: #d97706; }
+        .bg-ok { background: #dcfce7; color: #16a34a; }
         .text-debet { color: #dc2626; font-weight: 700; font-size: 0.7rem; } 
         .text-kredit { color: #16a34a; font-weight: 700; font-size: 0.7rem; }
-        
         .btn-bukti { background: #2563eb; color: white; font-size: 0.5rem; font-weight: 800; padding: 4px 6px; border-radius: 4px; text-decoration: none; }
         .filter-box { background: #f8fafc; padding: 12px; border-radius: 10px; margin: 10px; border: 1px solid #e2e8f0; }
         .btn-toggle { font-size: 0.7rem; font-weight: 700; color: #2563eb; background: none; border: none; margin: 5px 10px; }
-
-        @media (max-width: 576px) {
-            th, td { font-size: 0.6rem !important; }
-            .mutasi-txt { font-size: 0.65rem !important; }
-        }
+        @media (max-width: 576px) { th, td { font-size: 0.6rem !important; } }
     </style>
 </head>
 <body>
@@ -103,19 +91,26 @@
             </div>
             <button class="btn-toggle" onclick="toggleFull('tableKas', this)">+ FILTER & LIHAT SEMUA</button>
             <div id="filterKas" style="display:none;"><div class="filter-box"><div class="row g-2"><div class="col-6"><select id="kM" class="form-select form-select-sm" onchange="filterData('tableKas', 'kM', 'kY')"><option value="">Bulan</option><option value="Jan">Jan</option><option value="Feb">Feb</option><option value="Mar">Mar</option><option value="Apr">Apr</option><option value="Mei">Mei</option><option value="Jun">Jun</option><option value="Jul">Jul</option><option value="Agu">Agu</option><option value="Sep">Sep</option><option value="Okt">Okt</option><option value="Nov">Nov</option><option value="Des">Des</option></select></div><div class="col-6"><select id="kY" class="form-select form-select-sm" onchange="filterData('tableKas', 'kM', 'kY')"><option value="">Tahun</option><option value="2025">2025</option><option value="2026">2026</option></select></div></div></div></div>
-            <div class="table-responsive"><table class="table table-sm align-middle mb-0" id="tableKas"><thead class="head-kas" style="background: #e2e8f0; color: #1e293b;"><tr><th class="ps-2">TGL</th><th>KET</th><th class="text-end">MUTASI</th><th class="text-center">BUKTI</th></tr></thead><tbody>
-                <% kasAll.forEach((t, i) => { %>
-                    <tr class="row-data border-bottom" data-index="<%= i %>">
-                        <td class="ps-2 py-3 tgl-fix"><%= t.tgl %></td>
-                        <td style="line-height: 1.1;"><div class="fw-bold text-uppercase" style="font-size: 0.6rem;"><%= t.kat %></div><div class="text-muted" style="font-size: 0.5rem;"><%= t.ket %></div></td>
-                        <td class="text-end nowrap-cell">
-                            <div class="mutasi-txt <%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>"><%= t.mutasi %></div>
-                            <div class="text-muted" style="font-size: 0.5rem; font-weight: 600;">Sisa: <%= t.saldo %></div>
-                        </td>
-                        <td class="text-center px-1"><% if(t.bukti) { %><a href="<%= t.bukti %>" target="_blank" class="btn-bukti">BUKTI</a><% } else { %>-<% } %></td>
-                    </tr>
-                <% }) %>
-            </tbody></table></div>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0" id="tableKas">
+                    <thead class="head-kas-dark">
+                        <tr><th class="ps-2">TGL</th><th>KET</th><th class="text-end">MUTASI</th><th class="text-center">BUKTI</th></tr>
+                    </thead>
+                    <tbody>
+                        <% kasAll.forEach((t, i) => { %>
+                            <tr class="row-data border-bottom" data-index="<%= i %>">
+                                <td class="ps-2 py-3 tgl-fix"><%= t.tgl %></td>
+                                <td style="line-height: 1.1;"><div class="fw-bold text-uppercase" style="font-size: 0.6rem;"><%= t.kat %></div><div class="text-muted" style="font-size: 0.5rem;"><%= t.ket %></div></td>
+                                <td class="text-end nowrap-cell">
+                                    <div class="mutasi-txt <%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>"><%= t.mutasi %></div>
+                                    <div class="text-muted" style="font-size: 0.5rem; font-weight: 600;">Sisa: <%= t.saldo %></div>
+                                </td>
+                                <td class="text-center px-1"><% if(t.bukti) { %><a href="<%= t.bukti %>" target="_blank" class="btn-bukti">BUKTI</a><% } else { %>-<% } %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
