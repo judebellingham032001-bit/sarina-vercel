@@ -77,16 +77,12 @@ app.get('/', async (req, res) => {
         const isSaldoMinus = saldoTotalRaw.startsWith("-");
 
         res.render('index', { 
-            stocks, 
-            shippingAll, 
-            kasAll, 
+            stocks, shippingAll, kasAll, 
             saldoTotal: formatRP(saldoTotalRaw).replace('+', ''), 
-            isSaldoMinus, 
-            lastUpdate 
+            isSaldoMinus, lastUpdate 
         });
     } catch (e) {
-        console.error(e);
-        res.status(500).send("Backend Error: " + e.message);
+        res.status(500).send("Gagal memuat data: " + e.message);
     }
 });
 
