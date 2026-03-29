@@ -15,16 +15,14 @@
         .card-main { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 15px; overflow: hidden; }
         .content-section { display: none; } .content-section.active { display: block; }
 
-        /* HEADER COLORS */
-        .head-stok { background: #1d4ed8 !important; color: white !important; }
-        .head-ship { background: #334155 !important; color: white !important; }
+        /* HEADER COLORS FIXED */
+        .head-stok { background: #0f172a !important; color: white !important; } /* NAVY */
+        .head-ship { background: #000000 !important; color: white !important; } /* HITAM */
         
-        /* FIX: PAKSA WARNA HEADER KAS (ABU-ABU SOLID) */
         .head-kas-dark th { 
-            background-color: #cbd5e1 !important; /* Warna Abu-abu Solid */
+            background-color: #cbd5e1 !important; 
             color: #1e293b !important; 
             border: none !important;
-            -webkit-print-color-adjust: exact;
         }
 
         .bg-normal { background: linear-gradient(135deg, #1e293b, #475569); }
@@ -34,7 +32,6 @@
         .tgl-fix { white-space: nowrap !important; width: 65px !important; font-size: 0.6rem !important; font-weight: 700; }
         .nowrap-cell { white-space: nowrap !important; min-width: 95px !important; }
         
-        /* STATUS STOK COLORS */
         .badge-status { padding: 3px 8px; border-radius: 50px; font-size: 0.55rem; font-weight: 800; display: inline-block; }
         .bg-out { background: #fee2e2; color: #dc2626; }
         .bg-low { background: #fef3c7; color: #d97706; }
@@ -72,7 +69,7 @@
                 <tbody>
                     <% stocks.forEach(s => { %>
                         <tr class="border-bottom">
-                            <td class="ps-3 py-3 fw-bold"><%= s.nama %></td>
+                            <td class="ps-3 py-3 fw-bold text-uppercase"><%= s.nama %></td>
                             <td class="text-center"><%= s.display %></td>
                             <td class="text-end pe-3">
                                 <span class="badge-status <%= s.statusTxt === 'OUT OF STOCK' ? 'bg-out' : (s.statusTxt === 'LOW' ? 'bg-low' : 'bg-ok') %>">
