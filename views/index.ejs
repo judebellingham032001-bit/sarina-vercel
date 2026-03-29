@@ -125,41 +125,41 @@
                 </div>
             </div>
 <div class="table-responsive">
-    <table class="table table-sm align-middle mb-0" id="tableKas">
-        <thead class="head-kas-dark">
-            <tr>
-                <th class="ps-2" style="width: 15%;">TANGGAL</th>
-                <th style="width: 45%;">KETERANGAN</th>
-                <th class="text-end" style="width: 25%;">MUTASI</th>
-                <th class="text-center" style="width: 15%;">BUKTI</th>
+<table class="table table-sm align-middle mb-0" id="tableKas">
+    <thead class="head-kas-dark">
+        <tr>
+            <th class="ps-2" style="width: 22%;">TGL</th>
+            <th style="width: 38%;">KETERANGAN</th>
+            <th class="text-end" style="width: 25%;">MUTASI</th>
+            <th class="text-center" style="width: 15%;">BUKTI</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% kasAll.forEach((t, i) => { %>
+            <tr class="row-data border-bottom" data-index="<%= i %>">
+                <td class="ps-2 py-3 tgl-fix" style="font-size: 0.6rem !important;"><%= t.tgl %></td>
+                
+                <td style="line-height: 1.2;">
+                    <div class="fw-bold text-uppercase" style="font-size: 0.65rem;"><%= t.kat %></div>
+                    <div class="text-muted" style="font-size: 0.55rem;"><%= t.ket %></div>
+                </td>
+                
+                <td class="text-end" style="white-space: nowrap !important;">
+                    <div class="<%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>" style="font-size: 0.75rem; font-weight: 800;">
+                        <%= t.mutasi %>
+                    </div>
+                    <div class="sisa-saldo" style="font-size: 0.55rem; font-weight: 700;">Sisa: <%= t.saldo %></div>
+                </td>
+                
+                <td class="text-center px-1">
+                    <% if(t.bukti) { %>
+                        <a href="<%= t.bukti %>" target="_blank" class="btn-bukti" style="white-space: nowrap; display: inline-block; padding: 4px 6px;">BUKTI</a>
+                    <% } else { %>-<% } %>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            <% kasAll.forEach((t, i) => { %>
-                <tr class="row-data border-bottom" data-index="<%= i %>">
-                    <td class="ps-2 py-3 tgl-fix"><%= t.tgl %></td>
-                    
-                    <td style="line-height: 1.2;">
-                        <div class="fw-bold text-uppercase" style="font-size: 0.65rem;"><%= t.kat %></div>
-                        <div class="text-muted" style="font-size: 0.55rem;"><%= t.ket %></div>
-                    </td>
-                    
-                    <td class="text-end" style="white-space: nowrap !important;">
-                        <div class="<%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>" style="font-weight: 800;">
-                            <%= t.mutasi %>
-                        </div>
-                        <div class="sisa-saldo" style="font-size: 0.6rem; font-weight: 700;">Sisa: <%= t.saldo %></div>
-                    </td>
-                    
-                    <td class="text-center px-1">
-                        <% if(t.bukti) { %>
-                            <a href="<%= t.bukti %>" target="_blank" class="btn-bukti">LIHAT BUKTI</a>
-                        <% } else { %>-<% } %>
-                    </td>
-                </tr>
-            <% }) %>
-        </tbody>
-    </table>
+        <% }) %>
+    </tbody>
+</table>
 </div>
         </div>
     </div>
