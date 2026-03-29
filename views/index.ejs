@@ -30,15 +30,17 @@
         .bg-low { background: #fef3c7; color: #d97706; }
         .bg-tersedia { background: #dcfce7; color: #16a34a; }
 
-        .text-debet { color: #dc2626; font-weight: 700; font-size: 0.75rem; } 
-        .text-kredit { color: #16a34a; font-weight: 700; font-size: 0.75rem; }
-        .btn-bukti { background: #2563eb; color: white; font-size: 0.55rem; font-weight: 800; padding: 5px 8px; border-radius: 4px; text-decoration: none; }
+        .text-debet { color: #dc2626; font-weight: 800; font-size: 0.8rem; } 
+        .text-kredit { color: #16a34a; font-weight: 800; font-size: 0.8rem; }
         
-        /* STYLE FILTER & TOGGLE */
+        /* FIXED SISA SALDO */
+        .sisa-saldo { color: #0f172a !important; font-size: 0.65rem !important; font-weight: 800 !important; margin-top: 1px; }
+
+        .btn-bukti { background: #2563eb; color: white; font-size: 0.55rem; font-weight: 800; padding: 5px 8px; border-radius: 4px; text-decoration: none; }
         .filter-box { background: #f8fafc; padding: 12px; border-radius: 10px; margin: 10px; border: 1px solid #e2e8f0; }
         .btn-toggle { font-size: 0.7rem; font-weight: 700; color: #2563eb; background: none; border: none; margin: 5px 10px; text-decoration: underline; }
         
-        .tgl-fix { white-space: nowrap !important; width: 70px !important; font-size: 0.65rem !important; font-weight: 700; }
+        .tgl-fix { white-space: nowrap !important; width: 75px !important; font-size: 0.65rem !important; font-weight: 700; }
         .logo-sarina { width: 80px; height: auto; margin-bottom: 5px; border-radius: 10px; }
 
         @media (max-width: 576px) { th, td { font-size: 0.65rem !important; } }
@@ -49,7 +51,8 @@
 <div class="container">
     <div class="text-center py-3">
         <div class="d-flex flex-column align-items-center mb-1">
-            <img src="https://via.placeholder.com/150/0f172a/FFFFFF?text=SARINA" alt="Logo Sarina Store" class="logo-sarina">
+            <img src="URL_LOGO_BOS_DI_SINI" onerror="this.style.display='none'" alt="Logo" class="logo-sarina">
+            
             <h1 style="font-weight: 800; font-size: 1.6rem; margin: 0; text-transform: uppercase;">SARINA STORE</h1>
             <p style="font-size: 0.6rem; color: #64748b; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-top: -2px;">MANAJEMEN OPERASIONAL</p>
         </div>
@@ -123,7 +126,10 @@
                             <tr class="row-data border-bottom" data-index="<%= i %>">
                                 <td class="ps-2 py-3 tgl-fix"><%= t.tgl %></td>
                                 <td style="line-height: 1.2;"><div class="fw-bold text-uppercase" style="font-size: 0.65rem;"><%= t.kat %></div><div class="text-muted" style="font-size: 0.55rem;"><%= t.ket %></div></td>
-                                <td class="text-end nowrap-cell"><div class="<%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>"><%= t.mutasi %></div><div class="text-muted" style="font-size: 0.55rem; font-weight: 600;">Sisa: <%= t.saldo %></div></td>
+                                <td class="text-end nowrap-cell">
+                                    <div class="<%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>"><%= t.mutasi %></div>
+                                    <div class="sisa-saldo">Sisa: <%= t.saldo %></div>
+                                </td>
                                 <td class="text-center px-1"><% if(t.bukti) { %><a href="<%= t.bukti %>" target="_blank" class="btn-bukti">BUKTI</a><% } else { %>-<% } %></td>
                             </tr>
                         <% }) %>
