@@ -9,48 +9,26 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         body { background: #f1f5f9; font-family: 'Inter', sans-serif; color: #1e293b; padding-bottom: 30px; }
         .container { max-width: 900px; padding: 10px; }
-        
         .nav-custom { background: white; border-radius: 50px; padding: 4px; border: 1px solid #e2e8f0; display: inline-flex; }
         .nav-link { border-radius: 50px; color: #64748b; font-weight: 700; padding: 6px 14px; font-size: 0.7rem; border: none; }
         .nav-link.active { background: #2563eb !important; color: white !important; }
         .card-main { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 15px; overflow: hidden; }
         .content-section { display: none; } .content-section.active { display: block; }
-
         .head-stok { background: #1d4ed8; color: white; }
         .head-ship { background: #334155; color: white; }
         .head-kas { background: #2563eb; color: white; }
-        
-        /* LOGIKA WARNA SALDO */
         .bg-normal { background: linear-gradient(135deg, #1e293b, #475569); }
         .bg-minus { background: #dc2626 !important; } 
-
         th { font-size: 0.65rem; padding: 10px !important; text-transform: uppercase; letter-spacing: 0.5px; }
         td { padding: 10px 8px !important; vertical-align: middle; }
-
-        /* ANTI TURUN (NOWRAP) */
-        .tgl-fix { 
-            white-space: nowrap !important; 
-            width: 85px !important; 
-            font-size: 0.7rem !important;
-            font-weight: 700;
-        }
-
+        .tgl-fix { white-space: nowrap !important; width: 85px !important; font-size: 0.7rem !important; font-weight: 700; }
         .badge-status { padding: 3px 8px; border-radius: 50px; font-size: 0.55rem; font-weight: 800; display: inline-block; }
         .bg-out { background: #fee2e2; color: #dc2626; } .bg-ok { background: #dcfce7; color: #16a34a; }
         .text-debet { color: #dc2626; font-weight: 700; } .text-kredit { color: #16a34a; font-weight: 700; }
-        
-        .btn-bukti { 
-            background: #2563eb; color: white; font-size: 0.55rem; font-weight: 800; 
-            padding: 5px 8px; border-radius: 50px; text-decoration: none; display: inline-block;
-        }
-
+        .btn-bukti { background: #2563eb; color: white; font-size: 0.55rem; font-weight: 800; padding: 5px 8px; border-radius: 50px; text-decoration: none; display: inline-block; }
         .filter-box { background: #f8fafc; padding: 12px; border-radius: 10px; margin: 10px; border: 1px solid #e2e8f0; }
         .btn-toggle { font-size: 0.7rem; font-weight: 700; color: #2563eb; background: none; border: none; margin: 5px 10px; }
-
-        @media (max-width: 576px) {
-            th, td { font-size: 0.65rem !important; }
-            .tgl-fix { width: 75px !important; font-size: 0.6rem !important; }
-        }
+        @media (max-width: 576px) { th, td { font-size: 0.65rem !important; } .tgl-fix { width: 75px !important; font-size: 0.6rem !important; } }
     </style>
 </head>
 <body>
@@ -67,9 +45,7 @@
     </div>
 
     <div id="stocks" class="content-section active">
-        <div class="text-center mb-3">
-            <small class="text-muted fw-bold">Update Terakhir: <%= lastUpdate %></small>
-        </div>
+        <div class="text-center mb-3"><small class="text-muted fw-bold">Update Terakhir: <%= lastUpdate %></small></div>
         <div class="card-main">
             <table class="table table-sm align-middle mb-0">
                 <thead class="head-stok">
@@ -128,16 +104,8 @@
                 <small class="fw-bold opacity-75">TOTAL SALDO KAS</small>
                 <h2 class="fw-bold m-0"><%= saldoTotal %></h2>
             </div>
-            
             <button class="btn-toggle" onclick="toggleFull('tableKas', this)">+ FILTER & LIHAT SEMUA</button>
-            <div id="filterKas" style="display:none;">
-                <div class="filter-box">
-                    <div class="row g-2">
-                        <div class="col-6"><select id="kM" class="form-select form-select-sm" onchange="filterData('tableKas', 'kM', 'kY')"><option value="">Bulan</option><option value="Jan">Jan</option><option value="Feb">Feb</option><option value="Mar">Mar</option><option value="Apr">Apr</option><option value="Mei">Mei</option><option value="Jun">Jun</option><option value="Jul">Jul</option><option value="Agu">Agu</option><option value="Sep">Sep</option><option value="Okt">Okt</option><option value="Nov">Nov</option><option value="Des">Des</option></select></div>
-                        <div class="col-6"><select id="kY" class="form-select form-select-sm" onchange="filterData('tableKas', 'kM', 'kY')"><option value="">Tahun</option><option value="2025">2025</option><option value="2026">2026</option></select></div>
-                    </div>
-                </div>
-            </div>
+            <div id="filterKas" style="display:none;"><div class="filter-box"><div class="row g-2"><div class="col-6"><select id="kM" class="form-select form-select-sm" onchange="filterData('tableKas', 'kM', 'kY')"><option value="">Bulan</option><option value="Jan">Jan</option><option value="Feb">Feb</option><option value="Mar">Mar</option><option value="Apr">Apr</option><option value="Mei">Mei</option><option value="Jun">Jun</option><option value="Jul">Jul</option><option value="Agu">Agu</option><option value="Sep">Sep</option><option value="Okt">Okt</option><option value="Nov">Nov</option><option value="Des">Des</option></select></div><div class="col-6"><select id="kY" class="form-select form-select-sm" onchange="filterData('tableKas', 'kM', 'kY')"><option value="">Tahun</option><option value="2025">2025</option><option value="2026">2026</option></select></div></div></div></div>
             <div class="table-responsive">
                 <table class="table table-sm align-middle mb-0" id="tableKas">
                     <thead class="head-kas" style="background: #e2e8f0; color: #1e293b;">
@@ -153,7 +121,7 @@
                                 </td>
                                 <td class="text-end nowrap">
                                     <div class="mutasi-txt <%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>" style="font-size: 0.75rem;"><%= t.mutasi %></div>
-                                    <div class="text-muted" style="font-size: 0.55rem;"><%= t.saldo %></div>
+                                    <div class="text-muted" style="font-size: 0.55rem; font-weight: 600;">Sisa: <%= t.saldo %></div>
                                 </td>
                                 <td class="text-center px-2">
                                     <% if(t.bukti) { %><a href="<%= t.bukti %>" target="_blank" class="btn-bukti">BUKTI</a><% } else { %>-<% } %>
@@ -173,39 +141,28 @@
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); 
         document.getElementById(id).classList.add('active'); el.classList.add('active'); 
     }
-
     function toggleFull(tableId, btn) {
         const filterId = tableId === 'tableShip' ? 'filterShip' : 'filterKas';
         const filterEl = document.getElementById(filterId);
         const rows = document.querySelectorAll(`#${tableId} .row-data`);
         if (filterEl.style.display === "none") {
-            filterEl.style.display = "block";
-            rows.forEach(r => r.style.display = "");
-            btn.innerText = "- SEMBUNYIKAN";
+            filterEl.style.display = "block"; rows.forEach(r => r.style.display = ""); btn.innerText = "- SEMBUNYIKAN";
         } else {
-            filterEl.style.display = "none";
-            showDefault(tableId);
-            btn.innerText = "+ FILTER & LIHAT SEMUA";
+            filterEl.style.display = "none"; showDefault(tableId); btn.innerText = "+ FILTER & LIHAT SEMUA";
         }
     }
-
     function showDefault(tableId) {
         const rows = document.querySelectorAll(`#${tableId} .row-data`);
         const total = rows.length;
-        rows.forEach((row, idx) => {
-            row.style.display = (idx < total - 10) ? "none" : "";
-        });
+        rows.forEach((row, idx) => { row.style.display = (idx < total - 10) ? "none" : ""; });
     }
-
     function filterData(tableId, mId, yId) {
         const m = document.getElementById(mId).value;
         const y = document.getElementById(yId).value;
         document.querySelectorAll(`#${tableId} .row-data`).forEach(row => {
-            const txt = row.innerText;
-            row.style.display = (txt.includes(m) && txt.includes(y)) ? "" : "none";
+            const txt = row.innerText; row.style.display = (txt.includes(m) && txt.includes(y)) ? "" : "none";
         });
     }
-
     window.onload = function() { showDefault('tableShip'); showDefault('tableKas'); };
 </script>
 </body>
