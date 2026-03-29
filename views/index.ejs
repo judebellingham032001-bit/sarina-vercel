@@ -15,15 +15,10 @@
         .card-main { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 15px; overflow: hidden; }
         .content-section { display: none; } .content-section.active { display: block; }
 
-        /* HEADER COLORS FIXED */
-        .head-stok { background: #0f172a !important; color: white !important; } /* NAVY */
-        .head-ship { background: #000000 !important; color: white !important; } /* HITAM */
-        
-        .head-kas-dark th { 
-            background-color: #cbd5e1 !important; 
-            color: #1e293b !important; 
-            border: none !important;
-        }
+        /* FIX: SELECTOR PAKSA UNTUK HEADER */
+        .head-stok th { background-color: #0f172a !important; color: white !important; border: none !important; }
+        .head-ship th { background-color: #000000 !important; color: white !important; border: none !important; }
+        .head-kas-dark th { background-color: #cbd5e1 !important; color: #1e293b !important; border: none !important; }
 
         .bg-normal { background: linear-gradient(135deg, #1e293b, #475569); }
         .bg-minus { background: #dc2626 !important; } 
@@ -34,7 +29,7 @@
         
         .badge-status { padding: 3px 8px; border-radius: 50px; font-size: 0.55rem; font-weight: 800; display: inline-block; }
         .bg-out { background: #fee2e2; color: #dc2626; }
-        .bg-low { background: #fef3c7; color: #d97706; }
+        .bg-low { background: #fef3c7; color: #d97706; } /* LOW TETAP KUNING */
         .bg-ok { background: #dcfce7; color: #16a34a; }
 
         .text-debet { color: #dc2626; font-weight: 700; font-size: 0.7rem; } 
@@ -87,9 +82,16 @@
         <div class="card-main">
             <button class="btn-toggle" onclick="toggleFull('tableShip', this)">+ FILTER & LIHAT SEMUA</button>
             <div id="filterShip" style="display:none;"><div class="filter-box"><div class="row g-2"><div class="col-6"><select id="sM" class="form-select form-select-sm" onchange="filterData('tableShip', 'sM', 'sY')"><option value="">Bulan</option><option value="Jan">Jan</option><option value="Feb">Feb</option><option value="Mar">Mar</option><option value="Apr">Apr</option><option value="Mei">Mei</option><option value="Jun">Jun</option><option value="Jul">Jul</option><option value="Agu">Agu</option><option value="Sep">Sep</option><option value="Okt">Okt</option><option value="Nov">Nov</option><option value="Des">Des</option></select></div><div class="col-6"><select id="sY" class="form-select form-select-sm" onchange="filterData('tableShip', 'sM', 'sY')"><option value="">Tahun</option><option value="2025">2025</option><option value="2026">2026</option></select></div></div></div></div>
-            <div class="table-responsive"><table class="table text-center table-sm align-middle mb-0" id="tableShip"><thead class="head-ship"><tr><th class="ps-3 text-start">TGL</th><th>SPX</th><th>JNE</th><th>J&T</th><th>SD</th><th>TOT</th></tr></thead><tbody>
-                <% shippingAll.forEach((k, i) => { %><tr class="row-data border-bottom" data-index="<%= i %>"><td class="text-start fw-bold tgl-fix ps-3"><%= k.tgl %></td><td><%= k.spx %></td><td><%= k.jne %></td><td><%= k.jnt %></td><td><%= k.sd %></td><td class="fw-bold text-primary pe-2"><%= k.tot %></td></tr><% }) %>
-            </tbody></table></div>
+            <div class="table-responsive">
+                <table class="table text-center table-sm align-middle mb-0" id="tableShip">
+                    <thead class="head-ship">
+                        <tr><th class="ps-3 text-start">TGL</th><th>SPX</th><th>JNE</th><th>J&T</th><th>SD</th><th>TOT</th></tr>
+                    </thead>
+                    <tbody>
+                        <% shippingAll.forEach((k, i) => { %><tr class="row-data border-bottom" data-index="<%= i %>"><td class="text-start fw-bold tgl-fix ps-3"><%= k.tgl %></td><td><%= k.spx %></td><td><%= k.jne %></td><td><%= k.jnt %></td><td><%= k.sd %></td><td class="fw-bold text-primary pe-2"><%= k.tot %></td></tr><% }) %>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
