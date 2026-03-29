@@ -26,7 +26,8 @@
         .bg-saldo-minus { background: linear-gradient(135deg, #dc2626, #b91c1c); }
         .text-mutasi-debet { color: #dc2626; font-weight: 700; }
         .text-mutasi-kredit { color: #16a34a; font-weight: 700; }
-        .btn-bukti { background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; font-size: 0.65rem; font-weight: 700; padding: 3px 10px; border-radius: 50px; text-decoration: none; }
+        .btn-bukti { background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; font-size: 0.6rem; font-weight: 800; padding: 4px 10px; border-radius: 50px; text-decoration: none; text-transform: uppercase; }
+        .tgl-col { width: 90px; font-size: 0.7rem; font-weight: 600; color: #64748b; }
     </style>
 </head>
 <body>
@@ -50,12 +51,12 @@
             <small class="text-muted fw-bold"><i class="far fa-clock"></i> Last Update: <span class="text-primary"><%= lastUpdate %></span></small>
         </div>
         <div class="card-main">
-            <table class="table table-sm" style="font-size: 0.85rem;">
+            <table class="table table-sm align-middle" style="font-size: 0.85rem;">
                 <thead><tr class="text-muted"><th>Product Name</th><th class="text-end">Status</th></tr></thead>
                 <tbody>
                     <% stocks.forEach(s => { %>
                         <tr>
-                            <td class="fw-bold"><%= s.nama %></td>
+                            <td class="fw-bold text-uppercase"><%= s.nama %></td>
                             <td class="text-end">
                                 <span class="badge-status <%= s.statusTxt === 'OUT OF STOCK' ? 'bg-out' : (s.statusTxt === 'LOW' ? 'bg-low' : 'bg-ok') %>">
                                     <%= s.statusTxt %>
@@ -70,7 +71,7 @@
 
     <div id="shipping" class="content-section">
         <div class="card-main">
-            <table class="table text-center table-sm" style="font-size: 0.75rem;">
+            <table class="table text-center align-middle table-sm" style="font-size: 0.75rem;">
                 <thead class="table-dark"><tr><th>Date</th><th>SPX</th><th>JNE</th><th>J&T</th><th class="text-info">TOT</th></tr></thead>
                 <tbody>
                     <% shippingAll.slice(-10).forEach(k => { %>
@@ -87,19 +88,20 @@
             <h2 class="fw-bold m-0"><%= saldoTotalFormatted %></h2>
         </div>
         <div class="card-main p-0">
-            <table class="table table-sm" style="font-size: 0.8rem;">
+            <table class="table table-sm align-middle" style="font-size: 0.8rem;">
+                <thead class="table-light"><tr class="text-muted" style="font-size: 0.65rem;"><th class="ps-3">TGL</th><th>DESCRIPTION</th><th class="text-end pe-3">MUTATION</th></tr></thead>
                 <tbody>
                     <% kasAll.slice(-15).forEach(t => { %>
                         <tr class="border-bottom">
-                            <td class="ps-3 py-2">
-                                <div class="small text-muted"><%= t.tgl %></div>
-                                <div class="fw-bold text-uppercase"><%= t.kat %></div>
-                                <div class="text-muted small"><%= t.ket %></div>
+                            <td class="ps-3 py-3 tgl-col"><%= t.tgl %></td>
+                            <td>
+                                <div class="fw-bold text-uppercase" style="font-size: 0.75rem;"><%= t.kat %></div>
+                                <div class="text-muted small" style="font-size: 0.7rem; line-height: 1.2;"><%= t.ket %></div>
                             </td>
-                            <td class="text-end pe-3 py-2">
-                                <div class="<%= t.tipeMutasi === 'debet' ? 'text-mutasi-debet' : 'text-mutasi-kredit' %>"><%= t.mutasi %></div>
+                            <td class="text-end pe-3 py-3">
+                                <div class="<%= t.tipeMutasi === 'debet' ? 'text-mutasi-debet' : 'text-mutasi-kredit' %>" style="font-size: 0.85rem;"><%= t.mutasi %></div>
                                 <div class="text-muted" style="font-size: 0.65rem;">Bal: <%= t.saldo %></div>
-                                <% if(t.bukti) { %><a href="<%= t.bukti %>" target="_blank" class="btn-bukti d-inline-block mt-1">BUKTI TF</a><% } %>
+                                <% if(t.bukti) { %><div class="mt-2"><a href="<%= t.bukti %>" target="_blank" class="btn-bukti">LIHAT BUKTI</a></div><% } %>
                             </td>
                         </tr>
                     <% }) %>
