@@ -33,7 +33,7 @@
         .text-debet { color: #dc2626; font-weight: 800; font-size: 0.8rem; } 
         .text-kredit { color: #16a34a; font-weight: 800; font-size: 0.8rem; }
         
-        /* FIXED SISA SALDO */
+        /* SISA SALDO JELAS */
         .sisa-saldo { color: #0f172a !important; font-size: 0.65rem !important; font-weight: 800 !important; margin-top: 1px; }
 
         .btn-bukti { background: #2563eb; color: white; font-size: 0.55rem; font-weight: 800; padding: 5px 8px; border-radius: 4px; text-decoration: none; }
@@ -41,9 +41,11 @@
         .btn-toggle { font-size: 0.7rem; font-weight: 700; color: #2563eb; background: none; border: none; margin: 5px 10px; text-decoration: underline; }
         
         .tgl-fix { white-space: nowrap !important; width: 75px !important; font-size: 0.65rem !important; font-weight: 700; }
-        .logo-sarina { width: 80px; height: auto; margin-bottom: 5px; border-radius: 10px; }
+        
+        /* LOGO STYLE */
+        .logo-sarina { width: 80px; height: auto; margin-bottom: 5px; border-radius: 10px; object-fit: contain; }
 
-        @media (max-width: 576px) { th, td { font-size: 0.65rem !important; } }
+        @media (max-width: 576px) { th, td { font-size: 0.65rem !important; } .logo-sarina { width: 70px; } }
     </style>
 </head>
 <body>
@@ -51,7 +53,7 @@
 <div class="container">
     <div class="text-center py-3">
         <div class="d-flex flex-column align-items-center mb-1">
-            <img src="https://i.ibb.co/nsMntX1/image.png" onerror="this.style.display='none'" alt="Logo" class="logo-sarina">
+            <img src="/logo.png" onerror="this.style.display='none'" alt="Logo Sarina" class="logo-sarina">
             
             <h1 style="font-weight: 800; font-size: 1.6rem; margin: 0; text-transform: uppercase;">SARINA STORE</h1>
             <p style="font-size: 0.6rem; color: #64748b; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-top: -2px;">MANAJEMEN OPERASIONAL</p>
