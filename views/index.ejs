@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sarina Store Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%); min-height: 100vh; font-family: 'Inter', sans-serif; padding: 20px 0; }
+        .nav-custom { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 50px; padding: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+        .nav-link { border-radius: 50px; color: #444; font-weight: 700; border: none; padding: 12px 25px; transition: 0.3s; }
+        .nav-link.active { background: linear-gradient(45deg, #007bff, #00c6ff) !important; color: white !important; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); }
+        .card-main { background: white; border-radius: 24px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 20px; margin-bottom: 25px; }
+        .nowrap { white-space: nowrap !important; }
+        .content-section { display: none; }
+        .content-section.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .filter-area { display: none; background: #f8f9fa; border-radius: 15px; padding: 15px; margin-bottom: 20px; border: 1px solid #eee; }
+        .badge-status { padding: 6px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 800; }
+        .bg-habis { background: #ff7675; color: white; } .bg-low { background: #fdcb6e; color: #2d3436; } .bg-aman { background: #55efc4; color: #006266; }
+        .saldo-card { background: linear-gradient(45deg, #1e272e, #485460); color: white; border-radius: 20px; padding: 25px; text-align: center; margin-bottom: 25px; }
+        .saldo-minus { background: linear-gradient(45deg, #eb3b5a, #a52a2a) !important; }
+        .btn-riwayat { background: #f1f2f6; border: none; padding: 12px; width: 100%; border-radius: 12px; color: #007bff; font-weight: bold; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="d-flex justify-content-center mb-4">
+        <ul class="nav nav-pills nav-custom shadow-sm">
+            <li class="nav-item"><button class="nav-link active" onclick="openMenu('stocks', this)">STOCKS</button></li>
+            <li class="nav-item"><button class="nav-link" onclick="openMenu('shipping', this)">SHIPPING</button></li>
+            <li class="nav-item"><button class="nav-link" onclick="openMenu('kas', this)">KAS</button></li>
+        </ul>
+    </div>
+
+    <div id="stocks" class="content-section active">
+        <div class="card-main text-center">
+            <div class="mb-3 text-muted fw-bold"> <span class="text-primary"><%= lastUpdate %></span></div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>Produk</th><th>Qty</th><th class="text-center">Status</th></tr></thead>
+                    <tbody>
+                        <% stocks.forEach(s => { %>
+                            <tr><td class="fw-bold text-uppercase text-start"><%= s.nama %></td><td class="nowrap fw-bold text-muted"><%= s.display %></td>
+                            <td class="text-center"><span class="badge-status <%= s.qty <= 0 ? 'bg-habis' : (s.qty <= 2 ? 'bg-low' : 'bg-aman') %>"><%= s.qty <= 0 ? 'HABIS' : (s.qty <= 2 ? 'LOW' : 'TERSEDIA') %></span></td></tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="shipping" class="content-section">
+        <div class="card-main">
+            <button class="btn-riwayat" id="btnShip" onclick="showFilter('shipFilter', 'tableShip', this)">LIHAT RIWAYAT LENGKAP</button>
+            <div id="shipFilter" class="filter-area"><div class="row g-2">
+                <div class="col-6"><select id="sMonth" class="form-select" onchange="applyFilter('tableShip', 'sMonth', 'sYear')"><option value="">Bulan</option><option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option></select></div>
+                <div class="col-6"><select id="sYear" class="form-select" onchange="applyFilter('tableShip', 'sMonth', 'sYear')"><option value="">Tahun</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option></select></div>
+            </div></div>
+            <div class="table-responsive">
+                <table class="table text-center align-middle" id="tableShip">
+                    <thead class="table-dark"><tr><th>Tanggal</th><th>SPX</th><th>JNE</th><th>J&T</th><th>Same/Inst</th><th>TOTAL</th></tr></thead>
+                    <tbody><% shippingAll.forEach((k, index) => { %><tr class="data-row" data-index="<%= index %>" data-total="<%= shippingAll.length %>"><td class="nowrap fw-bold text-start tgl-format"><%= k.tgl %></td><td><%= k.spx %></td><td><%= k.jne %></td><td><%= k.jnt %></td><td><%= k.sd %></td><td class="nowrap fw-bold text-primary"><%= k.tot %></td></tr><% }) %></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="kas" class="content-section">
+        <div class="saldo-card <%= saldoTotal.includes('-') ? 'saldo-minus' : '' %>"><small class="fw-bold opacity-75">TOTAL SALDO KAS</small><h1 class="fw-bold mt-1 nowrap"><%= saldoTotal %></h1></div>
+        <div class="card-main">
+            <button class="btn-riwayat" id="btnKas" onclick="showFilter('kasFilter', 'tableKas', this)">LIHAT RIWAYAT LENGKAP</button>
+            <div id="kasFilter" class="filter-area"><div class="row g-2">
+                <div class="col-6"><select id="kMonth" class="form-select" onchange="applyFilter('tableKas', 'kMonth', 'kYear')"><option value="">Bulan</option><option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option></select></div>
+                <div class="col-6"><select id="kYear" class="form-select" onchange="applyFilter('tableKas', 'kMonth', 'kYear')"><option value="">Tahun</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option></select></div>
+            </div></div>
+            <div class="table-responsive">
+                <table class="table align-middle" id="tableKas">
+                    <thead class="table-light"><tr><th>Tanggal</th><th>Keterangan</th><th class="text-end">Mutasi</th><th class="text-center">Bukti Transaksi</th></tr></thead>
+                    <tbody>
+                        <% kasAll.forEach((t, index) => { %>
+                            <tr class="data-row" data-index="<%= index %>" data-total="<%= kasAll.length %>" style="font-size: 0.85rem;">
+                                <td class="nowrap text-muted tgl-format"><%= t.tgl %></td>
+                                <td><div class="fw-bold text-uppercase"><%= t.kat %></div><div class="small text-muted" style="font-size: 11px;"><%= t.ket %></div></td>
+                                <td class="text-end nowrap">
+                                    <div class="fw-bold <%= (t.debet && t.debet != '0' && t.debet != '-') ? 'text-danger' : 'text-success' %>" style="font-size: 0.9rem;">
+                                        <%= (t.debet && t.debet != '0' && t.debet != '-') ? '-' + t.debet : (t.kredit && t.kredit != '0' && t.kredit != '-' ? '+' + t.kredit : '0') %>
+                                    </div>
+                                    <div class="text-muted" style="font-size: 10px; margin-top: -2px;">Sisa: <%= t.saldo %></div>
+                                </td>
+                                <td class="text-center"><% if(t.bukti && t.bukti.toLowerCase().includes('http')) { %><a href="<%= t.bukti %>" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 10px; border-radius: 8px;">LIHAT BUKTI</a><% } else { %> - <% } %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function formatDateString(str) { if(!str || !str.includes('/')) return str; const part = str.split('/'); const date = new Date(part[2], part[1]-1, part[0]); return date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); }
+    document.querySelectorAll('.tgl-format').forEach(el => { el.innerText = formatDateString(el.innerText); });
+    function setInitialView() { document.querySelectorAll('.data-row').forEach(row => { const idx = parseInt(row.getAttribute('data-index')); const total = parseInt(row.getAttribute('data-total')); if (idx < total - 10) row.style.display = 'none'; else row.style.display = ''; }); }
+    setInitialView();
+    function openMenu(id, el) { document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); document.getElementById(id).classList.add('active'); el.classList.add('active'); }
+    function showFilter(filterId, tableId, btn) { const filter = document.getElementById(filterId); if(filter.style.display === 'block') { filter.style.display = 'none'; btn.innerText = "LIHAT RIWAYAT LENGKAP"; setInitialView(); } else { filter.style.display = 'block'; btn.innerText = "TAMPILKAN 10 TERAKHIR"; document.querySelectorAll(`#${tableId} .data-row`).forEach(r => r.style.display = ''); } }
+    function applyFilter(tableId, mId, yId) { const m = document.getElementById(mId).value; const y = document.getElementById(yId).value; document.querySelectorAll(`#${tableId} .data-row`).forEach(row => { const text = row.cells[0].innerText; const matchM = m === "" || text.includes(m); const matchY = y === "" || text.includes(y); row.style.display = (matchM && matchY) ? "" : "none"; }); }
+</script>
+</body>
+</html>
