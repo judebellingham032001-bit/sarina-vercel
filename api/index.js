@@ -61,11 +61,7 @@ app.get('/', async (req, res) => {
         const kasAll = linesK.slice(5).map(l => {
             const c = splitCSV(l);
             if (c[0] && c[0].trim() !== "") tempDate = c[0];
-            
-            // BUKTI TRANSAKSI: Sesuai gambar image_c3a926 (Kolom D / Indeks 3)
-            let linkBukti = (c[3] && c[3].toLowerCase().includes('http')) ? c[3].trim() : "";
-            
-            // GABUNG MUTASI 1 BARIS: Debet (Kolom E/Idx 4) atau Kredit (Kolom F/Idx 5)
+            let linkBukti = (c[3] && c[3].toLowerCase().includes('http')) ? c[3].trim().replace(/^"|"$/g, '') : "";
             let mutasiRaw = "0";
             let tipe = "netral";
             if (c[4] && c[4] !== "0" && c[4] !== "-") { mutasiRaw = "-" + c[4]; tipe = "debet"; }
@@ -80,9 +76,17 @@ app.get('/', async (req, res) => {
         let saldoTotalRaw = kasAll.length > 0 ? kasAll[kasAll.length - 1].saldo.replace(/[^\d-]/g, "") : "0";
         const isSaldoMinus = saldoTotalRaw.startsWith("-");
 
-        res.render('index', { stocks, shippingAll, kasAll, saldoTotal: formatRP(saldoTotalRaw).replace('+', ''), isSaldoMinus, lastUpdate });
+        res.render('index', { 
+            stocks, 
+            shippingAll, 
+            kasAll, 
+            saldoTotal: formatRP(saldoTotalRaw).replace('+', ''), 
+            isSaldoMinus, 
+            lastUpdate 
+        });
     } catch (e) {
-        res.status(500).send("Error: " + e.message);
+        console.error(e);
+        res.status(500).send("Backend Error: " + e.message);
     }
 });
 
