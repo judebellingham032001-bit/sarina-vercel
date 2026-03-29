@@ -14,6 +14,10 @@
         .nav-link.active { background: #2563eb !important; color: white !important; }
         .card-main { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 15px; overflow: hidden; }
         .content-section { display: none; } .content-section.active { display: block; }
+.nowrap-cell { 
+    white-space: nowrap !important; 
+    width: 1%; 
+}
 
         /* HEADER COLORS */
         .head-stok th { background-color: #0f172a !important; color: white !important; border: none !important; }
@@ -126,12 +130,12 @@
                     <tbody>
                         <% kasAll.forEach((t, i) => { %>
                             <tr class="row-data border-bottom" data-index="<%= i %>">
-                                <td class="ps-2 py-3 tgl-fix"><%= t.tgl %></td>
-                                <td style="line-height: 1.2;"><div class="fw-bold text-uppercase" style="font-size: 0.65rem;"><%= t.kat %></div><div class="text-muted" style="font-size: 0.55rem;"><%= t.ket %></div></td>
-                                <td class="text-end nowrap-cell">
-                                    <div class="<%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>"><%= t.mutasi %></div>
-                                    <div class="sisa-saldo">Sisa: <%= t.saldo %></div>
-                                </td>
+<td class="text-end nowrap-cell">
+    <div class="<%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>">
+        <%= t.mutasi %>
+    </div>
+    <div class="sisa-saldo">Sisa: <%= t.saldo %></div>
+</td>
                                 <td class="text-center px-1"><% if(t.bukti) { %><a href="<%= t.bukti %>" target="_blank" class="btn-bukti">BUKTI</a><% } else { %>-<% } %></td>
                             </tr>
                         <% }) %>
