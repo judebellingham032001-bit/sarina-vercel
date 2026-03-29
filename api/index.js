@@ -22,6 +22,33 @@ function splitCSV(line) {
     return result;
 }
 
+// FUNGSI FORMAT RUPIAH (Backend Version)
+function formatRP(angkaStr) {
+    if (!angkaStr || angkaStr === "0" || angkaStr === "-") return "0";
+    // Hapus karakter non-angka kecuali minus
+    let bersih = angkaStr.replace(/[^\d-]/g, "");
+    if (bersih === "" || bersih === "-") return "0";
+    
+    let isMinus = bersih.startsWith("-");
+    let angka = Math.abs(parseInt(bersih));
+    
+    let formatted = "Rp " + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return isMinus ? "-" + formatted : "+ " + formatted;
+}
+
+// FUNGSI FORMAT SALDO (Backend Version)
+function formatSaldo(angkaStr) {
+    if (!angkaStr || angkaStr === "0" || angkaStr === "-") return "Rp 0";
+    let bersih = angkaStr.replace(/[^\d-]/g, "");
+    if (bersih === "" || bersih === "-") return "Rp 0";
+    
+    let isMinus = bersih.startsWith("-");
+    let angka = Math.abs(parseInt(bersih));
+    
+    let formatted = "Rp " + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return isMinus ? "-" + formatted : formatted;
+}
+
 app.get('/', async (req, res) => {
     try {
         const urlS = "https://docs.google.com/spreadsheets/d/1xTVwqw9a3BMrmHEir9wQEidVxIgUhvCP_qj8jHY0u7w/export?format=csv&gid=0";
@@ -47,7 +74,7 @@ app.get('/', async (req, res) => {
             return { tgl: c[6], spx: c[7], jne: c[8], jnt: c[9], sd: c[10], tot: c[11] };
         }).filter(i => i.tgl && i.tgl !== "0");
 
-        // DATA KAS (DIPERBAIKI: Link Bukti Kolom H / Indeks 7)
+        // DATA KAS (VERSI DIPERBAIKI TOTAL - FORMATTING backend)
         const linesK = resK.data.split(/\r?\n/);
         let tempDate = ""; 
         const kasAll = linesK.slice(5).map(l => {
@@ -56,21 +83,30 @@ app.get('/', async (req, res) => {
             
             // Ambil Link Bukti di Indeks 7 (Kolom H)
             const linkBukti = c[7] ? c[7].trim() : "";
+            
+            // Tentukan nominal Mutasi (Debet atau Kredit)
+            let mutasiRaw = "0";
+            let tipe = "netral";
+            if (c[4] && c[4] !== "0" && c[4] !== "-") { mutasiRaw = "-" + c[4]; tipe = "debet"; }
+            else if (c[5] && c[5] !== "0" && c[5] !== "-") { mutasiRaw = c[5]; tipe = "kredit"; }
 
             return { 
                 tgl: tempDate, 
                 kat: c[1], 
                 ket: c[2], 
-                debet: c[4], 
-                kredit: c[5], 
-                saldo: c[6], 
+                mutasi: formatRP(mutasiRaw), // Format Rp di backend
+                tipeMutasi: tipe,
+                saldo: formatSaldo(c[6]), // Format Saldo Sisa di backend
                 bukti: linkBukti 
             };
         }).filter(t => t.kat && t.kat !== "Kategori" && t.kat !== "");
 
-        const saldoTotal = kasAll.length > 0 ? kasAll[kasAll.length - 1].saldo : "0";
+        // Tentukan Saldo Total (Format Besar di Atas)
+        let saldoTotalRaw = kasAll.length > 0 ? kasAll[kasAll.length - 1].saldo.replace(/[^\d-]/g, "") : "0";
+        const saldoTotalFormatted = formatSaldo(saldoTotalRaw);
+        const isSaldoMinus = saldoTotalFormatted.startsWith("-");
 
-        res.render('index', { stocks, shippingAll, kasAll, saldoTotal, lastUpdate });
+        res.render('index', { stocks, shippingAll, kasAll, saldoTotalFormatted, isSaldoMinus, lastUpdate });
     } catch (e) {
         res.status(500).send("Error koneksi data: " + e.message);
     }
