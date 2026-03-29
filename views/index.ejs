@@ -22,10 +22,14 @@
         .head-ship { background: #334155; color: white; }
         .head-kas { background: #2563eb; color: white; }
         
+        /* LOGIKA WARNA SALDO (FIXED) */
+        .bg-normal { background: linear-gradient(135deg, #1e293b, #475569); } /* Biru/Gelap Aman */
+        .bg-minus { background: #dc2626 !important; } /* MERAH MENYALA KALAU MINUS */
+
         th { font-size: 0.65rem; padding: 10px !important; text-transform: uppercase; letter-spacing: 0.5px; }
         td { padding: 10px 8px !important; vertical-align: middle; }
 
-        /* ANTI TURUN (NOWRAP) */
+        /* ANTI TURUN (NOWRAP) - PAKSA 1 BARIS */
         .tgl-fix { 
             white-space: nowrap !important; 
             width: 85px !important; 
@@ -99,29 +103,32 @@
                     </div>
                 </div>
             </div>
-            <table class="table text-center table-sm align-middle mb-0" id="tableShip">
-                <thead class="head-ship">
-                    <tr><th class="ps-3 text-start">TGL</th><th>SPX</th><th>JNE</th><th>J&T</th><th>SD</th><th>TOT</th></tr>
-                </thead>
-                <tbody>
-                    <% shippingAll.forEach((k, i) => { %>
-                        <tr class="row-data border-bottom" data-index="<%= i %>" data-total="<%= shippingAll.length %>">
-                            <td class="text-start fw-bold tgl-fix ps-3"><%= k.tgl %></td>
-                            <td><%= k.spx %></td><td><%= k.jne %></td><td><%= k.jnt %></td><td><%= k.sd %></td>
-                            <td class="fw-bold text-primary"><%= k.tot %></td>
-                        </tr>
-                    <% }) %>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table text-center table-sm align-middle mb-0" id="tableShip">
+                    <thead class="head-ship">
+                        <tr><th class="ps-3 text-start">TGL</th><th>SPX</th><th>JNE</th><th>J&T</th><th>SD</th><th>TOT</th></tr>
+                    </thead>
+                    <tbody>
+                        <% shippingAll.forEach((k, i) => { %>
+                            <tr class="row-data border-bottom" data-index="<%= i %>" data-total="<%= shippingAll.length %>">
+                                <td class="text-start fw-bold tgl-fix ps-3"><%= k.tgl %></td>
+                                <td><%= k.spx %></td><td><%= k.jne %></td><td><%= k.jnt %></td><td><%= k.sd %></td>
+                                <td class="fw-bold text-primary pe-2"><%= k.tot %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <div id="kas" class="content-section">
         <div class="card-main">
-            <div class="p-3 text-center head-kas">
+            <div class="p-3 text-center <%= isSaldoMinus ? 'bg-minus' : 'bg-normal' %>" style="color: white; border-radius: 12px 12px 0 0;">
                 <small class="fw-bold opacity-75">TOTAL SALDO KAS</small>
                 <h2 class="fw-bold m-0"><%= saldoTotal %></h2>
             </div>
+            
             <button class="btn-toggle" onclick="toggleFull('tableKas', this)">+ FILTER & LIHAT SEMUA</button>
             <div id="filterKas" style="display:none;">
                 <div class="filter-box">
@@ -131,29 +138,31 @@
                     </div>
                 </div>
             </div>
-            <table class="table table-sm align-middle mb-0" id="tableKas">
-                <thead class="head-kas" style="background: #e2e8f0; color: #1e293b;">
-                    <tr><th class="ps-3">TGL</th><th>KET</th><th class="text-end">MUTASI</th><th class="text-center">BUKTI</th></tr>
-                </thead>
-                <tbody>
-                    <% kasAll.forEach((t, i) => { %>
-                        <tr class="row-data border-bottom" data-index="<%= i %>" data-total="<%= kasAll.length %>">
-                            <td class="ps-3 py-3 tgl-fix"><%= t.tgl %></td>
-                            <td style="line-height: 1.1;">
-                                <div class="fw-bold text-uppercase" style="font-size: 0.65rem;"><%= t.kat %></div>
-                                <div class="text-muted" style="font-size: 0.55rem;"><%= t.ket %></div>
-                            </td>
-                            <td class="text-end nowrap">
-                                <div class="mutasi-txt <%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>" style="font-size: 0.75rem;"><%= t.mutasi %></div>
-                                <div class="text-muted" style="font-size: 0.55rem;"><%= t.saldo %></div>
-                            </td>
-                            <td class="text-center">
-                                <% if(t.bukti) { %><a href="<%= t.bukti %>" target="_blank" class="btn-bukti">BUKTI</a><% } else { %>-<% } %>
-                            </td>
-                        </tr>
-                    <% }) %>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0" id="tableKas">
+                    <thead class="head-kas" style="background: #e2e8f0; color: #1e293b;">
+                        <tr><th class="ps-3">TGL</th><th>KET</th><th class="text-end">MUTASI</th><th class="text-center">BUKTI</th></tr>
+                    </thead>
+                    <tbody>
+                        <% kasAll.forEach((t, i) => { %>
+                            <tr class="row-data border-bottom" data-index="<%= i %>" data-total="<%= kasAll.length %>">
+                                <td class="ps-3 py-3 tgl-fix"><%= t.tgl %></td>
+                                <td style="line-height: 1.1; min-width: 100px;">
+                                    <div class="fw-bold text-uppercase" style="font-size: 0.65rem;"><%= t.kat %></div>
+                                    <div class="text-muted" style="font-size: 0.55rem;"><%= t.ket %></div>
+                                </td>
+                                <td class="text-end nowrap">
+                                    <div class="mutasi-txt <%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>" style="font-size: 0.75rem;"><%= t.mutasi %></div>
+                                    <div class="text-muted" style="font-size: 0.55rem;"><%= t.saldo %></div>
+                                </td>
+                                <td class="text-center">
+                                    <% if(t.bukti) { %><a href="<%= t.bukti %>" target="_blank" class="btn-bukti">BUKTI</a><% } else { %>-<% } %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
