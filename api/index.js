@@ -30,16 +30,6 @@ function formatRP(angkaStr) {
     return isMinus ? "-" + formatted : "+ " + formatted;
 }
 
-function formatSaldo(angkaStr) {
-    if (!angkaStr || angkaStr === "0" || angkaStr === "-") return "Rp 0";
-    let bersih = angkaStr.replace(/[^\d-]/g, "");
-    if (bersih === "" || bersih === "-") return "Rp 0";
-    let isMinus = bersih.startsWith("-");
-    let angka = Math.abs(parseInt(bersih));
-    let formatted = "Rp " + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    return isMinus ? "-" + formatted : formatted;
-}
-
 app.get('/', async (req, res) => {
     try {
         const urlS = "https://docs.google.com/spreadsheets/d/1xTVwqw9a3BMrmHEir9wQEidVxIgUhvCP_qj8jHY0u7w/export?format=csv&gid=0";
@@ -72,15 +62,10 @@ app.get('/', async (req, res) => {
             const c = splitCSV(l);
             if (c[0] && c[0].trim() !== "") tempDate = c[0];
             
-            // LOGIKA BUKTI: Cari di semua kolom dari indeks 6 ke atas
-            let linkBukti = "";
-            for(let i=6; i<c.length; i++) {
-                if(c[i] && c[i].toLowerCase().includes('http')) {
-                    linkBukti = c[i].trim().replace(/^"|"$/g, ''); 
-                    break;
-                }
-            }
+            // BUKTI TRANSAKSI: Sesuai gambar image_c3a926 (Kolom D / Indeks 3)
+            let linkBukti = (c[3] && c[3].toLowerCase().includes('http')) ? c[3].trim() : "";
             
+            // GABUNG MUTASI 1 BARIS: Debet (Kolom E/Idx 4) atau Kredit (Kolom F/Idx 5)
             let mutasiRaw = "0";
             let tipe = "netral";
             if (c[4] && c[4] !== "0" && c[4] !== "-") { mutasiRaw = "-" + c[4]; tipe = "debet"; }
@@ -88,17 +73,16 @@ app.get('/', async (req, res) => {
 
             return { 
                 tgl: tempDate, kat: c[1], ket: c[2], mutasi: formatRP(mutasiRaw),
-                tipeMutasi: tipe, saldo: formatSaldo(c[6]), bukti: linkBukti 
+                tipeMutasi: tipe, saldo: formatRP(c[6]), bukti: linkBukti 
             };
         }).filter(t => t.kat && t.kat !== "Kategori" && t.kat !== "");
 
         let saldoTotalRaw = kasAll.length > 0 ? kasAll[kasAll.length - 1].saldo.replace(/[^\d-]/g, "") : "0";
-        const saldoTotalFormatted = formatSaldo(saldoTotalRaw);
-        const isSaldoMinus = saldoTotalFormatted.startsWith("-");
+        const isSaldoMinus = saldoTotalRaw.startsWith("-");
 
-        res.render('index', { stocks, shippingAll, kasAll, saldoTotalFormatted, isSaldoMinus, lastUpdate });
+        res.render('index', { stocks, shippingAll, kasAll, saldoTotal: formatRP(saldoTotalRaw).replace('+', ''), isSaldoMinus, lastUpdate });
     } catch (e) {
-        res.status(500).send("Error koneksi data: " + e.message);
+        res.status(500).send("Error: " + e.message);
     }
 });
 
