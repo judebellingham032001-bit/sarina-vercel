@@ -3,10 +3,11 @@ const axios = require('axios');
 const path = require('path');
 const app = express();
 
-// SETTING KHUSUS VERCEL BIAR TAHU LOKASI FOLDER VIEWS
+// SETTING VIEW ENGINE UNTUK VERCEL
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../views'));
 
+// FUNGSI PEMECAH CSV YANG LEBIH CERDAS (UNTUK MENANGANI LINK/KOMAL)
 function splitCSV(line) {
     const result = [];
     let cur = '';
@@ -31,6 +32,7 @@ app.get('/', async (req, res) => {
             axios.get(urlS), axios.get(urlR), axios.get(urlK)
         ]);
 
+        // DATA STOK (Last Update dari Kolom A1)
         const linesS = resS.data.split(/\r?\n/);
         const lastUpdate = splitCSV(linesS[0])[0] || "-"; 
 
@@ -39,18 +41,32 @@ app.get('/', async (req, res) => {
             return { nama: c[0], qty: parseFloat(c[1]) || 0, display: c[3] };
         }).filter(i => i.nama);
 
+        // DATA SHIPPING
         const shippingAll = resR.data.split(/\r?\n/).slice(3).map(l => {
             const c = splitCSV(l);
             return { tgl: c[6], spx: c[7], jne: c[8], jnt: c[9], sd: c[10], tot: c[11] };
         }).filter(i => i.tgl && i.tgl !== "0");
 
+        // DATA KAS (DIPERBAIKI: Link Bukti Kolom H / Indeks 7)
         const linesK = resK.data.split(/\r?\n/);
         let tempDate = ""; 
         const kasAll = linesK.slice(5).map(l => {
             const c = splitCSV(l);
             if (c[0] && c[0].trim() !== "") tempDate = c[0];
-            return { tgl: tempDate, kat: c[1], ket: c[2], debet: c[4], kredit: c[5], saldo: c[6], bukti: c[7] };
-        }).filter(t => t.kat && t.kat !== "Kategori");
+            
+            // Ambil Link Bukti di Indeks 7 (Kolom H)
+            const linkBukti = c[7] ? c[7].trim() : "";
+
+            return { 
+                tgl: tempDate, 
+                kat: c[1], 
+                ket: c[2], 
+                debet: c[4], 
+                kredit: c[5], 
+                saldo: c[6], 
+                bukti: linkBukti 
+            };
+        }).filter(t => t.kat && t.kat !== "Kategori" && t.kat !== "");
 
         const saldoTotal = kasAll.length > 0 ? kasAll[kasAll.length - 1].saldo : "0";
 
@@ -60,5 +76,4 @@ app.get('/', async (req, res) => {
     }
 });
 
-// KHUSUS VERCEL: GAK PAKAI APP.LISTEN
 module.exports = app;
