@@ -72,10 +72,13 @@ app.get('/', async (req, res) => {
             const c = splitCSV(l);
             if (c[0] && c[0].trim() !== "") tempDate = c[0];
             
-            // LOGIKA BUKTI: Ambil kolom ke-8 (Indeks 7) atau cari yang ada http-nya
+            // LOGIKA BUKTI: Cari di semua kolom dari indeks 6 ke atas
             let linkBukti = "";
-            for(let i=7; i<c.length; i++) {
-                if(c[i] && c[i].toLowerCase().includes('http')) { linkBukti = c[i].trim(); break; }
+            for(let i=6; i<c.length; i++) {
+                if(c[i] && c[i].toLowerCase().includes('http')) {
+                    linkBukti = c[i].trim().replace(/^"|"$/g, ''); 
+                    break;
+                }
             }
             
             let mutasiRaw = "0";
