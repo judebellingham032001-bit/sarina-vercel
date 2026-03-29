@@ -1,45 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SARINA STORE | OPERATIONAL</title>
+    <title>SARINA STORE | OPERASIONAL</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        body { background: #f1f5f9; font-family: 'Inter', sans-serif; padding: 15px 0; color: #1e293b; }
+        body { background: #f1f5f9; font-family: 'Inter', sans-serif; padding-bottom: 50px; color: #1e293b; }
         .nav-custom { background: white; border-radius: 50px; padding: 5px; border: 1px solid #e2e8f0; display: inline-flex; }
         .nav-link { border-radius: 50px; color: #64748b; font-weight: 700; padding: 8px 18px; font-size: 0.75rem; border: none; }
         .nav-link.active { background: #2563eb !important; color: white !important; }
-        .card-main { background: white; border-radius: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 15px; margin-bottom: 20px; }
-        .content-section { display: none; }
-        .content-section.active { display: block; }
+        .card-main { background: white; border-radius: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 15px; margin-bottom: 20px; overflow: hidden; }
+        .content-section { display: none; } .content-section.active { display: block; }
         .badge-status { padding: 4px 10px; border-radius: 50px; font-size: 0.6rem; font-weight: 800; }
         .bg-out { background: #fee2e2; color: #dc2626; } .bg-low { background: #fef3c7; color: #d97706; } .bg-ok { background: #dcfce7; color: #16a34a; }
         .saldo-header { color: white; border-radius: 18px; padding: 25px; text-align: center; margin-bottom: 20px; }
         .bg-normal { background: linear-gradient(135deg, #1e293b, #475569); } .bg-minus { background: #dc2626; }
         .text-debet { color: #dc2626; font-weight: 700; } .text-kredit { color: #16a34a; font-weight: 700; }
-        .btn-bukti { background: #2563eb; color: white; font-size: 0.55rem; font-weight: 800; padding: 4px 8px; border-radius: 50px; text-decoration: none; }
+        .btn-bukti { background: #2563eb; color: white; font-size: 0.6rem; font-weight: 800; padding: 4px 10px; border-radius: 50px; text-decoration: none; white-space: nowrap; }
+        .table-kas thead { background: #2563eb; color: white; }
+        .table-kas th { font-size: 0.65rem; padding: 10px !important; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nowrap { white-space: nowrap !important; }
+        .filter-box { background: #f8fafc; padding: 10px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #e2e8f0; }
+        .btn-toggle { font-size: 0.7rem; font-weight: 700; color: #2563eb; background: none; border: none; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-<div class="container" style="max-width: 550px;">
-    <div class="text-center mb-4">
-        <h1 style="font-weight: 800; font-size: 1.8rem;">SARINA STORE</h1>
-        <p style="font-size: 0.7rem; color: #64748b; font-weight: 600; letter-spacing: 2px;">OPERATIONAL MANAGEMENT</p>
+<div class="container" style="max-width: 600px;">
+    <div class="text-center py-4">
+        <h1 style="font-weight: 800; font-size: 1.8rem; margin: 0;">SARINA STORE</h1>
+        <p style="font-size: 0.7rem; color: #64748b; font-weight: 600; letter-spacing: 2px;">MANAJEMEN OPERASIONAL</p>
         <ul class="nav nav-pills nav-custom mt-2">
-            <li class="nav-item"><button class="nav-link active" onclick="openMenu('stocks', this)">STOCKS</button></li>
-            <li class="nav-item"><button class="nav-link" onclick="openMenu('shipping', this)">SHIPPING</button></li>
-            <li class="nav-item"><button class="nav-link" onclick="openMenu('kas', this)">CASH FLOW</button></li>
+            <li class="nav-item"><button class="nav-link active" onclick="openMenu('stocks', this)">STOK</button></li>
+            <li class="nav-item"><button class="nav-link" onclick="openMenu('shipping', this)">PENGIRIMAN</button></li>
+            <li class="nav-item"><button class="nav-link" onclick="openMenu('kas', this)">KAS TOKO</button></li>
         </ul>
     </div>
 
     <div id="stocks" class="content-section active">
-        <div class="text-center mb-3"><small class="text-muted fw-bold">Last Update: <%= lastUpdate %></small></div>
+        <div class="text-center mb-3"><small class="text-muted fw-bold">Update Terakhir: <%= lastUpdate %></small></div>
         <div class="card-main">
-            <table class="table table-sm align-middle" style="font-size: 0.85rem;">
-                <thead><tr class="text-muted"><th>Product</th><th class="text-end">Status</th></tr></thead>
+            <table class="table table-sm align-middle mb-0" style="font-size: 0.85rem;">
+                <thead><tr class="text-muted"><th>Nama Produk</th><th class="text-end">Status</th></tr></thead>
                 <tbody>
                     <% stocks.forEach(s => { %>
                         <tr><td class="fw-bold"><%= s.nama %></td><td class="text-end"><span class="badge-status <%= s.statusTxt === 'OUT OF STOCK' ? 'bg-out' : (s.statusTxt === 'LOW' ? 'bg-low' : 'bg-ok') %>"><%= s.statusTxt %></span></td></tr>
@@ -51,42 +55,66 @@
 
     <div id="shipping" class="content-section">
         <div class="card-main">
-            <table class="table text-center table-sm" style="font-size: 0.75rem;">
-                <thead class="table-dark"><tr><th>Date</th><th>SPX</th><th>JNE</th><th>J&T</th><th>TOT</th></tr></thead>
-                <tbody>
-                    <% shippingAll.slice(-10).forEach(k => { %>
-                        <tr><td class="text-start fw-bold"><%= k.tgl %></td><td><%= k.spx %></td><td><%= k.jne %></td><td><%= k.jnt %></td><td class="fw-bold text-primary"><%= k.tot %></td></tr>
-                    <% }) %>
-                </tbody>
-            </table>
+            <button class="btn-toggle" onclick="toggleFilter('shipLogs', this)">+ LIHAT MUTASI LENGKAP</button>
+            <div id="shipLogs" style="display:none;">
+                <div class="filter-box">
+                    <div class="row g-2">
+                        <div class="col-6"><select id="sM" class="form-select form-select-sm" onchange="filterTable('tableShip', 'sM', 'sY')"><option value="">Bulan</option><option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option></select></div>
+                        <div class="col-6"><select id="sY" class="form-select form-select-sm" onchange="filterTable('tableShip', 'sM', 'sY')"><option value="">Tahun</option><option value="2025">2025</option><option value="2026">2026</option></select></div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table text-center table-sm align-middle mb-0" id="tableShip" style="font-size: 0.75rem;">
+                    <thead class="table-dark"><tr><th class="nowrap">TANGGAL</th><th>SPX</th><th>JNE</th><th>J&T</th><th>TOTAL</th></tr></thead>
+                    <tbody>
+                        <% shippingAll.forEach((k, i) => { %>
+                            <tr class="row-data" data-index="<%= i %>" data-total="<%= shippingAll.length %>">
+                                <td class="text-start fw-bold nowrap ps-2"><%= k.tgl %></td><td><%= k.spx %></td><td><%= k.jne %></td><td><%= k.jnt %></td><td class="fw-bold text-primary"><%= k.tot %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <div id="kas" class="content-section">
         <div class="saldo-header <%= isSaldoMinus ? 'bg-minus' : 'bg-normal' %>">
-            <small class="fw-bold">TOTAL BALANCE</small>
+            <small class="fw-bold opacity-75">TOTAL SALDO KAS</small>
             <h2 class="fw-bold m-0"><%= saldoTotal %></h2>
         </div>
         <div class="card-main p-0">
+            <div class="p-3 pb-0">
+                <button class="btn-toggle" onclick="toggleFilter('kasLogs', this)">+ LIHAT MUTASI LENGKAP</button>
+                <div id="kasLogs" style="display:none;">
+                    <div class="filter-box">
+                        <div class="row g-2">
+                            <div class="col-6"><select id="kM" class="form-select form-select-sm" onchange="filterTable('tableKas', 'kM', 'kY')"><option value="">Bulan</option><option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option></select></div>
+                            <div class="col-6"><select id="kY" class="form-select form-select-sm" onchange="filterTable('tableKas', 'kM', 'kY')"><option value="">Tahun</option><option value="2025">2025</option><option value="2026">2026</option></select></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="table-responsive">
-                <table class="table table-sm align-middle mb-0" style="font-size: 0.75rem;">
-                    <thead class="table-light">
-                        <tr class="text-muted"><th class="ps-3">DATE</th><th>DESC</th><th class="text-end">MUTATION</th><th class="text-center">PROOF</th></tr>
+                <table class="table table-sm align-middle mb-0 table-kas" id="tableKas" style="font-size: 0.7rem;">
+                    <thead>
+                        <tr><th class="ps-3">TGL</th><th>KETERANGAN</th><th class="text-end nowrap">MUTASI</th><th class="text-center">BUKTI</th></tr>
                     </thead>
                     <tbody>
-                        <% kasAll.slice(-15).forEach(t => { %>
-                            <tr class="border-bottom">
-                                <td class="ps-3 py-3 fw-bold text-muted" style="width: 80px;"><%= t.tgl %></td>
-                                <td>
+                        <% kasAll.forEach((t, i) => { %>
+                            <tr class="row-data border-bottom" data-index="<%= i %>" data-total="<%= kasAll.length %>">
+                                <td class="ps-3 py-3 fw-bold text-muted nowrap"><%= t.tgl %></td>
+                                <td style="min-width: 120px;">
                                     <div class="fw-bold text-uppercase" style="font-size: 0.7rem;"><%= t.kat %></div>
                                     <div class="text-muted small" style="line-height: 1.1;"><%= t.ket %></div>
                                 </td>
-                                <td class="text-end">
+                                <td class="text-end nowrap">
                                     <div class="<%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>"><%= t.mutasi %></div>
-                                    <div class="text-muted" style="font-size: 0.6rem;">Bal: <%= t.saldo %></div>
+                                    <div class="text-muted" style="font-size: 0.6rem;">Sisa: <%= t.saldo %></div>
                                 </td>
-                                <td class="text-center">
-                                    <% if(t.bukti) { %><a href="<%= t.bukti %>" target="_blank" class="btn-bukti">LINK</a><% } else { %>-<% } %>
+                                <td class="text-center px-2">
+                                    <% if(t.bukti) { %><a href="<%= t.bukti %>" target="_blank" class="btn-bukti">LIHAT BUKTI</a><% } else { %>-<% } %>
                                 </td>
                             </tr>
                         <% }) %>
@@ -103,6 +131,36 @@
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); 
         document.getElementById(id).classList.add('active'); el.classList.add('active'); 
     }
+
+    function toggleFilter(id, btn) {
+        const x = document.getElementById(id);
+        if (x.style.display === "none") {
+            x.style.display = "block"; btn.innerText = "- SEMBUNYIKAN OPSI";
+            document.querySelectorAll(`#${id.replace('Logs','')} .row-data`).forEach(r => r.style.display = "");
+        } else {
+            x.style.display = "none"; btn.innerText = "+ LIHAT MUTASI LENGKAP";
+            showDefault(id.replace('Logs',''));
+        }
+    }
+
+    function showDefault(tableId) {
+        document.querySelectorAll(`#${tableId} .row-data`).forEach(row => {
+            const idx = parseInt(row.getAttribute('data-index'));
+            const total = parseInt(row.getAttribute('data-total'));
+            row.style.display = (idx < total - 10) ? "none" : "";
+        });
+    }
+
+    function filterTable(tableId, mId, yId) {
+        const m = document.getElementById(mId).value;
+        const y = document.getElementById(yId).value;
+        document.querySelectorAll(`#${tableId} .row-data`).forEach(row => {
+            const txt = row.innerText;
+            row.style.display = (txt.includes(m) && txt.includes(y)) ? "" : "none";
+        });
+    }
+
+    window.onload = function() { showDefault('tableShip'); showDefault('tableKas'); };
 </script>
 </body>
 </html>
