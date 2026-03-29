@@ -10,26 +10,24 @@
         body { background: #f1f5f9; font-family: 'Inter', sans-serif; color: #1e293b; padding-bottom: 30px; }
         .container { max-width: 900px; padding: 10px; }
         
-        /* Navbar & Card */
         .nav-custom { background: white; border-radius: 50px; padding: 4px; border: 1px solid #e2e8f0; display: inline-flex; }
         .nav-link { border-radius: 50px; color: #64748b; font-weight: 700; padding: 6px 14px; font-size: 0.7rem; border: none; }
         .nav-link.active { background: #2563eb !important; color: white !important; }
         .card-main { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 15px; overflow: hidden; }
         .content-section { display: none; } .content-section.active { display: block; }
 
-        /* Header Warna Berbeda */
         .head-stok { background: #1d4ed8; color: white; }
         .head-ship { background: #334155; color: white; }
         .head-kas { background: #2563eb; color: white; }
         
-        /* LOGIKA WARNA SALDO (FIXED) */
-        .bg-normal { background: linear-gradient(135deg, #1e293b, #475569); } /* Biru/Gelap Aman */
-        .bg-minus { background: #dc2626 !important; } /* MERAH MENYALA KALAU MINUS */
+        /* LOGIKA WARNA SALDO */
+        .bg-normal { background: linear-gradient(135deg, #1e293b, #475569); }
+        .bg-minus { background: #dc2626 !important; } 
 
         th { font-size: 0.65rem; padding: 10px !important; text-transform: uppercase; letter-spacing: 0.5px; }
         td { padding: 10px 8px !important; vertical-align: middle; }
 
-        /* ANTI TURUN (NOWRAP) - PAKSA 1 BARIS */
+        /* ANTI TURUN (NOWRAP) */
         .tgl-fix { 
             white-space: nowrap !important; 
             width: 85px !important; 
@@ -52,7 +50,6 @@
         @media (max-width: 576px) {
             th, td { font-size: 0.65rem !important; }
             .tgl-fix { width: 75px !important; font-size: 0.6rem !important; }
-            .mutasi-txt { font-size: 0.7rem !important; }
         }
     </style>
 </head>
@@ -70,6 +67,9 @@
     </div>
 
     <div id="stocks" class="content-section active">
+        <div class="text-center mb-3">
+            <small class="text-muted fw-bold">Update Terakhir: <%= lastUpdate %></small>
+        </div>
         <div class="card-main">
             <table class="table table-sm align-middle mb-0">
                 <thead class="head-stok">
@@ -155,7 +155,7 @@
                                     <div class="mutasi-txt <%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>" style="font-size: 0.75rem;"><%= t.mutasi %></div>
                                     <div class="text-muted" style="font-size: 0.55rem;"><%= t.saldo %></div>
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center px-2">
                                     <% if(t.bukti) { %><a href="<%= t.bukti %>" target="_blank" class="btn-bukti">BUKTI</a><% } else { %>-<% } %>
                                 </td>
                             </tr>
@@ -178,7 +178,6 @@
         const filterId = tableId === 'tableShip' ? 'filterShip' : 'filterKas';
         const filterEl = document.getElementById(filterId);
         const rows = document.querySelectorAll(`#${tableId} .row-data`);
-        
         if (filterEl.style.display === "none") {
             filterEl.style.display = "block";
             rows.forEach(r => r.style.display = "");
