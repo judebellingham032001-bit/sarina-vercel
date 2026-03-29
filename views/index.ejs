@@ -64,13 +64,13 @@
         </div>
         <ul class="nav nav-pills nav-custom mt-2">
             <li class="nav-item"><button class="nav-link active" onclick="openMenu('stocks', this)">STOK</button></li>
-            <li class="nav-item"><button class="nav-link" onclick="openMenu('shipping', this)">KIRIM</button></li>
+            <li class="nav-item"><button class="nav-link" onclick="openMenu('shipping', this)">PENGIRIMAN</button></li>
             <li class="nav-item"><button class="nav-link" onclick="openMenu('kas', this)">KAS</button></li>
         </ul>
     </div>
 
     <div id="stocks" class="content-section active">
-        <div class="text-center mb-3"><small class="text-muted fw-bold">Update Terakhir: <%= lastUpdate %></small></div>
+        <div class="text-center mb-3"><small class="text-muted fw-bold"><%= lastUpdate %></small></div>
         <div class="card-main">
             <table class="table table-sm align-middle mb-0">
                 <thead class="head-stok"><tr><th class="ps-3">PRODUK</th><th class="text-center">QTY</th><th class="text-end pe-3">STATUS</th></tr></thead>
@@ -102,7 +102,7 @@
             </div>
             <div class="table-responsive">
                 <table class="table text-center table-sm align-middle mb-0" id="tableShip">
-                    <thead class="head-ship"><tr><th class="ps-3 text-start">TGL</th><th>SPX</th><th>JNE</th><th>J&T</th><th>SD</th><th>TOT</th></tr></thead>
+                    <thead class="head-ship"><tr><th class="ps-3 text-start">Tanggal</th><th>SPX</th><th>JNE</th><th>J&T</th><th>Same/Ins</th><th>TOTAL</th></tr></thead>
                     <tbody><% shippingAll.forEach((k, i) => { %><tr class="row-data border-bottom" data-index="<%= i %>"><td class="text-start fw-bold tgl-fix ps-3"><%= k.tgl %></td><td><%= k.spx %></td><td><%= k.jne %></td><td><%= k.jnt %></td><td><%= k.sd %></td><td class="fw-bold text-primary pe-2"><%= k.tot %></td></tr><% }) %></tbody>
                 </table>
             </div>
@@ -112,7 +112,7 @@
     <div id="kas" class="content-section">
         <div class="card-main">
             <div class="p-4 text-center <%= isSaldoMinus ? 'bg-minus' : 'bg-normal' %>" style="color: white;">
-                <small class="fw-bold opacity-75">TOTAL SALDO KAS</small>
+                <small class="fw-bold opacity-75">SALDO KAS</small>
                 <h2 class="fw-bold m-0" style="font-size: 1.5rem;"><%= saldoTotal %></h2>
             </div>
             <button class="btn-toggle" onclick="toggleFull('tableKas', this)">+ FILTER & LIHAT SEMUA</button>
@@ -126,7 +126,7 @@
             </div>
             <div class="table-responsive">
                 <table class="table table-sm align-middle mb-0" id="tableKas">
-                    <thead class="head-kas-dark"><tr><th class="ps-2">TGL</th><th>KET</th><th class="text-end">MUTASI</th><th class="text-center">BUKTI</th></tr></thead>
+                    <thead class="head-kas-dark"><tr><th class="ps-2">Tanggal</th><th>Keterangan</th><th class="text-end">MUTASI</th><th class="text-center">Bukti Transaksi</th></tr></thead>
                     <tbody>
                         <% kasAll.forEach((t, i) => { %>
                             <tr class="row-data border-bottom" data-index="<%= i %>">
@@ -136,7 +136,7 @@
     </div>
     <div class="sisa-saldo">Sisa: <%= t.saldo %></div>
 </td>
-                                <td class="text-center px-1"><% if(t.bukti) { %><a href="<%= t.bukti %>" target="_blank" class="btn-bukti">BUKTI</a><% } else { %>-<% } %></td>
+                                <td class="text-center px-1"><% if(t.bukti) { %><a href="<%= t.bukti %>" target="_blank" class="btn-bukti">LIHAT BUKTI</a><% } else { %>-<% } %></td>
                             </tr>
                         <% }) %>
                     </tbody>
