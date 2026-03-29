@@ -51,10 +51,21 @@ app.get('/', async (req, res) => {
             return { nama: c[0], qty: parseFloat(c[1]) || 0, display: c[3], statusTxt: status };
         }).filter(i => i.nama);
 
+// ... (bagian atas sama seperti v7)
+
         const shippingAll = resR.data.split(/\r?\n/).slice(3).map(l => {
             const c = splitCSV(l);
-            return { tgl: c[6], spx: c[7], jne: c[8], jnt: c[9], sd: c[10], tot: c[11] };
+            return { 
+                tgl: c[6], 
+                spx: c[7], 
+                jne: c[8], 
+                jnt: c[9], 
+                sd: c[10] || "0", // Kolom Sameday/Instant
+                tot: c[11] 
+            };
         }).filter(i => i.tgl && i.tgl !== "0");
+
+// ... (sisanya sama seperti v7)
 
         const linesK = resK.data.split(/\r?\n/);
         let tempDate = ""; 
