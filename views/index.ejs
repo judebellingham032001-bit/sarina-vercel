@@ -47,7 +47,7 @@
     </div>
 
     <div id="stocks" class="content-section active">
-        <div class="text-center mb-3"><small class="text-muted fw-bold">Update Terakhir: <%= lastUpdate %></small></div>
+        <div class="text-center mb-3"><small class="text-muted fw-bold"><%= lastUpdate %></small></div>
         <div class="card-main">
             <table class="table table-sm align-middle mb-0" style="font-size: 0.85rem;">
                 <thead class="head-stok">
@@ -84,7 +84,7 @@
             <div class="table-responsive">
                 <table class="table text-center table-sm align-middle mb-0" id="tableShip" style="font-size: 0.75rem;">
                     <thead class="head-ship">
-                        <tr><th class="nowrap ps-2">TANGGAL</th><th>SPX</th><th>JNE</th><th>J&T</th><th>SD/INST</th><th>TOTAL</th></tr>
+                        <tr><th class="nowrap ps-2">TANGGAL</th><th>SPX</th><th>JNE</th><th>J&T</th><th>Same/Inst</th><th>TOTAL</th></tr>
                     </thead>
                     <tbody>
                         <% shippingAll.forEach((k, i) => { %>
@@ -102,7 +102,7 @@
 
     <div id="kas" class="content-section">
         <div class="saldo-header <%= isSaldoMinus ? 'bg-minus' : 'bg-normal' %>">
-            <small class="fw-bold opacity-75">TOTAL SALDO KAS</small>
+            <small class="fw-bold opacity-75">SALDO KAS</small>
             <h2 class="fw-bold m-0"><%= saldoTotal %></h2>
         </div>
         <div class="card-main p-0">
@@ -118,7 +118,7 @@
             <div class="table-responsive">
                 <table class="table table-sm align-middle mb-0" id="tableKas" style="font-size: 0.7rem;">
                     <thead class="head-kas">
-                        <tr><th class="ps-3">TGL</th><th>KETERANGAN</th><th class="text-end nowrap">MUTASI</th><th class="text-center px-2">BUKTI</th></tr>
+                        <tr><th class="ps-3">Tanggal</th><th>KETERANGAN</th><th class="text-end nowrap">MUTASI</th><th class="text-center px-2">Bukti Transaksi</th></tr>
                     </thead>
                     <tbody>
                         <% kasAll.forEach((t, i) => { %>
