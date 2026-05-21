@@ -158,6 +158,20 @@ body{
     background:#cbd5e1 !important;
     color:#1e293b !important;
 }
+/* TINGGI DAN LEBAR KOLOM TANGGAL AGAR TIDAK KELEBARAN */
+#tableShip th:first-child,
+#tableShip td:first-child {
+    width: 80px !important;      /* Bisa disesuaikan 80-100px */
+    min-width: 80px !important;
+    white-space: nowrap !important;
+}
+
+/* Mengurangi padding agar tabel lebih padat */
+#tableShip th,
+#tableShip td {
+    padding: 6px 8px !important; 
+    font-size: 12px;
+}
 
 /* FREEZE HEADER PACKAGING */
 /* 1. Bungkus tabel dengan container ini di HTML (Lihat langkah ke-2) */
