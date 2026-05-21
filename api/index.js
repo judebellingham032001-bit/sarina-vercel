@@ -1,16 +1,10 @@
 // ==========================================
-// WAJIB FULL SCRIPT - BACKEND EXPRESS (v20)
+// WAJIB FULL SCRIPT - BACKEND EXPRESS (v22-DYNAMIS-ROUTER-FIX)
 // ==========================================
 
 const express = require('express');
 const axios = require('axios');
-const path = require('path');
-const app = express();
-
-app.use(express.static(path.join(__dirname, '../public')));
-
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '../views'));
+const app = express.Router(); // Murni pakai Router bawaan Vercel kamu agar tidak crash
 
 function splitCSV(line) {
     const result = [];
@@ -36,7 +30,17 @@ function formatRP(angkaStr) {
     return isMinus ? "-" + formatted : "+ " + formatted;
 }
 
-app.get('/', async (req, res) => {
+// Handler dengan pencarian parameter fleksibel agar tidak tertukar di serverless
+app.get('/', async function(...args) {
+    const req = args.find(a => a && a.query !== undefined) || args[0];
+    const res = args.find(a => a && typeof a.render === 'function') || args[1];
+
+    if (!res || typeof res.render !== 'function') {
+        return args[0] && typeof args[0].send === 'function' 
+            ? args[0].status(500).send("Gagal: Object response Express tidak valid.")
+            : console.error("Express res.render tidak ditemukan.");
+    }
+
     try {
         // 1. DAFTAR URL SOURCE GOOGLE SHEETS
         const urlS = "https://docs.google.com/spreadsheets/d/1xTVwqw9a3BMrmHEir9wQEidVxIgUhvCP_qj8jHY0u7w/export?format=csv&gid=0";
@@ -44,12 +48,13 @@ app.get('/', async (req, res) => {
         const urlK = "https://docs.google.com/spreadsheets/d/1oT_uV104wNhTOmJjX_MOzvpkkX0_QAvMYOirsVFbTYo/export?format=csv&gid=0";
         const urlP = "https://docs.google.com/spreadsheets/d/1CmfqkuK2w9GDuohbFIandJGLnlZMrwR-19m5hMA7E4E/export?format=csv&gid=0";
 
-        // Fetch data paralel
+        // Fetch data paralel dengan timeout aman 8 detik
+        const configTimeout = { timeout: 8000 };
         const [resS, resR, resK, resP] = await Promise.all([
-            axios.get(urlS).catch(err => { console.error("Error Stok:", err.message); return { data: "" }; }),
-            axios.get(urlR).catch(err => { console.error("Error Ship:", err.message); return { data: "" }; }),
-            axios.get(urlK).catch(err => { console.error("Error Kas:", err.message); return { data: "" }; }),
-            axios.get(urlP).catch(err => { console.error("Error Pack:", err.message); return { data: "" }; })
+            axios.get(urlS, configTimeout).catch(err => { console.error("Error Stok:", err.message); return { data: "" }; }),
+            axios.get(urlR, configTimeout).catch(err => { console.error("Error Ship:", err.message); return { data: "" }; }),
+            axios.get(urlK, configTimeout).catch(err => { console.error("Error Kas:", err.message); return { data: "" }; }),
+            axios.get(urlP, configTimeout).catch(err => { console.error("Error Pack:", err.message); return { data: "" }; })
         ]);
 
         // 2. PARSING DATA TAB STOK
@@ -73,12 +78,7 @@ app.get('/', async (req, res) => {
             shippingAll = resR.data.split(/\r?\n/).slice(3).map(l => {
                 const c = splitCSV(l);
                 return { 
-                    tgl: c[6] || "", 
-                    spx: c[7] || "0", 
-                    jne: c[8] || "0", 
-                    jnt: c[9] || "0", 
-                    sd: c[10] || "0", 
-                    tot: c[11] || "0" 
+                    tgl: c[6] || "", spx: c[7] || "0", jne: c[8] || "0", jnt: c[9] || "0", sd: c[10] || "0", tot: c[11] || "0" 
                 };
             }).filter(i => i.tgl && i.tgl !== "0");
         }
@@ -111,14 +111,15 @@ app.get('/', async (req, res) => {
             }
         }
 
-        // 5. PARSING DATA TAB PACKAGING (PERBAIKAN TOTAL ESKTRASI TANGGAL UPDATE)
+        // 5. PARSING DATA TAB PACKAGING (MURNI DINAMIS OTOMATIS)
+        let packHeaders = []; // Tempat menyimpan nama-nama ukuran varian (100G, 200G, dll) secara otomatis
         let packagingAll = [];
         let lastUpdatePack = "-";
         
         if (resP.data && resP.data.trim() !== "") {
             const linesP = resP.data.split(/\r?\n/).filter(line => line.trim() !== "");
             
-            // KUNCI COK! Ambil tanggal langsung dari baris ke-2 (index 1) kolom H (index 7)
+            // Ambil text last update dari baris ke-2 (index 1) kolom H (index 7)
             if (linesP.length > 1) {
                 const barisSample = splitCSV(linesP[1]);
                 if (barisSample[7] && barisSample[7].trim() !== "") {
@@ -126,21 +127,30 @@ app.get('/', async (req, res) => {
                 }
             }
 
-            // Loop semua baris data kemasan mulai dari baris ke-2 (index 1)
+            // AMBIL HEADER DINAMIS: Baca baris pertama (Index 0) untuk tahu ukuran varian apa saja yang ada di sheet
+            if (linesP.length > 0) {
+                const rawHeaders = splitCSV(linesP[0]);
+                // Ambil kolom setelah PRODUCT (kolom index 1 sampai sebelum kolom LAST UPDATE/kolom ke-7)
+                for (let i = 1; i < rawHeaders.length; i++) {
+                    if (!rawHeaders[i] || rawHeaders[i].trim() === "" || rawHeaders[i].toLowerCase().includes("update")) break;
+                    packHeaders.push(rawHeaders[i].trim().toUpperCase());
+                }
+            }
+
+            // Ambil nilai per baris produk secara dinamis menyesuaikan header yang terbaca
             for (let i = 1; i < linesP.length; i++) {
                 const c = splitCSV(linesP[i]);
-                
-                // Jika nama produk kosong atau berisi teks header "product", lewati saja
                 if (!c[0] || c[0].trim() === "" || c[0].toLowerCase() === "product") continue;
                 
+                let varianData = {};
+                packHeaders.forEach((header, idx) => {
+                    let nilaiSel = c[idx + 1]; // Geser +1 karena index 0 adalah nama Product
+                    varianData[header] = (nilaiSel && nilaiSel.trim() !== "") ? nilaiSel.trim() : "-";
+                });
+
                 packagingAll.push({
                     nama: c[0].trim(),
-                    g100: (c[1] && c[1].trim() !== "") ? c[1].trim() : "-",
-                    g200: (c[2] && c[2].trim() !== "") ? c[2].trim() : "-",
-                    g250: (c[3] && c[3].trim() !== "") ? c[3].trim() : "-",
-                    g400: (c[4] && c[4].trim() !== "") ? c[4].trim() : "-",
-                    g500: (c[5] && c[5].trim() !== "") ? c[5].trim() : "-",
-                    k1:   (c[6] && c[6].trim() !== "") ? c[6].trim() : "-"
+                    varian: varianData // Menyimpan data varian berupa key-value dinamis
                 });
             }
         }
@@ -149,11 +159,12 @@ app.get('/', async (req, res) => {
             lastUpdatePack = "Belum Diupdate";
         }
 
-        // 6. RENDER DATA KE VIEW
+        // 6. RENDER DATA KE VIEW INDEX
         res.render('index', { 
             stocks, 
             shippingAll, 
             kasAll, 
+            packHeaders, // Ditambahkan agar frontend bisa menggambar kolom otomatis
             packagingAll, 
             saldoTotal: formatRP(saldoTotalRaw).replace('+', ''), 
             isSaldoMinus, 
