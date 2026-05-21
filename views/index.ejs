@@ -230,23 +230,19 @@ td{
     background:#dcfce7;
     color:#16a34a;
 }
-/* CLICK EFFECT STOK PRODUK */
+/* HOVER STOK PRODUK */
 #stocks tbody tr{
     transition:.15s;
     cursor:pointer;
 }
 
-#stocks tbody tr:active{
-    transform:scale(.985);
-}
-
-#stocks tbody tr:hover{
+#stocks tbody tr:hover td{
     background:#eff6ff !important;
 }
 
-#stocks tbody tr.selected{
+/* EFEK SENTUH HP */
+#stocks tbody tr:active td{
     background:#dbeafe !important;
-    box-shadow:inset 4px 0 0 #2563eb;
 }
 
 /* TEXT */
