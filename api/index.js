@@ -1,5 +1,5 @@
 // ==========================================
-// WAJIB FULL SCRIPT - BACKEND EXPRESS (v10)
+// WAJIB FULL SCRIPT - BACKEND EXPRESS (v11)
 // ==========================================
 
 const express = require('express');
@@ -7,7 +7,6 @@ const axios = require('axios');
 const path = require('path');
 const app = express();
 
-// Tambahkan ini tepat di bawah const app = express();
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.set('view engine', 'ejs');
@@ -43,11 +42,9 @@ app.get('/', async (req, res) => {
         const urlS = "https://docs.google.com/spreadsheets/d/1xTVwqw9a3BMrmHEir9wQEidVxIgUhvCP_qj8jHY0u7w/export?format=csv&gid=0";
         const urlR = "https://docs.google.com/spreadsheets/d/16N1Jpc11GUJyKqpyEvueKx0ccroVJfG-s6yP3DxxyX4/export?format=csv&gid=0";
         const urlK = "https://docs.google.com/spreadsheets/d/1oT_uV104wNhTOmJjX_MOzvpkkX0_QAvMYOirsVFbTYo/export?format=csv&gid=0";
-        
-        // URL Tab Packaging Baru Berdasarkan Gambar Terbaru Anda (Sudah Diarahkan ke ID Spreadsheet Baru)
         const urlP = "https://docs.google.com/spreadsheets/d/1CmfqkuK2w9GDuohbFlandJGLnlZMrwR-19m5hMA7E4E/export?format=csv&gid=0";
 
-        // Fetch data secara paralel dengan penanganan error mandiri (.catch) di setiap request
+        // Fetch data paralel
         const [resS, resR, resK, resP] = await Promise.all([
             axios.get(urlS).catch(err => { console.error("Error Stok:", err.message); return { data: "" }; }),
             axios.get(urlR).catch(err => { console.error("Error Ship:", err.message); return { data: "" }; }),
@@ -114,14 +111,26 @@ app.get('/', async (req, res) => {
             }
         }
 
-        // 5. PARSING DATA TAB PACKAGING
+        // 5. PARSING DATA TAB PACKAGING + TANGGAL DARI KOLOM K1 (KOLOM G BARIS 1)
         let packagingAll = [];
+        let lastUpdatePack = "-";
+        
         if (resP.data) {
             const linesP = resP.data.split(/\r?\n/);
-            // Slice(1) berarti kita melewati baris ke-1 (Product, 100g, 200g, 250g, dst)
+            
+            if (linesP.length > 0) {
+                // Ambil baris pertama (Header) untuk diekstrak tanggalnya dari kolom G (indeks 6)
+                const headerCols = splitCSV(linesP[0]);
+                if (headerCols[6] && headerCols[6].trim() !== "" && headerCols[6].toLowerCase() !== "1kg") {
+                    lastUpdatePack = headerCols[6].trim();
+                } else {
+                    lastUpdatePack = "Belum Ada Tanggal";
+                }
+            }
+
+            // Membaca data produk mulai dari baris kedua (indeks 1)
             packagingAll = linesP.slice(1).map(l => {
                 const c = splitCSV(l);
-                // Jika baris kosong atau tidak ada nama produk, abaikan
                 if (!c[0] || c[0].trim() === "" || c[0].toLowerCase() === 'product') return null;
                 
                 return {
@@ -144,7 +153,8 @@ app.get('/', async (req, res) => {
             packagingAll, 
             saldoTotal: formatRP(saldoTotalRaw).replace('+', ''), 
             isSaldoMinus, 
-            lastUpdate 
+            lastUpdate,
+            lastUpdatePack // Kita kirim variabel tanggal khusus packaging ke EJS
         });
     } catch (e) {
         console.error("Fatal Error Dashboard:", e);
