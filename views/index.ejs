@@ -230,6 +230,24 @@ td{
     background:#dcfce7;
     color:#16a34a;
 }
+/* CLICK EFFECT STOK PRODUK */
+#stocks tbody tr{
+    transition:.15s;
+    cursor:pointer;
+}
+
+#stocks tbody tr:active{
+    transform:scale(.985);
+}
+
+#stocks tbody tr:hover{
+    background:#eff6ff !important;
+}
+
+#stocks tbody tr.selected{
+    background:#dbeafe !important;
+    box-shadow:inset 4px 0 0 #2563eb;
+}
 
 /* TEXT */
 .text-debet{
@@ -832,7 +850,19 @@ function showDefault(t){
             : "";
     });
 }
+// HIGHLIGHT ROW STOK PRODUK
+document.querySelectorAll('#stocks tbody tr').forEach(row => {
 
+    row.addEventListener('click', () => {
+
+        document.querySelectorAll('#stocks tbody tr')
+            .forEach(r => r.classList.remove('selected'));
+
+        row.classList.add('selected');
+
+    });
+
+});
 window.onload = () => {
 
     showDefault('tableShip');
