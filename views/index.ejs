@@ -68,7 +68,7 @@
     </div>
 
     <div id="stocks" class="content-section active">
-        <div class="text-center mb-3"><small class="text-muted fw-bold"><%= lastUpdate %></small></div>
+        <div class="text-center mb-3"><small class="text-muted fw-bold">LAST UPDATED: <%= lastUpdate %></small></div>
         <div class="card-main">
             <table class="table table-sm align-middle mb-0">
                 <thead class="head-stok"><tr><th class="ps-3">PRODUK</th><th class="text-center">QUANTITY</th><th class="text-end pe-3">STATUS</th></tr></thead>
@@ -180,13 +180,12 @@
                 <table class="table table-bordered table-sm align-middle mb-0 text-center" style="border-color: #e2e8f0;">
                     <thead class="head-pack">
                         <tr>
-                            <th class="ps-3 text-start" style="width: 34%;">PRODUCT</th>
-                            <th style="width: 11%;">100G</th>
-                            <th style="width: 11%;">200G</th>
-                            <th style="width: 11%;">250G</th>
-                            <th style="width: 11%;">400G</th>
-                            <th style="width: 11%;">500G</th>
-                            <th style="width: 11%;">1KG</th>
+                            <th class="ps-3 text-start">PRODUCT</th>
+                            <% if (packagingHeaders && packagingHeaders.length > 0) { %>
+                                <% packagingHeaders.forEach(h => { %>
+                                    <th style="min-width: 65px;"><%= h.name %></th>
+                                <% }) %>
+                            <% } %>
                         </tr>
                     </thead>
                     <tbody style="font-size: 0.7rem;">
@@ -194,16 +193,13 @@
                             <% packagingAll.forEach(p => { %>
                                 <tr class="border-bottom">
                                     <td class="ps-3 py-2.5 text-start fw-bold text-uppercase text-secondary"><%= p.nama %></td>
-                                    <td class="<%= (p.g100 === '-' || p.g100 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g100 %></td>
-                                    <td class="<%= (p.g200 === '-' || p.g200 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g200 %></td>
-                                    <td class="<%= (p.g250 === '-' || p.g250 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g250 %></td>
-                                    <td class="<%= (p.g400 === '-' || p.g400 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g400 %></td>
-                                    <td class="<%= (p.g500 === '-' || p.g500 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g500 %></td>
-                                    <td class="<%= (p.k1 === '-' || p.k1 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.k1 %></td>
+                                    <% p.listNilai.forEach(val => { %>
+                                        <td class="<%= (val === '-' || val === '') ? 'cell-kosong' : 'cell-isi' %>"><%= val %></td>
+                                    <% }) %>
                                 </tr>
                             <% }) %>
                         <% } else { %>
-                            <tr><td colspan="7" class="text-center p-4 text-muted">Data matriks packaging tidak ditemukan atau kosong.</td></tr>
+                            <tr><td colspan="10" class="text-center p-4 text-muted">Data matriks packaging tidak ditemukan atau kosong.</td></tr>
                         <% } %>
                     </tbody>
                 </table>
