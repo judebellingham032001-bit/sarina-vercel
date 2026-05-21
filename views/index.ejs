@@ -425,29 +425,46 @@ h1{
                             <%= s.display %>
                         </td>
 
-                        <td class="text-end pe-3">
+<td class="text-end pe-3">
 
-                            <% if(s.statusTxt === 'OUT OF STOCK') { %>
+<%
+    let rawQty = s.display ? s.display.toString().trim() : "0";
 
-                                <span class="badge-status bg-out">
-                                    HABIS
-                                </span>
+    // convert pecahan unicode
+    let qtyFix = rawQty
+        .replace(/½/g, '.5')
+        .replace(/¼/g, '.25')
+        .replace(/¾/g, '.75');
 
-                            <% } else if(s.statusTxt === 'LOW') { %>
+    // ambil angka
+    qtyFix = qtyFix.replace(/[^0-9.]/g, '');
 
-                                <span class="badge-status bg-low">
-                                    LOW
-                                </span>
+    let qtyNum = parseFloat(qtyFix);
 
-                            <% } else { %>
+    if(isNaN(qtyNum)) qtyNum = 0;
+%>
 
-                                <span class="badge-status bg-tersedia">
-                                    READY
-                                </span>
+<% if(qtyNum <= 0){ %>
 
-                            <% } %>
+    <span class="badge-status bg-out">
+        HABIS
+    </span>
 
-                        </td>
+<% } else if(qtyNum <= 2.5){ %>
+
+    <span class="badge-status bg-low">
+        LOW
+    </span>
+
+<% } else { %>
+
+    <span class="badge-status bg-tersedia">
+        READY
+    </span>
+
+<% } %>
+
+</td>
 
                     </tr>
 
