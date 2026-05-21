@@ -21,15 +21,15 @@
         .head-stok th { background-color: #003153 !important; color: white !important; border: none !important; }
         .head-ship th { background-color: #000000 !important; color: white !important; border: none !important; }
         .head-kas-dark th { background-color: #cbd5e1 !important; color: #1e293b !important; border: none !important; }
-        .head-pack th { background-color: #1e3a8a !important; color: white !important; border: none !important; } /* Warna Tema Navy untuk Packaging */
+        .head-pack th { background-color: #003153 !important; color: white !important; border: none !important; }
 
-        /* STYLE ARSIR MATRIKS PACKAGING */
+        /* ARSIR MATRIKS KEMASAN */
         .cell-kosong { background-color: #f8fafc !important; color: #cbd5e1 !important; font-weight: 400; text-align: center; }
-        .cell-isi { background-color: #ffffff; color: #0f172a !important; font-weight: 700; text-align: center; }
+        .cell-isi { background-color: #ffffff; color: #2563eb !important; font-weight: 800; text-align: center; font-size: 0.75rem; }
 
         .bg-normal { background: linear-gradient(135deg, #1e293b, #475569); }
         .bg-minus { background: #dc2626 !important; } 
-        th { font-size: 0.6rem; padding: 12px !important; text-transform: uppercase; letter-spacing: 0.5px; }
+        th { font-size: 0.65rem; padding: 12px !important; text-transform: uppercase; letter-spacing: 0.5px; }
         td { padding: 10px !important; vertical-align: middle; }
         
         .badge-status { padding: 4px 10px; border-radius: 50px; font-size: 0.6rem; font-weight: 800; display: inline-block; }
@@ -40,16 +40,11 @@
         .text-debet { color: #dc2626; font-weight: 800; font-size: 0.8rem; } 
         .text-kredit { color: #16a34a; font-weight: 800; font-size: 0.8rem; }
         
-        /* SISA SALDO JELAS */
         .sisa-saldo { color: #0f172a !important; font-size: 0.65rem !important; font-weight: 800 !important; margin-top: 1px; }
-
         .btn-bukti { background: #2563eb; color: white; font-size: 0.55rem; font-weight: 800; padding: 5px 8px; border-radius: 4px; text-decoration: none; }
         .filter-box { background: #f8fafc; padding: 12px; border-radius: 10px; margin: 10px; border: 1px solid #e2e8f0; }
         .btn-toggle { font-size: 0.7rem; font-weight: 700; color: #2563eb; background: none; border: none; margin: 5px 10px; text-decoration: underline; }
-        
         .tgl-fix { white-space: nowrap !important; width: 75px !important; font-size: 0.65rem !important; font-weight: 700; }
-        
-        /* LOGO STYLE */
         .logo-sarina { width: 80px; height: auto; margin-bottom: 5px; border-radius: 10px; object-fit: contain; }
 
         @media (max-width: 576px) { th, td { font-size: 0.65rem !important; } .logo-sarina { width: 70px; } }
@@ -61,11 +56,9 @@
     <div class="text-center py-3">
         <div class="d-flex flex-column align-items-center mb-1">
             <img src="/logo.png" onerror="this.style.display='none'" alt="Logo Sarina" class="logo-sarina">
-            
             <h1 style="font-weight: 800; font-size: 1.6rem; margin: 0; text-transform: uppercase;">SARINA STORE</h1>
             <p style="font-size: 0.6rem; color: #64748b; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-top: -2px;">MANAJEMEN OPERASIONAL</p>
         </div>
-        
         <ul class="nav nav-pills nav-custom mt-2">
             <li class="nav-item"><button class="nav-link active" onclick="openMenu('stocks', this)">STOK</button></li>
             <li class="nav-item"><button class="nav-link" onclick="openMenu('shipping', this)">PENGIRIMAN</button></li>
@@ -80,15 +73,19 @@
             <table class="table table-sm align-middle mb-0">
                 <thead class="head-stok"><tr><th class="ps-3">PRODUK</th><th class="text-center">QUANTITY</th><th class="text-end pe-3">STATUS</th></tr></thead>
                 <tbody>
-                    <% stocks.forEach(s => { %>
-                        <tr class="border-bottom"><td class="ps-3 py-3 fw-bold text-uppercase"><%= s.nama %></td><td class="text-center fw-bold"><%= s.display %></td>
-                            <td class="text-end pe-3">
-                                <% if(s.statusTxt === 'OUT OF STOCK') { %><span class="badge-status bg-out">HABIS</span>
-                                <% } else if(s.statusTxt === 'LOW') { %><span class="badge-status bg-low">LOW</span>
-                                <% } else { %><span class="badge-status bg-tersedia">TERSEDIA</span><% } %>
-                            </td>
-                        </tr>
-                    <% }) %>
+                    <% if (stocks && stocks.length > 0) { %>
+                        <% stocks.forEach(s => { %>
+                            <tr class="border-bottom"><td class="ps-3 py-3 fw-bold text-uppercase"><%= s.nama %></td><td class="text-center fw-bold"><%= s.display %></td>
+                                <td class="text-end pe-3">
+                                    <% if(s.statusTxt === 'OUT OF STOCK') { %><span class="badge-status bg-out">HABIS</span>
+                                    <% } else if(s.statusTxt === 'LOW') { %><span class="badge-status bg-low">LOW</span>
+                                    <% } else { %><span class="badge-status bg-tersedia">TERSEDIA</span><% } %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr><td colspan="3" class="text-center p-3 text-muted">Data stok tidak tersedia</td></tr>
+                    <% } %>
                 </tbody>
             </table>
         </div>
@@ -108,7 +105,13 @@
             <div class="table-responsive">
                 <table class="table text-center table-sm align-middle mb-0" id="tableShip">
                     <thead class="head-ship"><tr><th class="ps-3 text-start">Tanggal</th><th>SPX</th><th>JNE</th><th>J&T</th><th>Sameday/Instan</th><th>TOTAL</th></tr></thead>
-                    <tbody><% shippingAll.forEach((k, i) => { %><tr class="row-data border-bottom" data-index="<%= i %>"><td class="text-start fw-bold tgl-fix ps-3"><%= k.tgl %></td><td><%= k.spx %></td><td><%= k.jne %></td><td><%= k.jnt %></td><td><%= k.sd %></td><td class="fw-bold text-primary pe-2"><%= k.tot %></td></tr><% }) %></tbody>
+                    <tbody>
+                        <% if (shippingAll && shippingAll.length > 0) { %>
+                            <% shippingAll.forEach((k, i) => { %><tr class="row-data border-bottom" data-index="<%= i %>"><td class="text-start fw-bold tgl-fix ps-3"><%= k.tgl %></td><td><%= k.spx %></td><td><%= k.jne %></td><td><%= k.jnt %></td><td><%= k.sd %></td><td class="fw-bold text-primary pe-2"><%= k.tot %></td></tr><% }) %>
+                        <% } else { %>
+                            <tr><td colspan="6" class="text-center p-3 text-muted">Data pengiriman tidak tersedia</td></tr>
+                        <% } %>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -140,26 +143,30 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% kasAll.forEach((t, i) => { %>
-                            <tr class="row-data border-bottom" data-index="<%= i %>">
-                                <td class="ps-2 py-3 tgl-fix" style="font-size: 0.6rem !important;"><%= t.tgl %></td>
-                                <td style="line-height: 1.2;">
-                                    <div class="fw-bold text-uppercase" style="font-size: 0.65rem;"><%= t.kat %></div>
-                                    <div class="text-muted" style="font-size: 0.55rem;"><%= t.ket %></div>
-                                </td>
-                                <td class="text-end" style="white-space: nowrap !important;">
-                                    <div class="<%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>" style="font-size: 0.75rem; font-weight: 800;">
-                                        <%= t.mutasi %>
-                                    </div>
-                                    <div class="sisa-saldo" style="font-size: 0.55rem; font-weight: 700;">Sisa: <%= t.saldo %></div>
-                                </td>
-                                <td class="text-center px-1">
-                                    <% if(t.bukti) { %>
-                                        <a href="<%= t.bukti %>" target="_blank" class="btn-bukti" style="white-space: nowrap; display: inline-block; padding: 4px 6px;">LIHAT BUKTI</a>
-                                    <% } else { %>-<% } %>
-                                </td>
-                            </tr>
-                        <% }) %>
+                        <% if (kasAll && kasAll.length > 0) { %>
+                            <% kasAll.forEach((t, i) => { %>
+                                <tr class="row-data border-bottom" data-index="<%= i %>">
+                                    <td class="ps-2 py-3 tgl-fix" style="font-size: 0.6rem !important;"><%= t.tgl %></td>
+                                    <td style="line-height: 1.2;">
+                                        <div class="fw-bold text-uppercase" style="font-size: 0.65rem;"><%= t.kat %></div>
+                                        <div class="text-muted" style="font-size: 0.55rem;"><%= t.ket %></div>
+                                    </td>
+                                    <td class="text-end" style="white-space: nowrap !important;">
+                                        <div class="<%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>" style="font-size: 0.75rem; font-weight: 800;">
+                                            <%= t.mutasi %>
+                                        </div>
+                                        <div class="sisa-saldo" style="font-size: 0.55rem; font-weight: 700;">Sisa: <%= t.saldo %></div>
+                                    </td>
+                                    <td class="text-center px-1">
+                                        <% if(t.bukti) { %>
+                                            <a href="<%= t.bukti %>" target="_blank" class="btn-bukti" style="white-space: nowrap; display: inline-block; padding: 4px 6px;">LIHAT BUKTI</a>
+                                        <% } else { %>-<% } %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr><td colspan="4" class="text-center p-3 text-muted">Data transaksi kas kosong</td></tr>
+                        <% } %>
                     </tbody>
                 </table>
             </div>
@@ -167,38 +174,37 @@
     </div>
 
     <div id="packaging" class="content-section">
-        <div class="text-center mb-3"><small class="text-muted fw-bold">LAST UPDATED: <%= lastUpdate %></small></div>
+        <div class="text-center mb-3"><small class="text-muted fw-bold">LAST UPDATED: <%= lastUpdatePack %></small></div>
         <div class="card-main">
             <div class="table-responsive">
                 <table class="table table-bordered table-sm align-middle mb-0 text-center" style="border-color: #e2e8f0;">
                     <thead class="head-pack">
                         <tr>
-                            <th class="ps-3 text-start" style="width: 28%;">PRODUCT</th>
-                            <th style="width: 9%;">70G</th>
-                            <th style="width: 9%;">100G</th>
-                            <th style="width: 9%;">200G</th>
-                            <th style="width: 9%;">250G</th>
-                            <th style="width: 9%;">400G</th>
-                            <th style="width: 9%;">500G</th>
-                            <th style="width: 9%;">800G</th>
-                            <th style="width: 9%;">1KG</th>
+                            <th class="ps-3 text-start" style="width: 34%;">PRODUCT</th>
+                            <th style="width: 11%;">100G</th>
+                            <th style="width: 11%;">200G</th>
+                            <th style="width: 11%;">250G</th>
+                            <th style="width: 11%;">400G</th>
+                            <th style="width: 11%;">500G</th>
+                            <th style="width: 11%;">1KG</th>
                         </tr>
                     </thead>
                     <tbody style="font-size: 0.7rem;">
-                        <% packagingAll.forEach(p => { %>
-                            <tr class="border-bottom">
-                                <td class="ps-3 py-2.5 text-start fw-bold text-uppercase text-secondary"><%= p.nama %></td>
-                                
-                                <td class="<%= (p.g70 === '-' || p.g70 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g70 %></td>
-                                <td class="<%= (p.g100 === '-' || p.g100 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g100 %></td>
-                                <td class="<%= (p.g200 === '-' || p.g200 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g200 %></td>
-                                <td class="<%= (p.g250 === '-' || p.g250 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g250 %></td>
-                                <td class="<%= (p.g400 === '-' || p.g400 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g400 %></td>
-                                <td class="<%= (p.g500 === '-' || p.g500 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g500 %></td>
-                                <td class="<%= (p.g800 === '-' || p.g800 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g800 %></td>
-                                <td class="<%= (p.k1 === '-' || p.k1 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.k1 %></td>
-                            </tr>
-                        <% }) %>
+                        <% if (packagingAll && packagingAll.length > 0) { %>
+                            <% packagingAll.forEach(p => { %>
+                                <tr class="border-bottom">
+                                    <td class="ps-3 py-2.5 text-start fw-bold text-uppercase text-secondary"><%= p.nama %></td>
+                                    <td class="<%= (p.g100 === '-' || p.g100 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g100 %></td>
+                                    <td class="<%= (p.g200 === '-' || p.g200 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g200 %></td>
+                                    <td class="<%= (p.g250 === '-' || p.g250 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g250 %></td>
+                                    <td class="<%= (p.g400 === '-' || p.g400 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g400 %></td>
+                                    <td class="<%= (p.g500 === '-' || p.g500 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g500 %></td>
+                                    <td class="<%= (p.k1 === '-' || p.k1 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.k1 %></td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr><td colspan="7" class="text-center p-4 text-muted">Data matriks packaging tidak ditemukan atau kosong.</td></tr>
+                        <% } %>
                     </tbody>
                 </table>
             </div>
