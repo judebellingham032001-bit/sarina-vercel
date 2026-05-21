@@ -120,29 +120,36 @@ body{
 }
 
 /* FREEZE HEADER PACKAGING */
-.head-pack th{
-    background:#003153 !important;
-    color:white !important;
-    position:sticky;
-    top:0;
-    z-index:10;
+/* 1. Bungkus tabel dengan container ini di HTML (Lihat langkah ke-2) */
+.table-container {
+    max-height: 500px; /* Atur tinggi tabel agar bisa di-scroll */
+    overflow: auto;
+    position: relative;
 }
 
-/* FREEZE FIRST COLUMN */
-#packaging table td:first-child,
-#packaging table th:first-child{
-    position:sticky;
-    left:0;
-    z-index:5;
+/* 2. Freeze Header (Atas) */
+.head-pack th {
+    background: #003153 !important; /* Wajib ada background */
+    color: white !important;
+    position: sticky;
+    top: 0;
+    z-index: 20; /* Lapisan 20 */
 }
 
-#packaging table td:first-child{
-    background:white;
+/* 3. Freeze Kolom Produk (Kiri) */
+#packaging table td:first-child, 
+#packaging table th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 10; /* Lapisan 10 */
+    background: white; /* Wajib ada background agar tidak transparan */
+    border-right: 1px solid #dee2e6;
 }
 
-#packaging table th:first-child{
-    background:#003153 !important;
-    z-index:11;
+/* 4. Pojok Kiri Atas (Pertemuan Header & Kolom Pertama) */
+#packaging table thead th:first-child {
+    z-index: 30; /* Paling tinggi agar menutupi semuanya */
+    background: #003153 !important;
 }
 
 /* SALDO */
@@ -656,95 +663,45 @@ h1{
 
     </div>
 
-    <!-- PACKAGING -->
-    <div id="packaging"
-         class="content-section active">
-
+<div id="packaging" class="content-section active">
         <div class="text-center mb-3">
-
             <small class="text-muted fw-bold">
-
-                LAST UPDATED:
-                <%= typeof lastUpdatePack !== 'undefined' ? lastUpdatePack : '-' %>
-
+                LAST UPDATED: <%= typeof lastUpdatePack !== 'undefined' ? lastUpdatePack : '-' %>
             </small>
-
         </div>
 
         <div class="card-main">
-
-            <div class="table-responsive">
-
-                <table class="table table-bordered table-sm text-center mb-0">
-
+            <div class="scroll-wrapper"> <table class="table table-bordered table-sm text-center mb-0">
                     <thead class="head-pack">
-
                         <tr>
-
-                            <th class="ps-3 text-start">
-                                PRODUCT
-                            </th>
-
-                            <% if (typeof packHeaders !== 'undefined') {
-                                packHeaders.forEach(h => { %>
-
+                            <th class="ps-3 text-start">PRODUCT</th>
+                            <% if (typeof packHeaders !== 'undefined') { packHeaders.forEach(h => { %>
                             <th><%= h %></th>
-
                             <% }) } %>
-
                         </tr>
-
                     </thead>
-
                     <tbody style="font-size:.65rem;">
-
-                        <% if (typeof packagingAll !== 'undefined') {
-                            packagingAll.forEach(p => { %>
-
+                        <% if (typeof packagingAll !== 'undefined') { packagingAll.forEach(p => { %>
                         <tr class="border-bottom">
-
                             <td class="ps-3 text-start fw-bold text-uppercase text-secondary">
-
                                 <%= p.nama %>
-
                             </td>
-
                             <% p.listVarian.forEach(val => {
-
                                 let angka = parseInt(val.replace(/\D/g, '')) || 0;
-
                                 let kelas = 'stok-ijo';
-
                                 if (angka === 0) kelas = 'stok-merah';
                                 else if (angka <= 2) kelas = 'stok-kuning';
                                 else if (angka === 3) kelas = 'stok-kuning-keras';
-
                             %>
-
-                            <td class="<%= kelas %>">
-
-                                <%= val %>
-
-                            </td>
-
+                            <td class="<%= kelas %>"><%= val %></td>
                             <% }) %>
-
                         </tr>
-
                         <% })} %>
-
                     </tbody>
-
                 </table>
-
-            </div>
-
-        </div>
-
+                
+            </div> </div>
     </div>
-
-</div>
-
 <script>
 
 function openMenu(id, el){
