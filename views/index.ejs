@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>SARINA STORE | OPERASIONAL</title>
     
-    <link rel="icon" type="image/png" href="/logo.png">
-    <link rel="shortcut icon" type="image/png" href="/logo.png">
+    <link rel="icon" type="image/png" href="/logo.png?v=1.3">
+    <link rel="shortcut icon" type="image/png" href="/logo.png?v=1.3">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -53,14 +53,14 @@
         <p style="font-size: 0.6rem; color: #64748b; font-weight: 600; letter-spacing: 1px;">MANAJEMEN OPERASIONAL</p>
         
         <ul class="nav nav-pills nav-custom mt-2">
-            <li class="nav-item"><button class="nav-link" onclick="openMenu('stocks', this)">STOK</button></li>
+            <li class="nav-item"><button class="nav-link" onclick="openMenu('stok-produk', this)">STOK PRODUK</button></li>
             <li class="nav-item"><button class="nav-link" onclick="openMenu('shipping', this)">PENGIRIMAN</button></li>
             <li class="nav-item"><button class="nav-link" onclick="openMenu('kas', this)">KAS</button></li>
-            <li class="nav-item"><button class="nav-link active" onclick="openMenu('packaging', this)">PACKAGING</button></li>
+            <li class="nav-item"><button class="nav-link active" onclick="openMenu('stok-kemasan', this)">STOK KEMASAN</button></li>
         </ul>
     </div>
 
-    <div id="stocks" class="content-section">
+    <div id="stok-produk" class="content-section">
         <div class="text-center mb-3"><small class="text-muted fw-bold">LAST UPDATED: <%= lastUpdate %></small></div>
         <div class="card-main">
             <table class="table table-sm mb-0">
@@ -153,70 +153,5 @@
         </div>
     </div>
 
-    <div id="packaging" class="content-section active">
+    <div id="stok-kemasan" class="content-section active">
         <div class="text-center mb-3"><small class="text-muted fw-bold">LAST UPDATED: <%= lastUpdatePack %></small></div>
-        <div class="card-main">
-            <div class="table-responsive">
-                <table class="table table-bordered table-sm text-center mb-0" style="border-color: #e2e8f0;">
-                    <thead class="head-pack">
-                        <tr>
-                            <th class="ps-3 text-start">PRODUCT</th>
-                            <% if (packHeaders && packHeaders.length > 0) { %>
-                                <% packHeaders.forEach(header => { %>
-                                    <th><%= header %></th>
-                                <% }) %>
-                            <% } %>
-                        </tr>
-                    </thead>
-                    <tbody style="font-size: 0.7rem;">
-                        <% if (packagingAll && packagingAll.length > 0) { %>
-                            <% packagingAll.forEach(p => { %>
-                                <tr class="border-bottom">
-                                    <td class="ps-3 py-2.5 text-start fw-bold text-uppercase text-secondary"><%= p.nama %></td>
-                                    <% p.listVarian.forEach(val => { %>
-                                        <td class="cell-isi-aman">ON GOING</td>
-                                    <% }) %>
-                                </tr>
-                            <% }) %>
-                        <% } else { %>
-                            <tr><td colspan="15" class="text-center p-4 text-muted fw-bold">Data matriks packaging kosong.</td></tr>
-                        <% } %>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    function openMenu(id, el) { 
-        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active')); 
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); 
-        document.getElementById(id).classList.add('active'); el.classList.add('active'); 
-    }
-    function toggleFull(tableId, btn) {
-        const filterId = tableId === 'tableShip' ? 'filterShip' : 'filterKas';
-        const filterEl = document.getElementById(filterId);
-        const rows = document.querySelectorAll(`#${tableId} .row-data`);
-        if (filterEl.style.display === "none") {
-            filterEl.style.display = "block"; rows.forEach(r => r.style.display = ""); btn.innerText = "- SEMBUNYIKAN";
-        } else {
-            filterEl.style.display = "none"; showDefault(tableId); btn.innerText = "+ FILTER & LIHAT SEMUA";
-        }
-    }
-    function showDefault(tableId) {
-        const rows = document.querySelectorAll(`#${tableId} .row-data`);
-        const total = rows.length;
-        rows.forEach((row, idx) => { row.style.display = (idx < total - 10) ? "none" : ""; });
-    }
-    function filterData(tableId, mId, yId) {
-        const m = document.getElementById(mId).value;
-        const y = document.getElementById(yId).value;
-        document.querySelectorAll(`#${tableId} .row-data`).forEach(row => {
-            const txt = row.innerText; row.style.display = (txt.includes(m) && txt.includes(y)) ? "" : "none";
-        });
-    }
-    window.onload = function() { showDefault('tableShip'); showDefault('tableKas'); };
-</script>
-</body>
-</html>
