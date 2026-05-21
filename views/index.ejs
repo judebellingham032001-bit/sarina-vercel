@@ -684,23 +684,40 @@ h1{
                     </tr>
                 </thead>
                 <tbody style="font-size:.65rem;">
-                    <% if (typeof packagingAll !== 'undefined') {
-                        packagingAll.forEach(p => { %>
-                    <tr class="border-bottom">
-                        <td class="ps-3 text-start fw-bold text-uppercase text-secondary">
-                            <%= p.nama %>
-                        </td>
-                        <% p.listVarian.forEach(val => {
-                            let angka = parseInt(val.replace(/\D/g, '')) || 0;
-                            let kelas = 'stok-ijo';
-                            if (angka === 0) kelas = 'stok-merah';
-                            else if (angka <= 2) kelas = 'stok-kuning';
-                            else if (angka === 3) kelas = 'stok-kuning-keras';
-                        %>
-                        <td class="<%= kelas %>"><%= val %></td>
-                        <% }) %>
-                    </tr>
-                    <% })} %>
+<% if (typeof packagingAll !== 'undefined' && packagingAll) { 
+    packagingAll.forEach(p => { %>
+        <tr class="border-bottom">
+            <td class="ps-3 text-start fw-bold text-uppercase text-secondary">
+                <%= p.nama %>
+            </td>
+            <% p.listVarian.forEach(val => {
+                let kelas = 'stok-netral'; 
+                let strVal = val ? val.toString().trim() : '-';
+
+                // Logika hanya jika bukan strip/kosong
+                if (strVal !== '-' && strVal !== '') {
+                    // Hapus karakter non-angka kecuali titik
+                    let cleanVal = strVal.replace(/[^0-9.]/g, ''); 
+                    let angka = parseFloat(cleanVal);
+
+                    if (!isNaN(angka)) {
+                        if (angka === 0) {
+                            kelas = 'stok-merah';
+                        } else if (angka <= 2.5) {
+                            kelas = 'stok-merah';
+                        } else if (angka <= 3) {
+                            kelas = 'stok-kuning';
+                        } else {
+                            kelas = 'stok-ijo';
+                        }
+                    }
+                }
+            %>
+            <td class="<%= kelas %>"><%= val %></td>
+            <% }) %>
+        </tr>
+    <% }); 
+} %>
                 </tbody>
             </table>
         </div> </div>
