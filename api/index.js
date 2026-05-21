@@ -1,5 +1,5 @@
 // ==========================================
-// WAJIB FULL SCRIPT - BACKEND EXPRESS (v22-SPEED-OPTIMIZED)
+// WAJIB FULL SCRIPT - BACKEND EXPRESS (v23-CELL-M1-FIX)
 // ==========================================
 
 const express = require('express');
@@ -44,7 +44,7 @@ app.get('/', async (req, res) => {
         const urlK = "https://docs.google.com/spreadsheets/d/1oT_uV104wNhTOmJjX_MOzvpkkX0_QAvMYOirsVFbTYo/export?format=csv&gid=0";
         const urlP = "https://docs.google.com/spreadsheets/d/1CmfqkuK2w9GDuohbFIandJGLnlZMrwR-19m5hMA7E4E/export?format=csv&gid=0";
 
-        // Fetch data paralel (Tanpa bumbu tambahan biar speed murni bypass)
+        // Fetch data paralel kilat
         const [resS, resR, resK, resP] = await Promise.all([
             axios.get(urlS).catch(err => { console.error("Error Stok:", err.message); return { data: "" }; }),
             axios.get(urlR).catch(err => { console.error("Error Ship:", err.message); return { data: "" }; }),
@@ -73,12 +73,7 @@ app.get('/', async (req, res) => {
             shippingAll = resR.data.split(/\r?\n/).slice(3).map(l => {
                 const c = splitCSV(l);
                 return { 
-                    tgl: c[6] || "", 
-                    spx: c[7] || "0", 
-                    jne: c[8] || "0", 
-                    jnt: c[9] || "0", 
-                    sd: c[10] || "0", 
-                    tot: c[11] || "0" 
+                    tgl: c[6] || "", spx: c[7] || "0", jne: c[8] || "0", jnt: c[9] || "0", sd: c[10] || "0", tot: c[11] || "0" 
                 };
             }).filter(i => i.tgl && i.tgl !== "0");
         }
@@ -111,42 +106,37 @@ app.get('/', async (req, res) => {
             }
         }
 
-        // 5. PARSING DATA TAB PACKAGING (CEPAT & OTOMATIS)
+        // 5. PARSING DATA TAB PACKAGING (TARGET EXCEL M1 & AUTO SPEED)
         let packagingAll = [];
-        let packHeaders = []; // Untuk nampung varian baru secara otomatis dari Baris 1 Sheet
+        let packHeaders = []; 
         let lastUpdatePack = "-";
         
         if (resP.data && resP.data.trim() !== "") {
             const linesP = resP.data.split(/\r?\n/).filter(line => line.trim() !== "");
             
-            // Ambil tanggal update tiang pancang utama v20
-            if (linesP.length > 1) {
-                const barisSample = splitCSV(linesP[1]);
-                if (barisSample[7] && barisSample[7].trim() !== "") {
-                    lastUpdatePack = barisSample[7].trim();
-                }
-            }
-
-            // EKSTRAKSI HEADER SEKALI JALAN (Biar loading tetep wus-wus!)
+            // TARGET CELL M1 COK! Baris ke-1 (index 0) Kolom M (index 12)
             if (linesP.length > 0) {
-                const barisHeader = splitCSV(linesP[0]);
-                // Baca kolom dari index 1 (setelah nama produk) sampai sebelum kolom H / index 7 (kolom update)
-                for (let h = 1; h < barisHeader.length; h++) {
-                    let headName = barisHeader[h] ? barisHeader[h].trim() : "";
-                    if (!headName || headName.toLowerCase().includes("update")) break;
+                const barisPertama = splitCSV(linesP[0]);
+                if (barisPertama[12] && barisPertama[12].trim() !== "") {
+                    lastUpdatePack = barisPertama[12].trim();
+                }
+                
+                // Ekstraksi header dinamis (Ambil dari kolom ke-2 sampai sebelum tulisan M1 / kolom kosong)
+                for (let h = 1; h < barisPertama.length; h++) {
+                    let headName = barisPertama[h] ? barisPertama[h].trim() : "";
+                    if (!headName || h >= 12 || headName.toLowerCase().includes("update")) break;
                     packHeaders.push(headName.toUpperCase());
                 }
             }
 
-            // Loop data per produk pake metode v20 yang super ringan
+            // Loop produk sikat habis pake array kilat
             for (let i = 1; i < linesP.length; i++) {
                 const c = splitCSV(linesP[i]);
                 if (!c[0] || c[0].trim() === "" || c[0].toLowerCase() === "product") continue;
                 
-                // Masukkan data varian secara berurutan dinamis mengikuti total kolom header yang ada
                 let listVarian = [];
                 for (let vIdx = 0; vIdx < packHeaders.length; vIdx++) {
-                    let nilaiKolom = c[vIdx + 1]; // Geser +1 karena index 0 dipakai nama produk
+                    let nilaiKolom = c[vIdx + 1]; 
                     listVarian.push((nilaiKolom && nilaiKolom.trim() !== "") ? nilaiKolom.trim() : "-");
                 }
                 
@@ -161,13 +151,13 @@ app.get('/', async (req, res) => {
             lastUpdatePack = "Belum Diupdate";
         }
 
-        // 6. RENDER DATA KE VIEW
+        // 6. RENDER KE VIEW
         res.render('index', { 
             stocks, 
             shippingAll, 
             kasAll, 
             packagingAll, 
-            packHeaders, // Lempar data array nama kolom ke EJS
+            packHeaders, 
             saldoTotal: formatRP(saldoTotalRaw).replace('+', ''), 
             isSaldoMinus, 
             lastUpdate,
