@@ -20,8 +20,11 @@
         .head-kas-dark th { background-color: #cbd5e1 !important; color: #1e293b !important; }
         .head-pack th { background-color: #003153 !important; color: white !important; }
 
-        .cell-kosong { background-color: #f8fafc !important; color: #cbd5e1 !important; text-align: center; }
-        .cell-isi { background-color: #e0f2fe !important; color: #0369a1 !important; font-weight: 800; text-align: center; }
+        /* KUNCI PEWARNAAN BARU DI SINI COK */
+        .cell-isi-aman { background-color: #e0f2fe !important; color: #0369a1 !important; font-weight: 800; text-align: center; }
+        .cell-kuning-muda { background-color: #fef08a !important; color: #854d0e !important; font-weight: 800; text-align: center; } /* 3 iket */
+        .cell-kuning-tua { background-color: #fde047 !important; color: #a16207 !important; font-weight: 800; text-align: center; }  /* 1-2 iket */
+        .cell-merah-critical { background-color: #fee2e2 !important; color: #b91c1c !important; font-weight: 800; text-align: center; } /* 0 / - */
 
         .bg-normal { background: linear-gradient(135deg, #1e293b, #475569); }
         .bg-minus { background: #dc2626 !important; } 
@@ -171,7 +174,20 @@
                                 <tr class="border-bottom">
                                     <td class="ps-3 py-2.5 text-start fw-bold text-uppercase text-secondary"><%= p.nama %></td>
                                     <% p.listVarian.forEach(val => { %>
-                                        <td class="<%= (val === '-' || val === '') ? 'cell-kosong' : 'cell-isi' %>"><%= val %></td>
+                                        <% 
+                                            // LOGIC DETEKSI ANGKA COK! Ambil angkinya saja buat pembanding
+                                            let num = parseInt(val.replace(/[^\d]/g, ''));
+                                            let cellClass = "cell-isi-aman"; 
+                                            
+                                            if (val === '-' || val === '' || num === 0 || val.toLowerCase() === '0 iket') {
+                                                cellClass = "cell-merah-critical";
+                                            } else if (num === 3) {
+                                                cellClass = "cell-kuning-muda";
+                                            } else if (num > 0 && num < 3) {
+                                                cellClass = "cell-kuning-tua";
+                                            }
+                                        %>
+                                        <td class="<%= cellClass %>"><%= val %></td>
                                     <% }) %>
                                 </tr>
                             <% }) %>
