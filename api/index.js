@@ -106,53 +106,46 @@ app.get('/', async (req, res) => {
             }
         }
 
-// 5. PARSING DATA TAB PACKAGING (TARGET EXCEL M2)
-let packagingAll = [];
-let packHeaders = []; 
-let lastUpdatePack = "Belum Diupdate"; 
-
-if (resP.data && resP.data.trim() !== "") {
-    const linesP = resP.data.split(/\r?\n/).filter(line => line.trim() !== "");
-    
-    // --- FIX: Ambil dari Baris 2 (index 1) ---
-    if (linesP.length > 1) {
-        const barisKedua = splitCSV(linesP[1]);
+        // 5. PARSING DATA TAB PACKAGING (TARGET EXCEL M1 & AUTO SPEED)
+        let packagingAll = [];
+        let packHeaders = []; 
+        let lastUpdatePack = "-";
         
-        // Debugging: Cek isi cell M2 (index 12)
-        console.log("Isi Cell M2 adalah:", barisKedua[12]); 
+        if (resP.data && resP.data.trim() !== "") {
+            const linesP = resP.data.split(/\r?\n/).filter(line => line.trim() !== "");
+            
+            // TARGET CELL M1 COK! Baris ke-1 (index 0) Kolom M (index 12)
+            if (linesP.length > 0) {
+                const barisPertama = splitCSV(linesP[1]);
+                if (barisPertama[12] && barisPertama[12].trim() !== "") {
+                    lastUpdatePack = barisPertama[12].trim();
+                }
+                
+                // Ekstraksi header dinamis (Ambil dari kolom ke-2 sampai sebelum tulisan M1 / kolom kosong)
+                for (let h = 1; h < barisPertama.length; h++) {
+                    let headName = barisPertama[h] ? barisPertama[h].trim() : "";
+                    if (!headName || h >= 12 || headName.toLowerCase().includes("update")) break;
+                    packHeaders.push(headName.toUpperCase());
+                }
+            }
 
-        if (barisKedua[12] && barisKedua[12].trim() !== "") {
-            lastUpdatePack = barisKedua[12].trim();
+            // Loop produk sikat habis pake array kilat
+            for (let i = 1; i < linesP.length; i++) {
+                const c = splitCSV(linesP[i]);
+                if (!c[0] || c[0].trim() === "" || c[0].toLowerCase() === "product") continue;
+                
+                let listVarian = [];
+                for (let vIdx = 0; vIdx < packHeaders.length; vIdx++) {
+                    let nilaiKolom = c[vIdx + 1]; 
+                    listVarian.push((nilaiKolom && nilaiKolom.trim() !== "") ? nilaiKolom.trim() : "-");
+                }
+                
+                packagingAll.push({
+                    nama: c[0].trim(),
+                    listVarian: listVarian
+                });
+            }
         }
-    }
-
-    // --- Ekstraksi Header (Tetap dari baris pertama/index 0) ---
-    if (linesP.length > 0) {
-        const barisPertama = splitCSV(linesP[0]);
-        for (let h = 1; h < barisPertama.length; h++) {
-            let headName = barisPertama[h] ? barisPertama[h].trim() : "";
-            if (!headName || h >= 12 || headName.toLowerCase().includes("update")) break;
-            packHeaders.push(headName.toUpperCase());
-        }
-    }
-
-    // Loop produk (tetap mulai dari baris 2/index 1 jika header ada di index 0)
-    for (let i = 1; i < linesP.length; i++) {
-        const c = splitCSV(linesP[i]);
-        if (!c[0] || c[0].trim() === "" || c[0].toLowerCase() === "product") continue;
-        
-        let listVarian = [];
-        for (let vIdx = 0; vIdx < packHeaders.length; vIdx++) {
-            let nilaiKolom = c[vIdx + 1] || "-"; 
-            listVarian.push(nilaiKolom.trim());
-        }
-        
-        packagingAll.push({
-            nama: c[0].trim(),
-            listVarian: listVarian
-        });
-    }
-}
 
         if (lastUpdatePack === "-") {
             lastUpdatePack = "Belum Diupdate";
@@ -167,7 +160,7 @@ if (resP.data && resP.data.trim() !== "") {
             packHeaders, 
             saldoTotal: formatRP(saldoTotalRaw).replace('+', ''), 
             isSaldoMinus, 
-            lastUpdatePack: lastUpdatePack,
+            lastUpdate,
             lastUpdatePack
         });
     } catch (e) {
