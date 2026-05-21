@@ -109,9 +109,37 @@ body{
     color:white !important;
 }
 
-.head-ship th{
-    background:#000 !important;
-    color:white !important;
+/* Container pengiriman */
+.pengiriman-wrapper {
+    max-height: 500px;
+    overflow: auto;
+    position: relative;
+    border-radius: 12px;
+}
+
+/* Header Pengiriman (Sticky) */
+#pengiriman .head-ship th {
+    background: #003153 !important; /* Bisa disesuaikan */
+    color: white !important;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+/* Kolom Pertama Pengiriman (Sticky) */
+#pengiriman table td:first-child, 
+#pengiriman table th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 10;
+    background: white;
+    border-right: 1px solid #dee2e6;
+}
+
+/* Pojok Kiri Atas Pengiriman */
+#pengiriman table thead th:first-child {
+    z-index: 30;
+    background: #003153 !important;
 }
 
 .head-kas-dark th{
@@ -430,114 +458,64 @@ h1{
     </div>
 
     <!-- SHIPPING -->
-    <div id="shipping" class="content-section">
+<div id="shipping" class="content-section">
+    <div class="card-main">
+        
+        <button class="btn-toggle" onclick="toggleFull('tableShip', this)">
+            + FILTER & LIHAT SEMUA
+        </button>
 
-        <div class="card-main">
-
-            <button class="btn-toggle"
-                onclick="toggleFull('tableShip', this)">
-
-                + FILTER & LIHAT SEMUA
-
-            </button>
-
-            <div id="filterShip" style="display:none;">
-
-                <div class="filter-box">
-
-                    <div class="row g-2">
-
-                        <div class="col-6">
-
-                            <select id="sM"
-                                class="form-select form-select-sm"
+        <div id="filterShip" style="display:none;">
+            <div class="filter-box">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <select id="sM" class="form-select form-select-sm" 
                                 onchange="filterData('tableShip', 'sM', 'sY')">
-
-                                <option value="">Bulan</option>
-                                <option value="Jan">Jan</option>
-                                <option value="Feb">Feb</option>
-
-                            </select>
-
-                        </div>
-
-                        <div class="col-6">
-
-                            <select id="sY"
-                                class="form-select form-select-sm"
-                                onchange="filterData('tableShip', 'sM', 'sY')">
-
-                                <option value="">Tahun</option>
-                                <option value="2025">2025</option>
-                                <option value="2026">2026</option>
-
-                            </select>
-
-                        </div>
-
+                            <option value="">Bulan</option>
+                            <option value="Jan">Jan</option>
+                            <option value="Feb">Feb</option>
+                        </select>
                     </div>
-
+                    <div class="col-6">
+                        <select id="sY" class="form-select form-select-sm" 
+                                onchange="filterData('tableShip', 'sM', 'sY')">
+                            <option value="">Tahun</option>
+                            <option value="2025">2025</option>
+                            <option value="2026">2026</option>
+                        </select>
+                    </div>
                 </div>
-
             </div>
-
-            <div class="table-responsive">
-
-                <table class="table table-sm text-center mb-0"
-                    id="tableShip">
-
-                    <thead class="head-ship">
-
-                        <tr>
-
-                            <th class="ps-3 text-start">
-                                Tanggal
-                            </th>
-
-                            <th>SPX</th>
-                            <th>JNE</th>
-                            <th>J&T</th>
-                            <th>Sameday/Instant</th>
-                            <th>TOTAL</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        <% if (typeof shippingAll !== 'undefined' && shippingAll) {
-                            shippingAll.forEach((k, i) => { %>
-
-                        <tr class="row-data border-bottom"
-                            data-index="<%= i %>">
-
-                            <td class="text-start fw-bold ps-3">
-                                <%= k.tgl %>
-                            </td>
-
-                            <td><%= k.spx %></td>
-                            <td><%= k.jne %></td>
-                            <td><%= k.jnt %></td>
-                            <td><%= k.sd %></td>
-
-                            <td class="fw-bold text-primary">
-                                <%= k.tot %>
-                            </td>
-
-                        </tr>
-
-                        <% })} %>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
         </div>
-
-    </div>
+        <div class="shipping-wrapper">
+            <table class="table table-sm text-center mb-0" id="tableShip">
+                <thead class="head-ship">
+                    <tr>
+                        <th class="ps-3 text-start">Tanggal</th>
+                        <th>SPX</th>
+                        <th>JNE</th>
+                        <th>J&T</th>
+                        <th>Sameday/Instant</th>
+                        <th>TOTAL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (typeof shippingAll !== 'undefined' && shippingAll) {
+                        shippingAll.forEach((k, i) => { %>
+                    <tr class="row-data border-bottom" data-index="<%= i %>">
+                        <td class="text-start fw-bold ps-3"><%= k.tgl %></td>
+                        <td><%= k.spx %></td>
+                        <td><%= k.jne %></td>
+                        <td><%= k.jnt %></td>
+                        <td><%= k.sd %></td>
+                        <td class="fw-bold text-primary"><%= k.tot %></td>
+                    </tr>
+                    <% })} %>
+                </tbody>
+            </table>
+        </div> 
+        </div>
+</div>
 
     <!-- KAS -->
     <div id="kas" class="content-section">
