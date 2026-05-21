@@ -109,74 +109,14 @@ body{
     color:white !important;
 }
 
-/* Container pengiriman */
-.pengiriman-wrapper {
-    max-height: 500px;
-    overflow: auto;
-    position: relative;
-    border-radius: 12px;
+.head-ship th{
+    background:#000 !important;
+    color:white !important;
 }
 
-/* 1. Wrapper harus punya tinggi agar scroll bisa jalan */
-.shipping-wrapper {
-    max-height: 500px;
-    overflow: auto !important;
-    position: relative;
-    border-radius: 12px;
-}
-
-/* 2. Paksa lebar tabel agar scrollbar muncul */
-.shipping-wrapper table {
-    min-width: 600px !important;
-}
-
-/* 3. Paksa Warna Header dan Freeze (Gunakan #shipping agar lebih kuat) */
-#shipping .head-ship th {
-    background: #003153 !important; /* Ganti warna di sini */
-    color: white !important;
-    position: sticky !important;
-    top: 0;
-    z-index: 20 !important;
-}
-
-/* 4. Freeze Kolom Tanggal (Kiri) */
-#shipping table td:first-child, 
-#shipping table th:first-child {
-    position: sticky !important;
-    left: 0 !important;
-    z-index: 10 !important;
-    background: white !important;
-    border-right: 1px solid #dee2e6;
-}
-
-/* 5. Pojok Kiri Atas (Pertemuan Header & Tanggal) */
-#shipping .head-ship th:first-child {
-    z-index: 30 !important;
-    background: #003153 !important; /* HARUS SAMA DENGAN WARNA HEADER */
-}
 .head-kas-dark th{
     background:#cbd5e1 !important;
     color:#1e293b !important;
-}
-/* 1. Paksa tabel lebih ramping */
-#tableShip th,
-#tableShip td {
-    font-size: 10px !important;    /* Font jadi lebih kecil & ramping */
-    padding: 3px 5px !important;   /* Jarak antar sel jadi sangat rapat */
-    white-space: nowrap !important; /* Mencegah teks turun ke bawah */
-    vertical-align: middle;
-}
-
-/* 2. Kunci kolom Tanggal agar paling kecil */
-#tableShip th:first-child,
-#tableShip td:first-child {
-    width: 60px !important;        /* Tanggal jadi lebih ramping lagi */
-    min-width: 60px !important;
-}
-
-/* 3. Pastikan container tidak memaksa lebar yang berlebihan */
-.shipping-wrapper {
-    overflow-x: auto !important;   /* Tetap bisa scroll kalau memang data banyak */
 }
 
 /* FREEZE HEADER PACKAGING */
@@ -490,64 +430,114 @@ h1{
     </div>
 
     <!-- SHIPPING -->
-<div id="shipping" class="content-section">
-    <div class="card-main">
-        
-        <button class="btn-toggle" onclick="toggleFull('tableShip', this)">
-            + FILTER & LIHAT SEMUA
-        </button>
+    <div id="shipping" class="content-section">
 
-        <div id="filterShip" style="display:none;">
-            <div class="filter-box">
-                <div class="row g-2">
-                    <div class="col-6">
-                        <select id="sM" class="form-select form-select-sm" 
+        <div class="card-main">
+
+            <button class="btn-toggle"
+                onclick="toggleFull('tableShip', this)">
+
+                + FILTER & LIHAT SEMUA
+
+            </button>
+
+            <div id="filterShip" style="display:none;">
+
+                <div class="filter-box">
+
+                    <div class="row g-2">
+
+                        <div class="col-6">
+
+                            <select id="sM"
+                                class="form-select form-select-sm"
                                 onchange="filterData('tableShip', 'sM', 'sY')">
-                            <option value="">Bulan</option>
-                            <option value="Jan">Jan</option>
-                            <option value="Feb">Feb</option>
-                        </select>
-                    </div>
-                    <div class="col-6">
-                        <select id="sY" class="form-select form-select-sm" 
+
+                                <option value="">Bulan</option>
+                                <option value="Jan">Jan</option>
+                                <option value="Feb">Feb</option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-6">
+
+                            <select id="sY"
+                                class="form-select form-select-sm"
                                 onchange="filterData('tableShip', 'sM', 'sY')">
-                            <option value="">Tahun</option>
-                            <option value="2025">2025</option>
-                            <option value="2026">2026</option>
-                        </select>
+
+                                <option value="">Tahun</option>
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+
+                            </select>
+
+                        </div>
+
                     </div>
+
                 </div>
+
             </div>
+
+            <div class="table-responsive">
+
+                <table class="table table-sm text-center mb-0"
+                    id="tableShip">
+
+                    <thead class="head-ship">
+
+                        <tr>
+
+                            <th class="ps-3 text-start">
+                                Tanggal
+                            </th>
+
+                            <th>SPX</th>
+                            <th>JNE</th>
+                            <th>J&T</th>
+                            <th>Sameday/Instant</th>
+                            <th>TOTAL</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <% if (typeof shippingAll !== 'undefined' && shippingAll) {
+                            shippingAll.forEach((k, i) => { %>
+
+                        <tr class="row-data border-bottom"
+                            data-index="<%= i %>">
+
+                            <td class="text-start fw-bold ps-3">
+                                <%= k.tgl %>
+                            </td>
+
+                            <td><%= k.spx %></td>
+                            <td><%= k.jne %></td>
+                            <td><%= k.jnt %></td>
+                            <td><%= k.sd %></td>
+
+                            <td class="fw-bold text-primary">
+                                <%= k.tot %>
+                            </td>
+
+                        </tr>
+
+                        <% })} %>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
         </div>
-        <div class="shipping-wrapper">
-            <table class="table table-sm text-center mb-0" id="tableShip">
-                <thead class="head-ship">
-                    <tr>
-                        <th class="ps-3 text-start">Tanggal</th>
-                        <th>SPX</th>
-                        <th>JNE</th>
-                        <th>J&T</th>
-                        <th>Sameday/Instant</th>
-                        <th>TOTAL</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% if (typeof shippingAll !== 'undefined' && shippingAll) {
-                        shippingAll.forEach((k, i) => { %>
-                    <tr class="row-data border-bottom" data-index="<%= i %>">
-                        <td class="text-start fw-bold ps-3"><%= k.tgl %></td>
-                        <td><%= k.spx %></td>
-                        <td><%= k.jne %></td>
-                        <td><%= k.jnt %></td>
-                        <td><%= k.sd %></td>
-                        <td class="fw-bold text-primary"><%= k.tot %></td>
-                    </tr>
-                    <% })} %>
-                </tbody>
-            </table>
-        </div> 
-        </div>
-</div>
+
+    </div>
 
     <!-- KAS -->
     <div id="kas" class="content-section">
@@ -700,22 +690,17 @@ h1{
                         <td class="ps-3 text-start fw-bold text-uppercase text-secondary">
                             <%= p.nama %>
                         </td>
-<% p.listVarian.forEach(val => {
-    let kelas = 'stok-netral'; // Defaultnya netral (putih)
-
-    // Cek apakah bukan strip/kosong, baru hitung angka
-    if (val.trim() !== '-' && val.trim() !== '') {
-        let cleanVal = val.replace(/[^0-9.]/g, ''); 
-        let angka = parseFloat(cleanVal) || 0;
-
-        if (angka === 0) kelas = 'stok-merah';
-        else if (angka <= 2.5) kelas = 'stok-merah';
-        else if (angka <= 3) kelas = 'stok-kuning';
-        else kelas = 'stok-ijo';
-    }
-%>
-    <td class="<%= kelas %>"><%= val %></td>
-<% }) %>
+                        <% p.listVarian.forEach(val => {
+                            let angka = parseInt(val.replace(/\D/g, '')) || 0;
+                            let kelas = 'stok-ijo';
+                            if (angka === 0) kelas = 'stok-merah';
+                            else if (angka <= 2) kelas = 'stok-kuning';
+                            else if (angka === 3) kelas = 'stok-kuning-keras';
+                        %>
+                        <td class="<%= kelas %>"><%= val %></td>
+                        <% }) %>
+                    </tr>
+                    <% })} %>
                 </tbody>
             </table>
         </div> </div>
