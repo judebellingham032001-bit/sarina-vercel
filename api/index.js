@@ -1,5 +1,5 @@
 // ==========================================
-// WAJIB FULL SCRIPT - BACKEND EXPRESS (v27-DYNAMIC-FIX)
+// WAJIB FULL SCRIPT - BACKEND EXPRESS (v29-FIX-LINK)
 // ==========================================
 
 const express = require('express');
@@ -27,37 +27,56 @@ function splitCSV(line) {
     return result;
 }
 
-// Fungsi format Rupiah
+// Fungsi format Rupiah (Versi Aman)
 function formatRP(angkaStr) {
-    if (!angkaStr || angkaStr === "0" || angkaStr === "-") return "0";
-    let bersih = angkaStr.replace(/[^\d-]/g, "");
-    if (bersih === "" || bersih === "-") return "0";
-    let isMinus = bersih.startsWith("-");
-    let angka = Math.abs(parseInt(bersih));
-    let formatted = "Rp " + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    return isMinus ? "-" + formatted : "+ " + formatted;
+    try {
+        if (!angkaStr || angkaStr === "0" || angkaStr === "-") return "0";
+        let bersih = angkaStr.replace(/[^\d-]/g, "");
+        if (bersih === "" || bersih === "-") return "0";
+        
+        let isMinus = bersih.startsWith("-");
+        let parsedInt = parseInt(bersih.replace(/[^0-9]/g, ''));
+        
+        if (isNaN(parsedInt)) return "0";
+        
+        let angka = Math.abs(parsedInt);
+        let formatted = "Rp " + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        return isMinus ? "-" + formatted : "+ " + formatted;
+    } catch (err) {
+        return "0";
+    }
 }
 
 app.get('/', async (req, res) => {
+    // Sediakan penampung data darurat agar EJS tidak crash jika Google Sheets overload
+    let stocks = [];
+    let shippingAll = [];
+    let kasAll = [];
+    let packagingAll = [];
+    let packagingHeaders = [];
+    let lastUpdate = "-";
+    let saldoTotalRaw = "0";
+    let isSaldoMinus = false;
+
+    // 1. DAFTAR URL SOURCE GOOGLE SHEETS
+    const urlS = "https://docs.google.com/spreadsheets/d/1xTVwqw9a3BMrmHEir9wQEidVxIgUhvCP_qj8jHY0u7w/export?format=csv&gid=0";
+    const urlR = "https://docs.google.com/spreadsheets/d/16N1Jpc11GUJyKqpyEvueKx0ccroVJfG-s6yP3DxxyX4/export?format=csv&gid=0";
+    const urlK = "https://docs.google.com/spreadsheets/d/1oT_uV104wNhTOmJjX_MOzvpkkX0_QAvMYOirsVFbTYo/export?format=csv&gid=0";
+    
+    // FIX LINK: Menggunakan huruf I besar (FIand) sesuai link asli dari kamu, dan diekspor ke CSV
+    const urlP = "https://docs.google.com/spreadsheets/d/1CmfqkuK2w9GDuohbFIandJGLnlZMrwR-19m5hMA7E4E/export?format=csv"; 
+
+    // Fetch data paralel dari Google Sheets
+    const [resS, resR, resK, resP] = await Promise.all([
+        axios.get(urlS).catch(err => { console.error("Gagal load Tab Stok:", err.message); return { data: "" }; }),
+        axios.get(urlR).catch(err => { console.error("Gagal load Tab Ship:", err.message); return { data: "" }; }),
+        axios.get(urlK).catch(err => { console.error("Gagal load Tab Kas:", err.message); return { data: "" }; }),
+        axios.get(urlP).catch(err => { console.error("Gagal load Tab Pack:", err.message); return { data: "" }; })
+    ]);
+
+    // 2. PARSING TAB STOK
     try {
-        // 1. DAFTAR URL SOURCE GOOGLE SHEETS
-        const urlS = "https://docs.google.com/spreadsheets/d/1xTVwqw9a3BMrmHEir9wQEidVxIgUhvCP_qj8jHY0u7w/export?format=csv&gid=0";
-        const urlR = "https://docs.google.com/spreadsheets/d/16N1Jpc11GUJyKqpyEvueKx0ccroVJfG-s6yP3DxxyX4/export?format=csv&gid=0";
-        const urlK = "https://docs.google.com/spreadsheets/d/1oT_uV104wNhTOmJjX_MOzvpkkX0_QAvMYOirsVFbTYo/export?format=csv&gid=0";
-        const urlP = "https://docs.google.com/spreadsheets/d/1CmfqkuK2w9GDuohbFIandJGLnlZMrwR-19m5hMA7E4E/export?format=csv"; 
-
-        // Fetch data paralel (Axios bawaan kamu yang terbukti aman)
-        const [resS, resR, resK, resP] = await Promise.all([
-            axios.get(urlS).catch(err => { console.error("Error Stok:", err.message); return { data: "" }; }),
-            axios.get(urlR).catch(err => { console.error("Error Ship:", err.message); return { data: "" }; }),
-            axios.get(urlK).catch(err => { console.error("Error Kas:", err.message); return { data: "" }; }),
-            axios.get(urlP).catch(err => { console.error("Error Pack:", err.message); return { data: "" }; })
-        ]);
-
-        // 2. PARSING DATA TAB STOK
-        let lastUpdate = "-";
-        let stocks = [];
-        if (resS.data) {
+        if (resS.data && resS.data.trim() !== "") {
             const linesS = resS.data.split(/\r?\n/);
             lastUpdate = splitCSV(linesS[0])[0] || "-"; 
             stocks = linesS.slice(13).map(l => {
@@ -68,28 +87,27 @@ app.get('/', async (req, res) => {
                 return { nama: c[0], qty: parseFloat(c[1]) || 0, display: c[3] || "0", statusTxt: status };
             }).filter(i => i.nama);
         }
+    } catch (errStok) {
+        console.error("Gagal parsing stok:", errStok.message);
+    }
 
-        // 3. PARSING DATA TAB PENGIRIMAN
-        let shippingAll = [];
-        if (resR.data) {
+    // 3. PARSING TAB PENGIRIMAN
+    try {
+        if (resR.data && resR.data.trim() !== "") {
             shippingAll = resR.data.split(/\r?\n/).slice(3).map(l => {
                 const c = splitCSV(l);
                 return { 
-                    tgl: c[6] || "", 
-                    spx: c[7] || "0", 
-                    jne: c[8] || "0", 
-                    jnt: c[9] || "0", 
-                    sd: c[10] || "0", 
-                    tot: c[11] || "0" 
+                    tgl: c[6] || "", spx: c[7] || "0", jne: c[8] || "0", jnt: c[9] || "0", sd: c[10] || "0", tot: c[11] || "0" 
                 };
             }).filter(i => i.tgl && i.tgl !== "0");
         }
+    } catch (errShip) {
+        console.error("Gagal parsing shipping:", errShip.message);
+    }
 
-        // 4. PARSING DATA TAB KAS
-        let kasAll = [];
-        let saldoTotalRaw = "0";
-        let isSaldoMinus = false;
-        if (resK.data) {
+    // 4. PARSING TAB KAS
+    try {
+        if (resK.data && resK.data.trim() !== "") {
             const linesK = resK.data.split(/\r?\n/);
             let tempDate = ""; 
             kasAll = linesK.slice(5).map(l => {
@@ -112,39 +130,35 @@ app.get('/', async (req, res) => {
                 isSaldoMinus = saldoTotalRaw.startsWith("-");
             }
         }
+    } catch (errKas) {
+        console.error("Gagal parsing kas:", errKas.message);
+    }
 
-        // 5. PARSING DATA TAB PACKAGING (SISTEM DETEKSI DINAMIS TOTAL)
-        let packagingAll = [];
-        let packagingHeaders = [];
-        
+    // 5. PARSING TAB PACKAGING DINAMIS 
+    try {
         if (resP.data && resP.data.trim() !== "") {
             const linesP = resP.data.split(/\r?\n/).filter(line => line.trim() !== "");
             
             if (linesP.length > 0) {
-                // Baris pertama murni dibaca sebagai Header Ukuran (Product, 100g, 200g, dst)
                 const barisHeader = splitCSV(linesP[0]);
                 
-                // Ambil semua kolom ukuran dari Kolom B (index 1) sampai ujung kanan sheet yang ada isinya
+                // Ambil header ukuran dari Kolom B ke kanan secara dinamis
                 for (let h = 1; h < barisHeader.length; h++) {
                     let headText = barisHeader[h].trim();
-                    if (!headText || headText === "") {
-                        // Jika ada kolom kosong di tengah, kita lewati atau stop agar rapi
-                        continue; 
-                    }
+                    if (!headText || headText === "") continue; 
                     packagingHeaders.push(headText.toUpperCase());
                 }
 
-                // Ambil data produk mulai dari baris ke-2 (index 1) sampai paling bawah
+                // Loop baris produk (Mulai index 1 ke bawah)
                 for (let i = 1; i < linesP.length; i++) {
                     const c = splitCSV(linesP[i]);
                     
-                    // VALIDASI: Lewati baris jika nama produk di kolom A kosong atau isinya cuma teks header
+                    // Lewati baris kalau kolom produk kosong atau berisi text template header
                     if (!c[0] || c[0].trim() === "" || c[0].toLowerCase() === "product") continue;
                     
-                    // Ambil isi datanya disesuaikan dengan jumlah kolom header yang aktif saat ini
                     let ukuranData = [];
                     for (let j = 0; j < packagingHeaders.length; j++) {
-                        let cellValue = c[j + 1]; // Geser index 1 karena kolom pertama (0) adalah Nama Produk
+                        let cellValue = c[j + 1]; 
                         ukuranData.push((cellValue && cellValue.trim() !== "") ? cellValue.trim() : "-");
                     }
 
@@ -155,22 +169,21 @@ app.get('/', async (req, res) => {
                 }
             }
         }
-
-        // 6. RENDER DATA KE VIEW EJS
-        res.render('index', { 
-            stocks, 
-            shippingAll, 
-            kasAll, 
-            packagingAll, 
-            packagingHeaders, // Array header dikirim ke EJS agar th ke-kanan digambar otomatis
-            saldoTotal: formatRP(saldoTotalRaw).replace('+', ''), 
-            isSaldoMinus, 
-            lastUpdate
-        });
-    } catch (e) {
-        console.error("Fatal Error Dashboard:", e);
-        res.status(500).send("Gagal memuat data operasional: " + e.message);
+    } catch (errPack) {
+        console.error("Gagal parsing packaging:", errPack.message);
     }
+
+    // 6. RENDER DATA KE INDEX.EJS
+    res.render('index', { 
+        stocks, 
+        shippingAll, 
+        kasAll, 
+        packagingAll, 
+        packagingHeaders, 
+        saldoTotal: formatRP(saldoTotalRaw).replace('+', ''), 
+        isSaldoMinus, 
+        lastUpdate
+    });
 });
 
 module.exports = app;
