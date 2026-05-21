@@ -10,12 +10,18 @@
         body { background: #f1f5f9; font-family: 'Inter', sans-serif; color: #1e293b; padding-bottom: 30px; }
         .container { max-width: 900px; padding: 10px; }
         
-        /* MENU 1 BARIS */
-        .nav-custom { background: white; border-radius: 50px; padding: 4px; border: 1px solid #e2e8f0; display: flex; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        .nav-link { white-space: nowrap; border-radius: 50px; color: #64748b; font-weight: 700; padding: 6px 14px; font-size: 0.65rem; border: none; flex-shrink: 0; }
+        /* MENU 1 BARIS (LINEAR & NO WRAP) */
+        .nav-custom { 
+            background: white; border-radius: 50px; padding: 4px; border: 1px solid #e2e8f0; 
+            display: flex; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; 
+        }
+        .nav-link { 
+            white-space: nowrap; border-radius: 50px; color: #64748b; font-weight: 700; 
+            padding: 6px 14px; font-size: 0.65rem; border: none; flex-shrink: 0;
+        }
         .nav-link.active { background: #2563eb !important; color: white !important; }
         
-        /* WARNA HEADER MENU */
+        /* WARNA HEADER TIAP MENU */
         .head-stok { background: #0f172a !important; color: white !important; }
         .head-ship { background: #c2410c !important; color: white !important; }
         .head-kas { background: #065f46 !important; color: white !important; }
@@ -24,7 +30,7 @@
         .card-main { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 15px; overflow: hidden; }
         .content-section { display: none; } .content-section.active { display: block; }
 
-        /* WARNA STOK */
+        /* WARNA STOK KEMASAN */
         .stok-merah { background-color: #fee2e2 !important; color: #dc2626 !important; font-weight: 800; }
         .stok-kuning { background-color: #fef3c7 !important; color: #d97706 !important; font-weight: 800; }
         .stok-kuning-keras { background-color: #fde68a !important; color: #92400e !important; font-weight: 800; }
