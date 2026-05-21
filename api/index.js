@@ -1,5 +1,5 @@
 // ==========================================
-// WAJIB FULL SCRIPT - BACKEND EXPRESS (v11)
+// WAJIB FULL SCRIPT - BACKEND EXPRESS (v13)
 // ==========================================
 
 const express = require('express');
@@ -111,38 +111,50 @@ app.get('/', async (req, res) => {
             }
         }
 
-        // 5. PARSING DATA TAB PACKAGING + TANGGAL DARI KOLOM K1 (KOLOM G BARIS 1)
+        // 5. PARSING DATA TAB PACKAGING (OTOMATIS / DINAMIS KOLOM)
         let packagingAll = [];
+        let packagingHeaders = [];
         let lastUpdatePack = "-";
         
         if (resP.data) {
             const linesP = resP.data.split(/\r?\n/);
             
             if (linesP.length > 0) {
-                // Ambil baris pertama (Header) untuk diekstrak tanggalnya dari kolom G (indeks 6)
-                const headerCols = splitCSV(linesP[0]);
-                if (headerCols[6] && headerCols[6].trim() !== "" && headerCols[6].toLowerCase() !== "1kg") {
-                    lastUpdatePack = headerCols[6].trim();
-                } else {
-                    lastUpdatePack = "Belum Ada Tanggal";
-                }
+                const rawHeaders = splitCSV(linesP[0]);
+                // Ambil header kolom timbangan (mulai dari indeks 1 ke kanan)
+                // Dan cari tahu kalau ada kolom ekstra di kanan yang berisi teks tanggal "Rabu, .."
+                rawHeaders.forEach((h, idx) => {
+                    if (idx === 0) return; // Lewati tulisan "Product"
+                    if (h.trim() === "") return;
+                    
+                    // Kalau teks header mengandung kata hari/jam atau panjang, berarti itu tanggal update
+                    if (h.toLowerCase().includes('wib') || h.toLowerCase().includes('mei') || h.toLowerCase().includes('update') || h.length > 8) {
+                        lastUpdatePack = h.trim();
+                    } else {
+                        // Jika normal seperti 100g, 200g, dimasukkan ke daftar ukuran kemasan
+                        packagingHeaders.push({ index: idx, name: h.trim() });
+                    }
+                });
             }
 
-            // Membaca data produk mulai dari baris kedua (indeks 1)
-            packagingAll = linesP.slice(1).map(l => {
-                const c = splitCSV(l);
-                if (!c[0] || c[0].trim() === "" || c[0].toLowerCase() === 'product') return null;
+            // Looping baris produk dari baris ke-2 (indeks 1) ke bawah
+            for (let i = 1; i < linesP.length; i++) {
+                if (!linesP[i]) continue;
+                const c = splitCSV(linesP[i]);
+                if (!c[0] || c[0].trim() === "" || c[0].toLowerCase() === 'product') continue;
                 
-                return {
+                // Ambil nilai ukuran dinamis berdasarkan indeks header yang cocok
+                let values = [];
+                packagingHeaders.forEach(hd => {
+                    let val = (c[hd.index] && c[hd.index].trim() !== "") ? c[hd.index].trim() : "-";
+                    values.push(val);
+                });
+
+                packagingAll.push({
                     nama: c[0].trim(),
-                    g100: c[1] || "-",
-                    g200: c[2] || "-",
-                    g250: c[3] || "-",
-                    g400: c[4] || "-",
-                    g500: c[5] || "-",
-                    k1: c[6] || "-"
-                };
-            }).filter(p => p !== null);
+                    listNilai: values
+                });
+            }
         }
 
         // 6. RENDER DATA KE VIEW
@@ -151,10 +163,11 @@ app.get('/', async (req, res) => {
             shippingAll, 
             kasAll, 
             packagingAll, 
+            packagingHeaders, // Mengirim daftar kolom dinamis
             saldoTotal: formatRP(saldoTotalRaw).replace('+', ''), 
             isSaldoMinus, 
             lastUpdate,
-            lastUpdatePack // Kita kirim variabel tanggal khusus packaging ke EJS
+            lastUpdatePack
         });
     } catch (e) {
         console.error("Fatal Error Dashboard:", e);
