@@ -122,11 +122,9 @@ app.get('/', async (req, res) => {
         if (resP.data && resP.data.trim() !== "") {
             const linesP = resP.data.split(/\r?\n/).filter(line => line.trim() !== "");
             
-            // --- BAGIAN INI YANG DIUBAH ---
-            // Cari header di baris ke-1 (index 0)
+            // 1. Cari Header (Baris ke-1, Index 0)
             if (linesP.length > 0) {
                 const headerRow = splitCSV(linesP[0]);
-                // Ekstraksi header
                 for (let h = 1; h < headerRow.length; h++) {
                     let headName = headerRow[h] ? headerRow[h].trim() : "";
                     if (!headName || h >= 12 || headName.toLowerCase().includes("update")) break;
@@ -134,16 +132,15 @@ app.get('/', async (req, res) => {
                 }
             }
 
-            // Cari Last Update di M2 (Baris ke-2, index 1, kolom M/index 12)
+            // 2. Cari Last Update di M2 (Baris ke-2, Index 1, kolom M/Index 12)
             if (linesP.length > 1) {
                 const barisKedua = splitCSV(linesP[1]);
                 if (barisKedua[12] && barisKedua[12].trim() !== "") {
                     lastUpdatePack = barisKedua[12].trim();
                 }
             }
-            // ------------------------------
 
-            // Loop produk
+            // 3. Loop Produk
             for (let i = 1; i < linesP.length; i++) {
                 const c = splitCSV(linesP[i]);
                 if (!c[0] || c[0].trim() === "" || c[0].toLowerCase() === "product") continue;
@@ -164,7 +161,6 @@ app.get('/', async (req, res) => {
         if (lastUpdatePack === "-") {
             lastUpdatePack = "Belum Diupdate";
         }
-
         // 6. RENDER KE VIEW
         res.render('index', { 
             stocks, 
