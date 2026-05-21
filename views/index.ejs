@@ -690,17 +690,31 @@ h1{
                         <td class="ps-3 text-start fw-bold text-uppercase text-secondary">
                             <%= p.nama %>
                         </td>
-                        <% p.listVarian.forEach(val => {
-                            let angka = parseInt(val.replace(/\D/g, '')) || 0;
-                            let kelas = 'stok-ijo';
-                            if (angka === 0) kelas = 'stok-merah';
-                            else if (angka <= 2) kelas = 'stok-kuning';
-                            else if (angka === 3) kelas = 'stok-kuning-keras';
-                        %>
-                        <td class="<%= kelas %>"><%= val %></td>
-                        <% }) %>
-                    </tr>
-                    <% })} %>
+<% p.listVarian.forEach(val => {
+    // 1. Buat variabel aman
+    let kelas = 'stok-netral';
+    let strVal = val ? val.toString() : ''; // Pastikan jadi string
+    
+    // 2. Logika hanya jika ada isi dan bukan strip
+    if (strVal.trim() !== '-' && strVal.trim() !== '') {
+        // Hapus karakter non-angka kecuali titik
+        let cleanVal = strVal.replace(/[^0-9.]/g, ''); 
+        let angka = parseFloat(cleanVal) || 0;
+
+        // Logika warna
+        if (angka === 0) {
+            kelas = 'stok-merah';
+        } else if (angka <= 2.5) {
+            kelas = 'stok-merah';
+        } else if (angka <= 3) {
+            kelas = 'stok-kuning';
+        } else {
+            kelas = 'stok-ijo';
+        }
+    }
+%>
+    <td class="<%= kelas %>"><%= val %></td>
+<% }) %>
                 </tbody>
             </table>
         </div> </div>
