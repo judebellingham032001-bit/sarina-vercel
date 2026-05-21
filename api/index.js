@@ -106,22 +106,23 @@ app.get('/', async (req, res) => {
             }
         }
 
-        // 5. PARSING DATA TAB PACKAGING (TARGET EXCEL M1 & AUTO SPEED)
+// 5. PARSING DATA TAB PACKAGING (TARGET EXCEL M1)
         let packagingAll = [];
         let packHeaders = []; 
-        let lastUpdatePack = "-";
+        let lastUpdatePack = "Belum Diupdate"; // Default nilai
         
         if (resP.data && resP.data.trim() !== "") {
             const linesP = resP.data.split(/\r?\n/).filter(line => line.trim() !== "");
             
-            // TARGET CELL M1 COK! Baris ke-1 (index 0) Kolom M (index 12)
             if (linesP.length > 0) {
                 const barisPertama = splitCSV(linesP[0]);
+                
+                // Cek aman untuk index 12 (Kolom M)
                 if (barisPertama[12] && barisPertama[12].trim() !== "") {
                     lastUpdatePack = barisPertama[12].trim();
                 }
                 
-                // Ekstraksi header dinamis (Ambil dari kolom ke-2 sampai sebelum tulisan M1 / kolom kosong)
+                // Ekstraksi header
                 for (let h = 1; h < barisPertama.length; h++) {
                     let headName = barisPertama[h] ? barisPertama[h].trim() : "";
                     if (!headName || h >= 12 || headName.toLowerCase().includes("update")) break;
@@ -129,15 +130,16 @@ app.get('/', async (req, res) => {
                 }
             }
 
-            // Loop produk sikat habis pake array kilat
+            // Loop produk
             for (let i = 1; i < linesP.length; i++) {
                 const c = splitCSV(linesP[i]);
                 if (!c[0] || c[0].trim() === "" || c[0].toLowerCase() === "product") continue;
                 
                 let listVarian = [];
                 for (let vIdx = 0; vIdx < packHeaders.length; vIdx++) {
-                    let nilaiKolom = c[vIdx + 1]; 
-                    listVarian.push((nilaiKolom && nilaiKolom.trim() !== "") ? nilaiKolom.trim() : "-");
+                    // Pakai || "-" agar tidak error jika data kosong
+                    let nilaiKolom = c[vIdx + 1] || "-"; 
+                    listVarian.push(nilaiKolom.trim());
                 }
                 
                 packagingAll.push({
