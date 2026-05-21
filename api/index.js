@@ -1,5 +1,5 @@
 // ==========================================
-// WAJIB FULL SCRIPT - BACKEND EXPRESS (v23-CELL-M1-FIX)
+// WAJIB FULL SCRIPT - BACKEND EXPRESS (v23-CLEAN-FIX)
 // ==========================================
 
 const express = require('express');
@@ -44,7 +44,7 @@ app.get('/', async (req, res) => {
         const urlK = "https://docs.google.com/spreadsheets/d/1oT_uV104wNhTOmJjX_MOzvpkkX0_QAvMYOirsVFbTYo/export?format=csv&gid=0";
         const urlP = "https://docs.google.com/spreadsheets/d/1CmfqkuK2w9GDuohbFIandJGLnlZMrwR-19m5hMA7E4E/export?format=csv&gid=0";
 
-        // Fetch data paralel kilat
+        // Fetch data paralel
         const [resS, resR, resK, resP] = await Promise.all([
             axios.get(urlS).catch(err => { console.error("Error Stok:", err.message); return { data: "" }; }),
             axios.get(urlR).catch(err => { console.error("Error Ship:", err.message); return { data: "" }; }),
@@ -106,7 +106,7 @@ app.get('/', async (req, res) => {
             }
         }
 
-        // 5. PARSING DATA TAB PACKAGING (TARGET EXCEL M1 & AUTO SPEED)
+        // 5. PARSING DATA TAB PACKAGING (TARGET EXCEL M2)
         let packagingAll = [];
         let packHeaders = []; 
         let lastUpdatePack = "-";
@@ -114,69 +114,6 @@ app.get('/', async (req, res) => {
         if (resP.data && resP.data.trim() !== "") {
             const linesP = resP.data.split(/\r?\n/).filter(line => line.trim() !== "");
             
-// 5. PARSING DATA TAB PACKAGING (TARGET EXCEL M2)
-        let packagingAll = [];
-        let packHeaders = []; 
-        let lastUpdatePack = "-";
-        
-        if (resP.data && resP.data.trim() !== "") {
-            const linesP = resP.data.split(/\r?\n/).filter(line => line.trim() !== "");
-            
-            // 1. Cari Header (Baris ke-1, Index 0)
+            // Cari Header (Baris ke-1)
             if (linesP.length > 0) {
-                const headerRow = splitCSV(linesP[0]);
-                for (let h = 1; h < headerRow.length; h++) {
-                    let headName = headerRow[h] ? headerRow[h].trim() : "";
-                    if (!headName || h >= 12 || headName.toLowerCase().includes("update")) break;
-                    packHeaders.push(headName.toUpperCase());
-                }
-            }
-
-            // 2. Cari Last Update di M2 (Baris ke-2, Index 1, kolom M/Index 12)
-            if (linesP.length > 1) {
-                const barisKedua = splitCSV(linesP[1]);
-                if (barisKedua[12] && barisKedua[12].trim() !== "") {
-                    lastUpdatePack = barisKedua[12].trim();
-                }
-            }
-
-            // 3. Loop Produk
-            for (let i = 1; i < linesP.length; i++) {
-                const c = splitCSV(linesP[i]);
-                if (!c[0] || c[0].trim() === "" || c[0].toLowerCase() === "product") continue;
-                
-                let listVarian = [];
-                for (let vIdx = 0; vIdx < packHeaders.length; vIdx++) {
-                    let nilaiKolom = c[vIdx + 1]; 
-                    listVarian.push((nilaiKolom && nilaiKolom.trim() !== "") ? nilaiKolom.trim() : "-");
-                }
-                
-                packagingAll.push({
-                    nama: c[0].trim(),
-                    listVarian: listVarian
-                });
-            }
-        }
-
-        if (lastUpdatePack === "-") {
-            lastUpdatePack = "Belum Diupdate";
-        }
-        // 6. RENDER KE VIEW
-        res.render('index', { 
-            stocks, 
-            shippingAll, 
-            kasAll, 
-            packagingAll, 
-            packHeaders, 
-            saldoTotal: formatRP(saldoTotalRaw).replace('+', ''), 
-            isSaldoMinus, 
-            lastUpdate,
-            lastUpdatePack
-        });
-    } catch (e) {
-        console.error("Fatal Error Dashboard:", e);
-        res.status(500).send("Gagal memuat data operasional: " + e.message);
-    }
-});
-
-module.exports = app;
+                const headerRow = splitCSV
