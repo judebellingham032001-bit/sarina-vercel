@@ -1,13 +1,10 @@
 // ==========================================
-// WAJIB FULL SCRIPT - BACKEND EXPRESS (v30-FINAL-CURE)
+// WAJIB FULL SCRIPT - BACKEND EXPRESS (v31-ANTI-GANTUNG)
 // ==========================================
 
 const express = require('express');
 const axios = require('axios');
-const path = require('path');
-
-// MENGGUNAKAN ROUTER BAWAAN AGAR TIDAK BENTROK DI VERCEL
-const app = express.Router();
+const app = express.Router(); // Murni menggunakan Router bawaan dashboard kamu
 
 // Fungsi pemisah CSV tangguh
 function splitCSV(line) {
@@ -63,12 +60,13 @@ app.get('/', async (req, res) => {
     // FIX LINK & TYPO: Menggunakan huruf I besar (FIand) sesuai sheet asli dari Bos
     const urlP = "https://docs.google.com/spreadsheets/d/1CmfqkuK2w9GDuohbFIandJGLnlZMrwR-19m5hMA7E4E/export?format=csv"; 
 
-    // Fetch data paralel dari Google Sheets
+    // Fetch data paralel dari Google Sheets dengan Timeout 8 detik agar tidak bisa gantung lama-lama
+    const configTimeout = { timeout: 8000 };
     const [resS, resR, resK, resP] = await Promise.all([
-        axios.get(urlS).catch(err => { console.error("Gagal load Tab Stok:", err.message); return { data: "" }; }),
-        axios.get(urlR).catch(err => { console.error("Gagal load Tab Ship:", err.message); return { data: "" }; }),
-        axios.get(urlK).catch(err => { console.error("Gagal load Tab Kas:", err.message); return { data: "" }; }),
-        axios.get(urlP).catch(err => { console.error("Gagal load Tab Pack:", err.message); return { data: "" }; })
+        axios.get(urlS, configTimeout).catch(err => { console.error("Gagal load Tab Stok:", err.message); return { data: "" }; }),
+        axios.get(urlR, configTimeout).catch(err => { console.error("Gagal load Tab Ship:", err.message); return { data: "" }; }),
+        axios.get(urlK, configTimeout).catch(err => { console.error("Gagal load Tab Kas:", err.message); return { data: "" }; }),
+        axios.get(urlP, configTimeout).catch(err => { console.error("Gagal load Tab Pack:", err.message); return { data: "" }; })
     ]);
 
     // 2. PARSING TAB STOK
