@@ -60,14 +60,14 @@
             <p style="font-size: 0.6rem; color: #64748b; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-top: -2px;">MANAJEMEN OPERASIONAL</p>
         </div>
         <ul class="nav nav-pills nav-custom mt-2">
-            <li class="nav-item"><button class="nav-link active" onclick="openMenu('stocks', this)">STOK</button></li>
+            <li class="nav-item"><button class="nav-link" onclick="openMenu('stocks', this)">STOK</button></li>
             <li class="nav-item"><button class="nav-link" onclick="openMenu('shipping', this)">PENGIRIMAN</button></li>
             <li class="nav-item"><button class="nav-link" onclick="openMenu('kas', this)">KAS</button></li>
-            <li class="nav-item"><button class="nav-link" onclick="openMenu('packaging', this)">PACKAGING</button></li>
+            <li class="nav-item"><button class="nav-link active" onclick="openMenu('packaging', this)">PACKAGING</button></li>
         </ul>
     </div>
 
-    <div id="stocks" class="content-section active">
+    <div id="stocks" class="content-section">
         <div class="text-center mb-3"><small class="text-muted fw-bold">LAST UPDATED: <%= lastUpdate %></small></div>
         <div class="card-main">
             <table class="table table-sm align-middle mb-0">
@@ -173,19 +173,20 @@
         </div>
     </div>
 
-    <div id="packaging" class="content-section">
+    <div id="packaging" class="content-section active">
         <div class="text-center mb-3"><small class="text-muted fw-bold">LAST UPDATED: <%= lastUpdatePack %></small></div>
         <div class="card-main">
             <div class="table-responsive">
                 <table class="table table-bordered table-sm align-middle mb-0 text-center" style="border-color: #e2e8f0;">
                     <thead class="head-pack">
                         <tr>
-                            <th class="ps-3 text-start">PRODUCT</th>
-                            <% if (packagingHeaders && packagingHeaders.length > 0) { %>
-                                <% packagingHeaders.forEach(h => { %>
-                                    <th style="min-width: 65px;"><%= h.name %></th>
-                                <% }) %>
-                            <% } %>
+                            <th class="ps-3 text-start" style="width: 34%;">PRODUCT</th>
+                            <th style="width: 11%;">100G</th>
+                            <th style="width: 11%;">200G</th>
+                            <th style="width: 11%;">250G</th>
+                            <th style="width: 11%;">400G</th>
+                            <th style="width: 11%;">500G</th>
+                            <th style="width: 11%;">1KG</th>
                         </tr>
                     </thead>
                     <tbody style="font-size: 0.7rem;">
@@ -193,13 +194,16 @@
                             <% packagingAll.forEach(p => { %>
                                 <tr class="border-bottom">
                                     <td class="ps-3 py-2.5 text-start fw-bold text-uppercase text-secondary"><%= p.nama %></td>
-                                    <% p.listNilai.forEach(val => { %>
-                                        <td class="<%= (val === '-' || val === '') ? 'cell-kosong' : 'cell-isi' %>"><%= val %></td>
-                                    <% }) %>
+                                    <td class="<%= (p.g100 === '-' || p.g100 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g100 %></td>
+                                    <td class="<%= (p.g200 === '-' || p.g200 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g200 %></td>
+                                    <td class="<%= (p.g250 === '-' || p.g250 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g250 %></td>
+                                    <td class="<%= (p.g400 === '-' || p.g400 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g400 %></td>
+                                    <td class="<%= (p.g500 === '-' || p.g500 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g500 %></td>
+                                    <td class="<%= (p.k1 === '-' || p.k1 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.k1 %></td>
                                 </tr>
                             <% }) %>
                         <% } else { %>
-                            <tr><td colspan="10" class="text-center p-4 text-muted">Data matriks packaging tidak ditemukan atau kosong.</td></tr>
+                            <tr><td colspan="7" class="text-center p-4 text-muted">Data matriks packaging tidak ditemukan atau kosong.</td></tr>
                         <% } %>
                     </tbody>
                 </table>
