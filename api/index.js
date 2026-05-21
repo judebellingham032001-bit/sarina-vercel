@@ -1,16 +1,13 @@
 // ==========================================
-// WAJIB FULL SCRIPT - BACKEND EXPRESS (v29-FIX-LINK)
+// WAJIB FULL SCRIPT - BACKEND EXPRESS (v30-FINAL-CURE)
 // ==========================================
 
 const express = require('express');
 const axios = require('axios');
 const path = require('path');
-const app = express();
 
-app.use(express.static(path.join(__dirname, '../public')));
-
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '../views'));
+// MENGGUNAKAN ROUTER BAWAAN AGAR TIDAK BENTROK DI VERCEL
+const app = express.Router();
 
 // Fungsi pemisah CSV tangguh
 function splitCSV(line) {
@@ -63,7 +60,7 @@ app.get('/', async (req, res) => {
     const urlR = "https://docs.google.com/spreadsheets/d/16N1Jpc11GUJyKqpyEvueKx0ccroVJfG-s6yP3DxxyX4/export?format=csv&gid=0";
     const urlK = "https://docs.google.com/spreadsheets/d/1oT_uV104wNhTOmJjX_MOzvpkkX0_QAvMYOirsVFbTYo/export?format=csv&gid=0";
     
-    // FIX LINK: Menggunakan huruf I besar (FIand) sesuai link asli dari kamu, dan diekspor ke CSV
+    // FIX LINK & TYPO: Menggunakan huruf I besar (FIand) sesuai sheet asli dari Bos
     const urlP = "https://docs.google.com/spreadsheets/d/1CmfqkuK2w9GDuohbFIandJGLnlZMrwR-19m5hMA7E4E/export?format=csv"; 
 
     // Fetch data paralel dari Google Sheets
@@ -173,7 +170,7 @@ app.get('/', async (req, res) => {
         console.error("Gagal parsing packaging:", errPack.message);
     }
 
-    // 6. RENDER DATA KE INDEX.EJS
+    // 6. RENDER DATA KE VIEWS/INDEX.EJS
     res.render('index', { 
         stocks, 
         shippingAll, 
