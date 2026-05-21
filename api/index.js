@@ -1,10 +1,16 @@
 // ==========================================
-// WAJIB FULL SCRIPT - BACKEND EXPRESS (v32-FIX-PARAMETER)
+// WAJIB FULL SCRIPT - BACKEND EXPRESS (v20)
 // ==========================================
 
 const express = require('express');
 const axios = require('axios');
-const app = express.Router();
+const path = require('path');
+const app = express();
+
+app.use(express.static(path.join(__dirname, '../public')));
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '../views'));
 
 function splitCSV(line) {
     const result = [];
@@ -25,36 +31,28 @@ function formatRP(angkaStr) {
     let bersih = angkaStr.replace(/[^\d-]/g, "");
     if (bersih === "" || bersih === "-") return "0";
     let isMinus = bersih.startsWith("-");
-    let angka = Math.abs(parseInt(bersih.replace(/[^0-9-]/g, '') || '0'));
+    let angka = Math.abs(parseInt(bersih));
     let formatted = "Rp " + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     return isMinus ? "-" + formatted : "+ " + formatted;
 }
 
-// Menggunakan penanganan argumen fleksibel supaya tidak tertukar antara req dan res
-app.get('/', async function(...args) {
-    // Pastikan kita mengambil object req dan res dengan benar terlepas dari urutan argumen Express
-    const req = args.find(a => a && a.query !== undefined) || args[0];
-    const res = args.find(a => a && typeof a.render === 'function') || args[1];
-
-    if (!res || typeof res.render !== 'function') {
-        console.error("Express 'res' object tidak valid atau tidak memiliki fungsi render!");
-        return;
-    }
-
+app.get('/', async (req, res) => {
     try {
+        // 1. DAFTAR URL SOURCE GOOGLE SHEETS
         const urlS = "https://docs.google.com/spreadsheets/d/1xTVwqw9a3BMrmHEir9wQEidVxIgUhvCP_qj8jHY0u7w/export?format=csv&gid=0";
         const urlR = "https://docs.google.com/spreadsheets/d/16N1Jpc11GUJyKqpyEvueKx0ccroVJfG-s6yP3DxxyX4/export?format=csv&gid=0";
         const urlK = "https://docs.google.com/spreadsheets/d/1oT_uV104wNhTOmJjX_MOzvpkkX0_QAvMYOirsVFbTYo/export?format=csv&gid=0";
-        const urlP = "https://docs.google.com/spreadsheets/d/1CmfqkuK2w9GDuohbFIandJGLnlZMrwR-19m5hMA7E4E/export?format=csv&gid=0"; 
+        const urlP = "https://docs.google.com/spreadsheets/d/1CmfqkuK2w9GDuohbFlandJGLnlZMrwR-19m5hMA7E4E/pub?output=csv";
 
+        // Fetch data paralel
         const [resS, resR, resK, resP] = await Promise.all([
-            axios.get(urlS).catch(() => ({ data: "" })),
-            axios.get(urlR).catch(() => ({ data: "" })),
-            axios.get(urlK).catch(() => ({ data: "" })),
-            axios.get(urlP).catch(() => ({ data: "" }))
+            axios.get(urlS).catch(err => { console.error("Error Stok:", err.message); return { data: "" }; }),
+            axios.get(urlR).catch(err => { console.error("Error Ship:", err.message); return { data: "" }; }),
+            axios.get(urlK).catch(err => { console.error("Error Kas:", err.message); return { data: "" }; }),
+            axios.get(urlP).catch(err => { console.error("Error Pack:", err.message); return { data: "" }; })
         ]);
 
-        // Parsing Stok
+        // 2. PARSING DATA TAB STOK
         let lastUpdate = "-";
         let stocks = [];
         if (resS.data) {
@@ -69,16 +67,23 @@ app.get('/', async function(...args) {
             }).filter(i => i.nama);
         }
 
-        // Parsing Shipping
+        // 3. PARSING DATA TAB PENGIRIMAN
         let shippingAll = [];
         if (resR.data) {
             shippingAll = resR.data.split(/\r?\n/).slice(3).map(l => {
                 const c = splitCSV(l);
-                return { tgl: c[6] || "", spx: c[7] || "0", jne: c[8] || "0", jnt: c[9] || "0", sd: c[10] || "0", tot: c[11] || "0" };
+                return { 
+                    tgl: c[6] || "", 
+                    spx: c[7] || "0", 
+                    jne: c[8] || "0", 
+                    jnt: c[9] || "0", 
+                    sd: c[10] || "0", 
+                    tot: c[11] || "0" 
+                };
             }).filter(i => i.tgl && i.tgl !== "0");
         }
 
-        // Parsing Kas
+        // 4. PARSING DATA TAB KAS
         let kasAll = [];
         let saldoTotalRaw = "0";
         let isSaldoMinus = false;
@@ -94,7 +99,10 @@ app.get('/', async function(...args) {
                 if (c[4] && c[4] !== "0" && c[4] !== "-") { mutasiRaw = "-" + c[4]; tipe = "debet"; }
                 else if (c[5] && c[5] !== "0" && c[5] !== "-") { mutasiRaw = c[5]; tipe = "kredit"; }
 
-                return { tgl: tempDate, kat: c[1] || "", ket: c[2] || "", mutasi: formatRP(mutasiRaw), tipeMutasi: tipe, saldo: formatRP(c[6] || "0"), bukti: linkBukti };
+                return { 
+                    tgl: tempDate, kat: c[1] || "", ket: c[2] || "", mutasi: formatRP(mutasiRaw),
+                    tipeMutasi: tipe, saldo: formatRP(c[6] || "0"), bukti: linkBukti 
+                };
             }).filter(t => t.kat && t.kat !== "Kategori" && t.kat !== "");
 
             if (kasAll.length > 0) {
@@ -103,28 +111,58 @@ app.get('/', async function(...args) {
             }
         }
 
-        // Parsing Packaging (VERSI AWAL STATIS KLOMLNYA - INDEX ARRAY GESER 1 KARENA GID=0)
+        // 5. PARSING DATA TAB PACKAGING (PERBAIKAN TOTAL ESKTRASI TANGGAL UPDATE)
         let packagingAll = [];
-        if (resP.data) {
-            const linesP = resP.data.split(/\r?\n/);
-            // Mulai slice dari baris data asli (indeks 1 atau 2 tergantung header sheet)
-            packagingAll = linesP.slice(1).map(l => {
-                const c = splitCSV(l);
-                if(!c[0] || c[0].toLowerCase() === 'product' || c[0].trim() === '') return null;
-                return {
-                    nama: c[0] || "",
-                    u100: c[1] || "-", u200: c[2] || "-", u250: c[3] || "-", u350: c[4] || "-",
-                    u400: c[5] || "-", u500: c[6] || "-", u1000: c[7] || "-"
-                };
-            }).filter(p => p && p.nama);
+        let lastUpdatePack = "-";
+        
+        if (resP.data && resP.data.trim() !== "") {
+            const linesP = resP.data.split(/\r?\n/).filter(line => line.trim() !== "");
+            
+            // KUNCI COK! Ambil tanggal langsung dari baris ke-2 (index 1) kolom H (index 7)
+            if (linesP.length > 1) {
+                const barisSample = splitCSV(linesP[1]);
+                if (barisSample[7] && barisSample[7].trim() !== "") {
+                    lastUpdatePack = barisSample[7].trim();
+                }
+            }
+
+            // Loop semua baris data kemasan mulai dari baris ke-2 (index 1)
+            for (let i = 1; i < linesP.length; i++) {
+                const c = splitCSV(linesP[i]);
+                
+                // Jika nama produk kosong atau berisi teks header "product", lewati saja
+                if (!c[0] || c[0].trim() === "" || c[0].toLowerCase() === "product") continue;
+                
+                packagingAll.push({
+                    nama: c[0].trim(),
+                    g100: (c[1] && c[1].trim() !== "") ? c[1].trim() : "-",
+                    g200: (c[2] && c[2].trim() !== "") ? c[2].trim() : "-",
+                    g250: (c[3] && c[3].trim() !== "") ? c[3].trim() : "-",
+                    g400: (c[4] && c[4].trim() !== "") ? c[4].trim() : "-",
+                    g500: (c[5] && c[5].trim() !== "") ? c[5].trim() : "-",
+                    k1:   (c[6] && c[6].trim() !== "") ? c[6].trim() : "-"
+                });
+            }
         }
 
+        if (lastUpdatePack === "-") {
+            lastUpdatePack = "Belum Diupdate";
+        }
+
+        // 6. RENDER DATA KE VIEW
         res.render('index', { 
-            stocks, shippingAll, kasAll, packagingAll, 
-            saldoTotal: formatRP(saldoTotalRaw).replace('+', ''), isSaldoMinus, lastUpdate
+            stocks, 
+            shippingAll, 
+            kasAll, 
+            packagingAll, 
+            saldoTotal: formatRP(saldoTotalRaw).replace('+', ''), 
+            isSaldoMinus, 
+            lastUpdate,
+            lastUpdatePack
         });
     } catch (e) {
-        res.status(500).send("Gagal memuat data dashboard: " + e.message);
+        console.error("Fatal Error Dashboard:", e);
+        res.status(500).send("Gagal memuat data operasional: " + e.message);
     }
 });
 
