@@ -119,37 +119,69 @@ body{
     color:#1e293b !important;
 }
 
-/* FREEZE HEADER PACKAGING */
-/* 1. Bungkus tabel dengan container ini di HTML (Lihat langkah ke-2) */
-.table-container {
-    max-height: 500px; /* Atur tinggi tabel agar bisa di-scroll */
-    overflow: auto;
-    position: relative;
+/* =========================================
+   FREEZE HEADER PACKAGING
+========================================= */
+
+.table-container{
+    max-height:500px;
+    overflow:auto;
+    position:relative;
 }
 
-/* 2. Freeze Header (Atas) */
-.head-pack th {
-    background: #003153 !important; /* Wajib ada background */
-    color: white !important;
-    position: sticky;
-    top: 0;
-    z-index: 20; /* Lapisan 20 */
+/* HEADER */
+.head-pack th{
+    background:#003153 !important;
+    color:white !important;
+    position:sticky;
+    top:0;
+    z-index:20;
 }
 
-/* 3. Freeze Kolom Produk (Kiri) */
-#packaging table td:first-child, 
-#packaging table th:first-child {
-    position: sticky;
-    left: 0;
-    z-index: 10; /* Lapisan 10 */
-    background: white; /* Wajib ada background agar tidak transparan */
-    border-right: 1px solid #dee2e6;
+/* HEADER GRAMASI HIJAU */
+.head-pack th:not(:first-child){
+    background:#166534 !important;
+    color:white !important;
 }
 
-/* 4. Pojok Kiri Atas (Pertemuan Header & Kolom Pertama) */
-#packaging table thead th:first-child {
-    z-index: 30; /* Paling tinggi agar menutupi semuanya */
-    background: #003153 !important;
+/* HEADER PRODUCT TETAP BIRU */
+.head-pack th:first-child{
+    background:#003153 !important;
+    color:white !important;
+}
+
+/* FREEZE KOLOM PRODUCT */
+#packaging table td:first-child,
+#packaging table th:first-child{
+    position:sticky;
+    left:0;
+    z-index:10;
+    border-right:1px solid #dee2e6;
+}
+
+/* PRODUCT COLUMN SELANG SELING SAMAR */
+#packaging tbody tr:nth-child(odd) td:first-child{
+    background:#f8fafc !important;
+}
+
+#packaging tbody tr:nth-child(even) td:first-child{
+    background:#eef2f7 !important;
+}
+
+/* BIAR GAK KETIMPA */
+#packaging table thead th:first-child{
+    z-index:30;
+}
+
+/* HOVER TABLE */
+#packaging tbody tr:hover td{
+    background:#f1f5f9;
+    transition:.15s;
+}
+
+/* TAPI PRODUCT TETAP KELIHATAN */
+#packaging tbody tr:hover td:first-child{
+    background:#dbeafe !important;
 }
 
 /* SALDO */
@@ -349,7 +381,7 @@ h1{
 
         <div class="text-center mb-3">
             <small class="text-muted fw-bold">
-                LAST UPDATED:
+                Last Updated:
                 <%= lastUpdate %>
             </small>
         </div>
@@ -667,7 +699,7 @@ h1{
 
     <div class="text-center mb-3">
         <small class="text-muted fw-bold">
-            LAST UPDATED: <%= typeof lastUpdatePack !== 'undefined' ? lastUpdatePack : '-' %>
+            Last Updated: <%= typeof lastUpdatePack !== 'undefined' ? lastUpdatePack : '-' %>
         </small>
     </div>
 
