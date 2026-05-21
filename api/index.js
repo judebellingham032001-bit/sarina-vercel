@@ -114,22 +114,36 @@ app.get('/', async (req, res) => {
         if (resP.data && resP.data.trim() !== "") {
             const linesP = resP.data.split(/\r?\n/).filter(line => line.trim() !== "");
             
-            // TARGET CELL M1 COK! Baris ke-1 (index 0) Kolom M (index 12)
+// 5. PARSING DATA TAB PACKAGING (TARGET EXCEL M2)
+        let packagingAll = [];
+        let packHeaders = []; 
+        let lastUpdatePack = "-";
+        
+        if (resP.data && resP.data.trim() !== "") {
+            const linesP = resP.data.split(/\r?\n/).filter(line => line.trim() !== "");
+            
+            // --- BAGIAN INI YANG DIUBAH ---
+            // Cari header di baris ke-1 (index 0)
             if (linesP.length > 0) {
-                const barisPertama = splitCSV(linesP[0]);
-                if (barisPertama[12] && barisPertama[12].trim() !== "") {
-                    lastUpdatePack = barisPertama[12].trim();
-                }
-                
-                // Ekstraksi header dinamis (Ambil dari kolom ke-2 sampai sebelum tulisan M1 / kolom kosong)
-                for (let h = 1; h < barisPertama.length; h++) {
-                    let headName = barisPertama[h] ? barisPertama[h].trim() : "";
+                const headerRow = splitCSV(linesP[0]);
+                // Ekstraksi header
+                for (let h = 1; h < headerRow.length; h++) {
+                    let headName = headerRow[h] ? headerRow[h].trim() : "";
                     if (!headName || h >= 12 || headName.toLowerCase().includes("update")) break;
                     packHeaders.push(headName.toUpperCase());
                 }
             }
 
-            // Loop produk sikat habis pake array kilat
+            // Cari Last Update di M2 (Baris ke-2, index 1, kolom M/index 12)
+            if (linesP.length > 1) {
+                const barisKedua = splitCSV(linesP[1]);
+                if (barisKedua[12] && barisKedua[12].trim() !== "") {
+                    lastUpdatePack = barisKedua[12].trim();
+                }
+            }
+            // ------------------------------
+
+            // Loop produk
             for (let i = 1; i < linesP.length; i++) {
                 const c = splitCSV(linesP[i]);
                 if (!c[0] || c[0].trim() === "" || c[0].toLowerCase() === "product") continue;
