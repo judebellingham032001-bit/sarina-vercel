@@ -120,36 +120,29 @@ body{
 }
 
 /* FREEZE HEADER PACKAGING */
-/* PARENT CONTAINER - Wajib untuk Sticky */
-.scroll-wrapper {
-    max-height: 400px; /* Sesuaikan tinggi agar bisa di-scroll */
-    overflow: auto;
-    position: relative;
+.head-pack th{
+    background:#003153 !important;
+    color:white !important;
+    position:sticky;
+    top:0;
+    z-index:10;
 }
 
-/* HEADER STICKY */
-.head-pack th {
-    background: #003153 !important;
-    color: white !important;
-    position: sticky;
-    top: 0;
-    z-index: 20; /* Lebih tinggi dari sel biasa */
-}
-
-/* KOLOM PERTAMA STICKY */
+/* FREEZE FIRST COLUMN */
 #packaging table td:first-child,
-#packaging table th:first-child {
-    position: sticky;
-    left: 0;
-    z-index: 10;
-    background: white; /* WAJIB: Agar teks di belakang tidak tembus */
-    border-right: 1px solid #dee2e6;
+#packaging table th:first-child{
+    position:sticky;
+    left:0;
+    z-index:5;
 }
 
-/* POJOK KIRI ATAS (Pertemuan Header & Kolom 1) */
-#packaging table thead th:first-child {
-    z-index: 30; /* Paling tinggi agar selalu di atas */
-    background: #003153 !important;
+#packaging table td:first-child{
+    background:white;
+}
+
+#packaging table th:first-child{
+    background:#003153 !important;
+    z-index:11;
 }
 
 /* SALDO */
@@ -664,21 +657,19 @@ h1{
     </div>
 
     <!-- PACKAGING -->
-<div id="packaging" class="content-section active">
-    <div class="card-main">
-        <div class="scroll-wrapper">
-            <table class="table table-bordered table-sm text-center mb-0">
-                <thead class="head-pack">
-                    <tr>
-                        <th class="ps-3 text-start">PRODUCT</th>
-                        </tr>
-                </thead>
-                <tbody>
-                    </tbody>
-            </table>
+    <div id="packaging"
+         class="content-section active">
+
+        <div class="text-center mb-3">
+
+            <small class="text-muted fw-bold">
+
+                LAST UPDATED:
+                <%= typeof lastUpdatePack !== 'undefined' ? lastUpdatePack : '-' %>
+
+            </small>
+
         </div>
-        </div>
-</div>
 
         <div class="card-main">
 
