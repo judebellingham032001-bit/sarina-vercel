@@ -27,7 +27,7 @@ body{
     padding:6px;
 }
 
-/* NAVIGATION */
+/* NAV */
 .nav-custom{
     background:white;
     border-radius:50px;
@@ -78,32 +78,21 @@ body{
     display:block;
 }
 
-/* STOK COLOR */
-.stok-merah{
-    background-color:#fee2e2 !important;
-    color:#dc2626 !important;
-    font-weight:800;
+/* TABLE */
+th{
+    font-size:.55rem;
+    padding:8px !important;
+    text-transform:uppercase;
+    white-space:nowrap;
 }
 
-.stok-kuning{
-    background-color:#fef3c7 !important;
-    color:#d97706 !important;
-    font-weight:800;
+td{
+    padding:7px !important;
+    vertical-align:middle;
+    font-size:.62rem;
 }
 
-.stok-kuning-keras{
-    background-color:#fde68a !important;
-    color:#92400e !important;
-    font-weight:800;
-}
-
-.stok-ijo{
-    background-color:#dcfce7 !important;
-    color:#16a34a !important;
-    font-weight:800;
-}
-
-/* TABLE HEAD */
+/* TABLE HEADER */
 .head-stok th{
     background:#003153 !important;
     color:white !important;
@@ -119,53 +108,75 @@ body{
     color:#1e293b !important;
 }
 
-/* FREEZE HEADER PACKAGING */
 .head-pack th{
     background:#003153 !important;
     color:white !important;
     position:sticky;
     top:0;
-    z-index:10;
+    z-index:20;
 }
 
-/* FREEZE FIRST COLUMN */
-#packaging table td:first-child,
-#packaging table th:first-child{
+/* PACKAGING FREEZE */
+#packaging .table-responsive{
+    overflow:auto;
+    max-height:75vh;
+}
+
+#packaging table th:first-child,
+#packaging table td:first-child{
     position:sticky;
     left:0;
-    z-index:5;
-}
-
-#packaging table td:first-child{
+    min-width:130px;
     background:white;
+    z-index:15;
+    box-shadow:2px 0 4px rgba(0,0,0,.05);
 }
 
 #packaging table th:first-child{
     background:#003153 !important;
-    z-index:11;
+    color:white !important;
+    z-index:30;
 }
 
-/* SALDO */
-.bg-normal{
-    background:linear-gradient(135deg,#1e293b,#475569);
+#packaging table th:nth-child(2),
+#packaging table td:nth-child(2){
+    position:sticky;
+    left:130px;
+    min-width:80px;
+    background:white;
+    z-index:14;
+    box-shadow:2px 0 4px rgba(0,0,0,.05);
 }
 
-.bg-minus{
-    background:#dc2626 !important;
+#packaging table th:nth-child(2){
+    background:#003153 !important;
+    color:white !important;
+    z-index:29;
 }
 
-/* TABLE */
-th{
-    font-size:.55rem;
-    padding:8px !important;
-    text-transform:uppercase;
-    white-space:nowrap;
+/* STOCK COLOR */
+.stok-merah{
+    background:#fee2e2 !important;
+    color:#dc2626 !important;
+    font-weight:800;
 }
 
-td{
-    padding:7px !important;
-    vertical-align:middle;
-    font-size:.62rem;
+.stok-kuning{
+    background:#fef3c7 !important;
+    color:#d97706 !important;
+    font-weight:800;
+}
+
+.stok-kuning-keras{
+    background:#fde68a !important;
+    color:#92400e !important;
+    font-weight:800;
+}
+
+.stok-ijo{
+    background:#dcfce7 !important;
+    color:#16a34a !important;
+    font-weight:800;
 }
 
 /* BADGE */
@@ -203,6 +214,15 @@ td{
     font-weight:800;
 }
 
+/* SALDO */
+.bg-normal{
+    background:linear-gradient(135deg,#1e293b,#475569);
+}
+
+.bg-minus{
+    background:#dc2626 !important;
+}
+
 /* BUTTON */
 .btn-bukti{
     background:#2563eb;
@@ -212,14 +232,6 @@ td{
     padding:4px 6px;
     border-radius:4px;
     text-decoration:none;
-}
-
-.filter-box{
-    background:#f8fafc;
-    padding:10px;
-    border-radius:10px;
-    margin:10px;
-    border:1px solid #e2e8f0;
 }
 
 .btn-toggle{
@@ -235,7 +247,6 @@ td{
 /* LOGO */
 .logo-sarina{
     width:65px;
-    height:auto;
     margin-bottom:5px;
 }
 
@@ -254,10 +265,6 @@ h1{
 
 /* MOBILE */
 @media(max-width:576px){
-
-    body{
-        font-size:.75rem;
-    }
 
     td{
         font-size:.58rem;
@@ -280,6 +287,17 @@ h1{
 
     h1{
         font-size:1rem !important;
+    }
+
+    #packaging table th:first-child,
+    #packaging table td:first-child{
+        min-width:110px;
+    }
+
+    #packaging table th:nth-child(2),
+    #packaging table td:nth-child(2){
+        left:110px;
+        min-width:70px;
     }
 
 }
@@ -337,325 +355,6 @@ h1{
 
     </div>
 
-    <!-- STOCK -->
-    <div id="stocks" class="content-section">
-
-        <div class="text-center mb-3">
-            <small class="text-muted fw-bold">
-                LAST UPDATED:
-                <%= lastUpdate %>
-            </small>
-        </div>
-
-        <div class="card-main">
-
-            <table class="table table-sm mb-0">
-
-                <thead class="head-stok">
-
-                    <tr>
-
-                        <th class="ps-3">
-                            PRODUK
-                        </th>
-
-                        <th class="text-center">
-                            QTY
-                        </th>
-
-                        <th class="text-end pe-3">
-                            STATUS
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    <% if (typeof stocks !== 'undefined' && stocks) {
-                        stocks.forEach(s => { %>
-
-                    <tr class="border-bottom">
-
-                        <td class="ps-3 fw-bold text-uppercase">
-                            <%= s.nama %>
-                        </td>
-
-                        <td class="text-center fw-bold">
-                            <%= s.display %>
-                        </td>
-
-                        <td class="text-end pe-3">
-
-                            <% if(s.statusTxt === 'OUT OF STOCK') { %>
-
-                                <span class="badge-status bg-out">
-                                    HABIS
-                                </span>
-
-                            <% } else if(s.statusTxt === 'LOW') { %>
-
-                                <span class="badge-status bg-low">
-                                    LOW
-                                </span>
-
-                            <% } else { %>
-
-                                <span class="badge-status bg-tersedia">
-                                    READY
-                                </span>
-
-                            <% } %>
-
-                        </td>
-
-                    </tr>
-
-                    <% })} %>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-    <!-- SHIPPING -->
-    <div id="shipping" class="content-section">
-
-        <div class="card-main">
-
-            <button class="btn-toggle"
-                onclick="toggleFull('tableShip', this)">
-
-                + FILTER & LIHAT SEMUA
-
-            </button>
-
-            <div id="filterShip" style="display:none;">
-
-                <div class="filter-box">
-
-                    <div class="row g-2">
-
-                        <div class="col-6">
-
-                            <select id="sM"
-                                class="form-select form-select-sm"
-                                onchange="filterData('tableShip', 'sM', 'sY')">
-
-                                <option value="">Bulan</option>
-                                <option value="Jan">Jan</option>
-                                <option value="Feb">Feb</option>
-
-                            </select>
-
-                        </div>
-
-                        <div class="col-6">
-
-                            <select id="sY"
-                                class="form-select form-select-sm"
-                                onchange="filterData('tableShip', 'sM', 'sY')">
-
-                                <option value="">Tahun</option>
-                                <option value="2025">2025</option>
-                                <option value="2026">2026</option>
-
-                            </select>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="table-responsive">
-
-                <table class="table table-sm text-center mb-0"
-                    id="tableShip">
-
-                    <thead class="head-ship">
-
-                        <tr>
-
-                            <th class="ps-3 text-start">
-                                Tanggal
-                            </th>
-
-                            <th>SPX</th>
-                            <th>JNE</th>
-                            <th>J&T</th>
-                            <th>Sameday</th>
-                            <th>TOTAL</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        <% if (typeof shippingAll !== 'undefined' && shippingAll) {
-                            shippingAll.forEach((k, i) => { %>
-
-                        <tr class="row-data border-bottom"
-                            data-index="<%= i %>">
-
-                            <td class="text-start fw-bold ps-3">
-                                <%= k.tgl %>
-                            </td>
-
-                            <td><%= k.spx %></td>
-                            <td><%= k.jne %></td>
-                            <td><%= k.jnt %></td>
-                            <td><%= k.sd %></td>
-
-                            <td class="fw-bold text-primary">
-                                <%= k.tot %>
-                            </td>
-
-                        </tr>
-
-                        <% })} %>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- KAS -->
-    <div id="kas" class="content-section">
-
-        <div class="card-main">
-
-            <div class="p-4 text-center <%= (typeof isSaldoMinus !== 'undefined' && isSaldoMinus) ? 'bg-minus' : 'bg-normal' %>"
-                style="color:white;">
-
-                <small class="fw-bold opacity-75">
-                    SALDO KAS
-                </small>
-
-                <h2 class="fw-bold m-0"
-                    style="font-size:1.3rem;">
-
-                    <%= typeof saldoTotal !== 'undefined' ? saldoTotal : 'Rp 0' %>
-
-                </h2>
-
-            </div>
-
-            <button class="btn-toggle"
-                onclick="toggleFull('tableKas', this)">
-
-                + FILTER & LIHAT SEMUA
-
-            </button>
-
-            <div class="table-responsive">
-
-                <table class="table table-sm mb-0"
-                    id="tableKas">
-
-                    <thead class="head-kas-dark">
-
-                        <tr>
-
-                            <th>Tanggal</th>
-                            <th>Keterangan</th>
-                            <th class="text-end">Mutasi</th>
-                            <th class="text-center">Bukti</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        <% if (typeof kasAll !== 'undefined' && kasAll) {
-                            kasAll.forEach((t, i) => { %>
-
-                        <tr class="row-data border-bottom"
-                            data-index="<%= i %>">
-
-                            <td>
-                                <%= t.tgl %>
-                            </td>
-
-                            <td>
-
-                                <div class="fw-bold text-uppercase">
-                                    <%= t.kat %>
-                                </div>
-
-                                <div class="text-muted"
-                                    style="font-size:.52rem;">
-
-                                    <%= t.ket %>
-
-                                </div>
-
-                            </td>
-
-                            <td class="text-end">
-
-                                <div class="<%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>">
-
-                                    <%= t.mutasi %>
-
-                                </div>
-
-                                <div style="font-size:.5rem;">
-
-                                    Sisa:
-                                    <%= t.saldo %>
-
-                                </div>
-
-                            </td>
-
-                            <td class="text-center">
-
-                                <% if(t.bukti) { %>
-
-                                <a href="<%= t.bukti %>"
-                                    target="_blank"
-                                    class="btn-bukti">
-
-                                    LIHAT
-
-                                </a>
-
-                                <% } else { %>
-
-                                -
-
-                                <% } %>
-
-                            </td>
-
-                        </tr>
-
-                        <% })} %>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-    </div>
-
     <!-- PACKAGING -->
     <div id="packaging"
          class="content-section active">
@@ -665,7 +364,9 @@ h1{
             <small class="text-muted fw-bold">
 
                 LAST UPDATED:
-                <%= typeof lastUpdatePack !== 'undefined' ? lastUpdatePack : '-' %>
+                <%= typeof lastUpdatePack !== 'undefined'
+                    ? lastUpdatePack
+                    : '-' %>
 
             </small>
 
@@ -681,14 +382,18 @@ h1{
 
                         <tr>
 
-                            <th class="ps-3 text-start">
+                            <th class="text-start ps-3">
                                 PRODUCT
                             </th>
 
-                            <% if (typeof packHeaders !== 'undefined') {
+                            <th>
+                                GRAMASI
+                            </th>
+
+                            <% if(typeof packHeaders !== 'undefined'){
                                 packHeaders.forEach(h => { %>
 
-                            <th><%= h %></th>
+                                <th><%= h %></th>
 
                             <% }) } %>
 
@@ -698,26 +403,40 @@ h1{
 
                     <tbody style="font-size:.65rem;">
 
-                        <% if (typeof packagingAll !== 'undefined') {
+                        <% if(typeof packagingAll !== 'undefined'){
                             packagingAll.forEach(p => { %>
 
                         <tr class="border-bottom">
 
-                            <td class="ps-3 text-start fw-bold text-uppercase text-secondary">
+                            <td class="text-start ps-3 fw-bold text-uppercase text-secondary">
 
                                 <%= p.nama %>
 
                             </td>
 
+                            <td class="fw-bold">
+
+                                <%= p.gramasi || '-' %>
+
+                            </td>
+
                             <% p.listVarian.forEach(val => {
 
-                                let angka = parseInt(val.replace(/\D/g, '')) || 0;
+                                let angka =
+                                    parseInt(
+                                        val.replace(/\D/g, '')
+                                    ) || 0;
 
                                 let kelas = 'stok-ijo';
 
-                                if (angka === 0) kelas = 'stok-merah';
-                                else if (angka <= 2) kelas = 'stok-kuning';
-                                else if (angka === 3) kelas = 'stok-kuning-keras';
+                                if(angka === 0)
+                                    kelas = 'stok-merah';
+
+                                else if(angka <= 2)
+                                    kelas = 'stok-kuning';
+
+                                else if(angka === 3)
+                                    kelas = 'stok-kuning-keras';
 
                             %>
 
@@ -731,7 +450,7 @@ h1{
 
                         </tr>
 
-                        <% })} %>
+                        <% }) } %>
 
                     </tbody>
 
@@ -759,51 +478,6 @@ function openMenu(id, el){
         .classList.add('active');
 
     el.classList.add('active');
-}
-
-function toggleFull(tableId, btn){
-
-    const rows = document.querySelectorAll(
-        `#${tableId} .row-data`
-    );
-
-    const hidden =
-        rows[0].style.display === "none";
-
-    if(hidden){
-
-        rows.forEach(r => r.style.display = "");
-
-        btn.innerText = "- SEMBUNYIKAN";
-
-    } else {
-
-        showDefault(tableId);
-
-        btn.innerText =
-            "+ FILTER & LIHAT SEMUA";
-    }
-}
-
-function showDefault(t){
-
-    const r =
-        document.querySelectorAll(`#${t} .row-data`);
-
-    r.forEach((x, i) => {
-
-        x.style.display =
-            (i < r.length - 10)
-            ? "none"
-            : "";
-    });
-}
-
-window.onload = () => {
-
-    showDefault('tableShip');
-
-    showDefault('tableKas');
 }
 
 </script>
