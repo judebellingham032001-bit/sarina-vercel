@@ -1,5 +1,5 @@
 // ==========================================
-// WAJIB FULL SCRIPT - BACKEND EXPRESS (v16)
+// WAJIB FULL SCRIPT - BACKEND EXPRESS (v17)
 // ==========================================
 
 const express = require('express');
@@ -111,28 +111,29 @@ app.get('/', async (req, res) => {
             }
         }
 
-        // 5. PARSING DATA TAB PACKAGING (HANYA BACA KONTEN - BEBAS HURUF BESAR KECIL)
+        // 5. PARSING DATA TAB PACKAGING (PERBAIKAN TOTAL TARGET BARIS DATA)
         let packagingAll = [];
         let lastUpdatePack = "-";
         
         if (resP.data) {
+            // Pecah data per baris dan buang baris yang benar-benar kosong kosong
             const linesP = resP.data.split(/\r?\n/).filter(line => line.trim() !== "");
             
             if (linesP.length > 1) {
-                // Ambil info update dari baris produk pertama (index 1) di kolom H (index 7)
-                const firstDataRow = splitCSV(linesP[1]);
-                if (firstDataRow[7] && firstDataRow[7].trim() !== "") {
-                    lastUpdatePack = firstDataRow[7].trim();
+                // Ambil tanggal update dari Baris ke-2 (Index 1) Kolom H (Index 7)
+                const rowUntukUpdate = splitCSV(linesP[1]);
+                if (rowUntukUpdate[7] && rowUntukUpdate[7].trim() !== "") {
+                    lastUpdatePack = rowUntukUpdate[7].trim();
                 } else {
                     lastUpdatePack = "Belum Diupdate";
                 }
 
-                // Loop data produk mulai dari index 1 (Abaikan baris 0 header total)
+                // LANGSUNG MULAI LOOP DARI INDEX 1 (Baris ke-2 tepat di bawah header kolom)
                 for (let i = 1; i < linesP.length; i++) {
                     const c = splitCSV(linesP[i]);
                     
-                    // Pokoknya kalau kolom nama produk kosong, lewati!
-                    if (!c[0] || c[0].trim() === "") continue;
+                    // Jika kolom nama produk (kolom A) kosong atau bernilai "product", skip saja
+                    if (!c[0] || c[0].trim() === "" || c[0].toLowerCase() === "product") continue;
                     
                     packagingAll.push({
                         nama: c[0].trim(),
