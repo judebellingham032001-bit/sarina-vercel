@@ -42,7 +42,7 @@ app.get('/', async (req, res) => {
         const urlS = "https://docs.google.com/spreadsheets/d/1xTVwqw9a3BMrmHEir9wQEidVxIgUhvCP_qj8jHY0u7w/export?format=csv&gid=0";
         const urlR = "https://docs.google.com/spreadsheets/d/16N1Jpc11GUJyKqpyEvueKx0ccroVJfG-s6yP3DxxyX4/export?format=csv&gid=0";
         const urlK = "https://docs.google.com/spreadsheets/d/1oT_uV104wNhTOmJjX_MOzvpkkX0_QAvMYOirsVFbTYo/export?format=csv&gid=0";
-        const urlP = "https://docs.google.com/spreadsheets/d/1CmfqkuK2w9GDuohbFlandJGLnlZMrwR-19m5hMA7E4E/export?format=csv&gid=0";
+        const urlP = "https://docs.google.com/spreadsheets/d/1CmfqkuK2w9GDuohbFIandJGLnlZMrwR-19m5hMA7E4E/export?format=csv&gid=0";
 
         // Fetch data paralel
         const [resS, resR, resK, resP] = await Promise.all([
