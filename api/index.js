@@ -147,7 +147,7 @@ if (resP.data && resP.data.trim() !== "") {
 
         // mulai dari kolom C
         for (
-            let h = 2;
+            let h = 1;
             h < barisPertama.length;
             h++
         ) {
@@ -192,7 +192,7 @@ if (resP.data && resP.data.trim() !== "") {
         ) {
 
             let nilaiKolom =
-                c[vIdx + 2];
+                c[vIdx + 1];
 
             listVarian.push(
                 (
