@@ -117,31 +117,43 @@ body{
     border-radius: 12px;
 }
 
-/* Header Pengiriman (Sticky) */
-#pengiriman .head-ship th {
-    background: #003153 !important; /* Bisa disesuaikan */
-    color: white !important;
-    position: sticky;
-    top: 0;
-    z-index: 20;
+/* 1. Wrapper harus punya tinggi agar scroll bisa jalan */
+.shipping-wrapper {
+    max-height: 500px;
+    overflow: auto !important;
+    position: relative;
+    border-radius: 12px;
 }
 
-/* Kolom Pertama Pengiriman (Sticky) */
-#pengiriman table td:first-child, 
-#pengiriman table th:first-child {
-    position: sticky;
-    left: 0;
-    z-index: 10;
-    background: white;
+/* 2. Paksa lebar tabel agar scrollbar muncul */
+.shipping-wrapper table {
+    min-width: 600px !important;
+}
+
+/* 3. Paksa Warna Header dan Freeze (Gunakan #shipping agar lebih kuat) */
+#shipping .head-ship th {
+    background: #003153 !important; /* Ganti warna di sini */
+    color: white !important;
+    position: sticky !important;
+    top: 0;
+    z-index: 20 !important;
+}
+
+/* 4. Freeze Kolom Tanggal (Kiri) */
+#shipping table td:first-child, 
+#shipping table th:first-child {
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 10 !important;
+    background: white !important;
     border-right: 1px solid #dee2e6;
 }
 
-/* Pojok Kiri Atas Pengiriman */
-#pengiriman table thead th:first-child {
-    z-index: 30;
-    background: #003153 !important;
+/* 5. Pojok Kiri Atas (Pertemuan Header & Tanggal) */
+#shipping .head-ship th:first-child {
+    z-index: 30 !important;
+    background: #003153 !important; /* HARUS SAMA DENGAN WARNA HEADER */
 }
-
 .head-kas-dark th{
     background:#cbd5e1 !important;
     color:#1e293b !important;
