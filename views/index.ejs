@@ -15,15 +15,17 @@
         .nav-link.active { background: #2563eb !important; color: white !important; }
         .card-main { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 15px; overflow: hidden; }
         .content-section { display: none; } .content-section.active { display: block; }
-.nowrap-cell { 
-    white-space: nowrap !important; 
-    width: 1%; 
-}
+        .nowrap-cell { white-space: nowrap !important; width: 1%; }
 
         /* HEADER COLORS */
         .head-stok th { background-color: #003153 !important; color: white !important; border: none !important; }
         .head-ship th { background-color: #000000 !important; color: white !important; border: none !important; }
         .head-kas-dark th { background-color: #cbd5e1 !important; color: #1e293b !important; border: none !important; }
+        .head-pack th { background-color: #1e3a8a !important; color: white !important; border: none !important; } /* Warna Tema Navy untuk Packaging */
+
+        /* STYLE ARSIR MATRIKS PACKAGING */
+        .cell-kosong { background-color: #f8fafc !important; color: #cbd5e1 !important; font-weight: 400; text-align: center; }
+        .cell-isi { background-color: #ffffff; color: #0f172a !important; font-weight: 700; text-align: center; }
 
         .bg-normal { background: linear-gradient(135deg, #1e293b, #475569); }
         .bg-minus { background: #dc2626 !important; } 
@@ -63,10 +65,12 @@
             <h1 style="font-weight: 800; font-size: 1.6rem; margin: 0; text-transform: uppercase;">SARINA STORE</h1>
             <p style="font-size: 0.6rem; color: #64748b; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-top: -2px;">MANAJEMEN OPERASIONAL</p>
         </div>
+        
         <ul class="nav nav-pills nav-custom mt-2">
             <li class="nav-item"><button class="nav-link active" onclick="openMenu('stocks', this)">STOK</button></li>
             <li class="nav-item"><button class="nav-link" onclick="openMenu('shipping', this)">PENGIRIMAN</button></li>
             <li class="nav-item"><button class="nav-link" onclick="openMenu('kas', this)">KAS</button></li>
+            <li class="nav-item"><button class="nav-link" onclick="openMenu('packaging', this)">PACKAGING</button></li>
         </ul>
     </div>
 
@@ -125,43 +129,79 @@
                     </div>
                 </div>
             </div>
-<div class="table-responsive">
-<table class="table table-sm align-middle mb-0" id="tableKas">
-    <thead class="head-kas-dark">
-        <tr>
-            <th class="ps-2" style="width: 22%;">Tanggal</th>
-            <th style="width: 38%;">KETERANGAN</th>
-            <th class="text-end" style="width: 25%;">MUTASI</th>
-            <th class="text-center" style="width: 15%;">BUKTI TRANSAKSI</th>
-        </tr>
-    </thead>
-    <tbody>
-        <% kasAll.forEach((t, i) => { %>
-            <tr class="row-data border-bottom" data-index="<%= i %>">
-                <td class="ps-2 py-3 tgl-fix" style="font-size: 0.6rem !important;"><%= t.tgl %></td>
-                
-                <td style="line-height: 1.2;">
-                    <div class="fw-bold text-uppercase" style="font-size: 0.65rem;"><%= t.kat %></div>
-                    <div class="text-muted" style="font-size: 0.55rem;"><%= t.ket %></div>
-                </td>
-                
-                <td class="text-end" style="white-space: nowrap !important;">
-                    <div class="<%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>" style="font-size: 0.75rem; font-weight: 800;">
-                        <%= t.mutasi %>
-                    </div>
-                    <div class="sisa-saldo" style="font-size: 0.55rem; font-weight: 700;">Sisa: <%= t.saldo %></div>
-                </td>
-                
-                <td class="text-center px-1">
-                    <% if(t.bukti) { %>
-                        <a href="<%= t.bukti %>" target="_blank" class="btn-bukti" style="white-space: nowrap; display: inline-block; padding: 4px 6px;">LIHAT BUKTI</a>
-                    <% } else { %>-<% } %>
-                </td>
-            </tr>
-        <% }) %>
-    </tbody>
-</table>
-</div>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0" id="tableKas">
+                    <thead class="head-kas-dark">
+                        <tr>
+                            <th class="ps-2" style="width: 22%;">Tanggal</th>
+                            <th style="width: 38%;">KETERANGAN</th>
+                            <th class="text-end" style="width: 25%;">MUTASI</th>
+                            <th class="text-center" style="width: 15%;">BUKTI TRANSAKSI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% kasAll.forEach((t, i) => { %>
+                            <tr class="row-data border-bottom" data-index="<%= i %>">
+                                <td class="ps-2 py-3 tgl-fix" style="font-size: 0.6rem !important;"><%= t.tgl %></td>
+                                <td style="line-height: 1.2;">
+                                    <div class="fw-bold text-uppercase" style="font-size: 0.65rem;"><%= t.kat %></div>
+                                    <div class="text-muted" style="font-size: 0.55rem;"><%= t.ket %></div>
+                                </td>
+                                <td class="text-end" style="white-space: nowrap !important;">
+                                    <div class="<%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>" style="font-size: 0.75rem; font-weight: 800;">
+                                        <%= t.mutasi %>
+                                    </div>
+                                    <div class="sisa-saldo" style="font-size: 0.55rem; font-weight: 700;">Sisa: <%= t.saldo %></div>
+                                </td>
+                                <td class="text-center px-1">
+                                    <% if(t.bukti) { %>
+                                        <a href="<%= t.bukti %>" target="_blank" class="btn-bukti" style="white-space: nowrap; display: inline-block; padding: 4px 6px;">LIHAT BUKTI</a>
+                                    <% } else { %>-<% } %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="packaging" class="content-section">
+        <div class="text-center mb-3"><small class="text-muted fw-bold">LAST UPDATED: <%= lastUpdate %></small></div>
+        <div class="card-main">
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm align-middle mb-0 text-center" style="border-color: #e2e8f0;">
+                    <thead class="head-pack">
+                        <tr>
+                            <th class="ps-3 text-start" style="width: 28%;">PRODUCT</th>
+                            <th style="width: 9%;">70G</th>
+                            <th style="width: 9%;">100G</th>
+                            <th style="width: 9%;">200G</th>
+                            <th style="width: 9%;">250G</th>
+                            <th style="width: 9%;">400G</th>
+                            <th style="width: 9%;">500G</th>
+                            <th style="width: 9%;">800G</th>
+                            <th style="width: 9%;">1KG</th>
+                        </tr>
+                    </thead>
+                    <tbody style="font-size: 0.7rem;">
+                        <% packagingAll.forEach(p => { %>
+                            <tr class="border-bottom">
+                                <td class="ps-3 py-2.5 text-start fw-bold text-uppercase text-secondary"><%= p.nama %></td>
+                                
+                                <td class="<%= (p.g70 === '-' || p.g70 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g70 %></td>
+                                <td class="<%= (p.g100 === '-' || p.g100 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g100 %></td>
+                                <td class="<%= (p.g200 === '-' || p.g200 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g200 %></td>
+                                <td class="<%= (p.g250 === '-' || p.g250 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g250 %></td>
+                                <td class="<%= (p.g400 === '-' || p.g400 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g400 %></td>
+                                <td class="<%= (p.g500 === '-' || p.g500 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g500 %></td>
+                                <td class="<%= (p.g800 === '-' || p.g800 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.g800 %></td>
+                                <td class="<%= (p.k1 === '-' || p.k1 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.k1 %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
