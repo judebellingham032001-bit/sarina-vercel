@@ -162,7 +162,7 @@ app.get('/', async (req, res) => {
             packHeaders, 
             saldoTotal: formatRP(saldoTotalRaw).replace('+', ''), 
             isSaldoMinus, 
-            lastUpdate,
+            lastUpdatePack: lastUpdatePack,
             lastUpdatePack
         });
     } catch (e) {
