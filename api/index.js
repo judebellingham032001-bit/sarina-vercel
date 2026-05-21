@@ -1,5 +1,5 @@
 // ==========================================
-// WAJIB FULL SCRIPT - BACKEND EXPRESS (v13)
+// WAJIB FULL SCRIPT - BACKEND EXPRESS (v16)
 // ==========================================
 
 const express = require('express');
@@ -111,49 +111,39 @@ app.get('/', async (req, res) => {
             }
         }
 
-        // 5. PARSING DATA TAB PACKAGING (OTOMATIS / DINAMIS KOLOM)
+        // 5. PARSING DATA TAB PACKAGING (HANYA BACA KONTEN - BEBAS HURUF BESAR KECIL)
         let packagingAll = [];
-        let packagingHeaders = [];
         let lastUpdatePack = "-";
         
         if (resP.data) {
-            const linesP = resP.data.split(/\r?\n/);
+            const linesP = resP.data.split(/\r?\n/).filter(line => line.trim() !== "");
             
-            if (linesP.length > 0) {
-                const rawHeaders = splitCSV(linesP[0]);
-                // Ambil header kolom timbangan (mulai dari indeks 1 ke kanan)
-                // Dan cari tahu kalau ada kolom ekstra di kanan yang berisi teks tanggal "Rabu, .."
-                rawHeaders.forEach((h, idx) => {
-                    if (idx === 0) return; // Lewati tulisan "Product"
-                    if (h.trim() === "") return;
+            if (linesP.length > 1) {
+                // Ambil info update dari baris produk pertama (index 1) di kolom H (index 7)
+                const firstDataRow = splitCSV(linesP[1]);
+                if (firstDataRow[7] && firstDataRow[7].trim() !== "") {
+                    lastUpdatePack = firstDataRow[7].trim();
+                } else {
+                    lastUpdatePack = "Belum Diupdate";
+                }
+
+                // Loop data produk mulai dari index 1 (Abaikan baris 0 header total)
+                for (let i = 1; i < linesP.length; i++) {
+                    const c = splitCSV(linesP[i]);
                     
-                    // Kalau teks header mengandung kata hari/jam atau panjang, berarti itu tanggal update
-                    if (h.toLowerCase().includes('wib') || h.toLowerCase().includes('mei') || h.toLowerCase().includes('update') || h.length > 8) {
-                        lastUpdatePack = h.trim();
-                    } else {
-                        // Jika normal seperti 100g, 200g, dimasukkan ke daftar ukuran kemasan
-                        packagingHeaders.push({ index: idx, name: h.trim() });
-                    }
-                });
-            }
-
-            // Looping baris produk dari baris ke-2 (indeks 1) ke bawah
-            for (let i = 1; i < linesP.length; i++) {
-                if (!linesP[i]) continue;
-                const c = splitCSV(linesP[i]);
-                if (!c[0] || c[0].trim() === "" || c[0].toLowerCase() === 'product') continue;
-                
-                // Ambil nilai ukuran dinamis berdasarkan indeks header yang cocok
-                let values = [];
-                packagingHeaders.forEach(hd => {
-                    let val = (c[hd.index] && c[hd.index].trim() !== "") ? c[hd.index].trim() : "-";
-                    values.push(val);
-                });
-
-                packagingAll.push({
-                    nama: c[0].trim(),
-                    listNilai: values
-                });
+                    // Pokoknya kalau kolom nama produk kosong, lewati!
+                    if (!c[0] || c[0].trim() === "") continue;
+                    
+                    packagingAll.push({
+                        nama: c[0].trim(),
+                        g100: (c[1] && c[1].trim() !== "") ? c[1].trim() : "-",
+                        g200: (c[2] && c[2].trim() !== "") ? c[2].trim() : "-",
+                        g250: (c[3] && c[3].trim() !== "") ? c[3].trim() : "-",
+                        g400: (c[4] && c[4].trim() !== "") ? c[4].trim() : "-",
+                        g500: (c[5] && c[5].trim() !== "") ? c[5].trim() : "-",
+                        k1:   (c[6] && c[6].trim() !== "") ? c[6].trim() : "-"
+                    });
+                }
             }
         }
 
@@ -163,7 +153,6 @@ app.get('/', async (req, res) => {
             shippingAll, 
             kasAll, 
             packagingAll, 
-            packagingHeaders, // Mengirim daftar kolom dinamis
             saldoTotal: formatRP(saldoTotalRaw).replace('+', ''), 
             isSaldoMinus, 
             lastUpdate,
