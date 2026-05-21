@@ -683,42 +683,56 @@ h1{
                         <% }) } %>
                     </tr>
                 </thead>
-                <tbody style="font-size:.65rem;">
-<% if (typeof packagingAll !== 'undefined' && packagingAll) { 
-    packagingAll.forEach(p => { %>
-        <tr class="border-bottom">
-            <td class="ps-3 text-start fw-bold text-uppercase text-secondary">
-                <%= p.nama %>
-            </td>
-            <% p.listVarian.forEach(val => {
-                let kelas = 'stok-netral'; 
-                let strVal = val ? val.toString().trim() : '-';
+<tbody style="font-size:.65rem;">
+    <% 
+    // Fungsi untuk ubah desimal ke pecahan
+    function toFraction(num) {
+        let whole = Math.floor(num);
+        let frac = num - whole;
+        if (frac === 0) return whole === 0 ? "0" : whole.toString();
+        
+        let fracStr = "";
+        if (frac === 0.25) fracStr = "1/4";
+        else if (frac === 0.5) fracStr = "1/2";
+        else if (frac === 0.75) fracStr = "3/4";
+        else return num.toString(); 
+        
+        return (whole > 0 ? whole + " " : "") + fracStr;
+    }
+    %>
 
-                // Logika hanya jika bukan strip/kosong
-                if (strVal !== '-' && strVal !== '') {
-                    // Hapus karakter non-angka kecuali titik
-                    let cleanVal = strVal.replace(/[^0-9.]/g, ''); 
-                    let angka = parseFloat(cleanVal);
+    <% if (typeof packagingAll !== 'undefined' && packagingAll) { 
+        packagingAll.forEach(p => { %>
+            <tr class="border-bottom">
+                <td class="ps-3 text-start fw-bold text-uppercase text-secondary">
+                    <%= p.nama %>
+                </td>
+                <% p.listVarian.forEach(val => {
+                    let kelas = 'stok-netral';
+                    let displayVal = val; 
+                    let strVal = val ? val.toString().trim() : '-';
 
-                    if (!isNaN(angka)) {
-                        if (angka === 0) {
-                            kelas = 'stok-merah';
-                        } else if (angka <= 2.5) {
-                            kelas = 'stok-merah';
-                        } else if (angka <= 3) {
-                            kelas = 'stok-kuning';
-                        } else {
-                            kelas = 'stok-ijo';
-                        }
+                    // Hanya proses jika bukan strip/kosong
+                    if (strVal !== '-' && strVal !== '') {
+                        let cleanVal = strVal.replace(/[^0-9.]/g, ''); 
+                        let angka = parseFloat(cleanVal) || 0;
+
+                        // Logika Warna
+                        if (angka === 0) kelas = 'stok-merah';
+                        else if (angka <= 2.5) kelas = 'stok-merah';
+                        else if (angka <= 3) kelas = 'stok-kuning';
+                        else kelas = 'stok-ijo';
+
+                        // Update tampilan ke pecahan
+                        displayVal = toFraction(angka);
                     }
-                }
-            %>
-            <td class="<%= kelas %>"><%= val %></td>
-            <% }) %>
-        </tr>
-    <% }); 
-} %>
-                </tbody>
+                %>
+                <td class="<%= kelas %>"><%= displayVal %></td>
+                <% }) %>
+            </tr>
+        <% }); 
+    } %>
+</tbody>
             </table>
         </div> </div>
 
