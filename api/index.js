@@ -1,5 +1,5 @@
 // ==========================================
-// WAJIB FULL SCRIPT - BACKEND EXPRESS (v17)
+// WAJIB FULL SCRIPT - BACKEND EXPRESS (v22)
 // ==========================================
 
 const express = require('express');
@@ -42,7 +42,7 @@ app.get('/', async (req, res) => {
         const urlS = "https://docs.google.com/spreadsheets/d/1xTVwqw9a3BMrmHEir9wQEidVxIgUhvCP_qj8jHY0u7w/export?format=csv&gid=0";
         const urlR = "https://docs.google.com/spreadsheets/d/16N1Jpc11GUJyKqpyEvueKx0ccroVJfG-s6yP3DxxyX4/export?format=csv&gid=0";
         const urlK = "https://docs.google.com/spreadsheets/d/1oT_uV104wNhTOmJjX_MOzvpkkX0_QAvMYOirsVFbTYo/export?format=csv&gid=0";
-        const urlP = "https://docs.google.com/spreadsheets/d/1CmfqkuK2w9GDuohbFIandJGLnlZMrwR-19m5hMA7E4E/export?format=csv&gid=0";
+        const urlP = "https://docs.google.com/spreadsheets/d/1CmfqkuK2w9GDuohbFlandJGLnlZMrwR-19m5hMA7E4E/pub?output=csv";
 
         // Fetch data paralel
         const [resS, resR, resK, resP] = await Promise.all([
@@ -111,41 +111,42 @@ app.get('/', async (req, res) => {
             }
         }
 
-        // 5. PARSING DATA TAB PACKAGING (PERBAIKAN TOTAL TARGET BARIS DATA)
+        // 5. PARSING DATA TAB PACKAGING (OTOMATIS DETEKSI VARIAN UKURAN)
         let packagingAll = [];
         let lastUpdatePack = "-";
         
-        if (resP.data) {
-            // Pecah data per baris dan buang baris yang benar-benar kosong kosong
+        if (resP.data && resP.data.trim() !== "") {
             const linesP = resP.data.split(/\r?\n/).filter(line => line.trim() !== "");
             
-            if (linesP.length > 1) {
-                // Ambil tanggal update dari Baris ke-2 (Index 1) Kolom H (Index 7)
-                const rowUntukUpdate = splitCSV(linesP[1]);
-                if (rowUntukUpdate[7] && rowUntukUpdate[7].trim() !== "") {
-                    lastUpdatePack = rowUntukUpdate[7].trim();
-                } else {
-                    lastUpdatePack = "Belum Diupdate";
-                }
-
-                // LANGSUNG MULAI LOOP DARI INDEX 1 (Baris ke-2 tepat di bawah header kolom)
-                for (let i = 1; i < linesP.length; i++) {
-                    const c = splitCSV(linesP[i]);
-                    
-                    // Jika kolom nama produk (kolom A) kosong atau bernilai "product", skip saja
-                    if (!c[0] || c[0].trim() === "" || c[0].toLowerCase() === "product") continue;
-                    
-                    packagingAll.push({
-                        nama: c[0].trim(),
-                        g100: (c[1] && c[1].trim() !== "") ? c[1].trim() : "-",
-                        g200: (c[2] && c[2].trim() !== "") ? c[2].trim() : "-",
-                        g250: (c[3] && c[3].trim() !== "") ? c[3].trim() : "-",
-                        g400: (c[4] && c[4].trim() !== "") ? c[4].trim() : "-",
-                        g500: (c[5] && c[5].trim() !== "") ? c[5].trim() : "-",
-                        k1:   (c[6] && c[6].trim() !== "") ? c[6].trim() : "-"
-                    });
+            // LOCK CELL L1 UNTUK TANGGAL UPDATE (Baris ke-1 index 0, Kolom L index 11)
+            if (linesP.length > 0) {
+                const barisPertama = splitCSV(linesP[0]);
+                if (barisPertama[11] && barisPertama[11].trim() !== "") {
+                    lastUpdatePack = barisPertama[11].trim();
                 }
             }
+
+            // Loop semua baris data produk mulai dari baris ke-2 (index 1)
+            for (let i = 1; i < linesP.length; i++) {
+                const c = splitCSV(linesP[i]);
+                
+                // Abaikan jika baris kosong atau teks "product" bawaan header kuno
+                if (!c[0] || c[0].trim() === "" || c[0].toLowerCase() === "product") continue;
+                
+                packagingAll.push({
+                    nama: c[0].trim(),
+                    g100: (c[1] && c[1].trim() !== "") ? c[1].trim() : "-",
+                    g200: (c[2] && c[2].trim() !== "") ? c[2].trim() : "-",
+                    g250: (c[3] && c[3].trim() !== "") ? c[3].trim() : "-",
+                    g400: (c[4] && c[4].trim() !== "") ? c[4].trim() : "-",
+                    g500: (c[5] && c[5].trim() !== "") ? c[5].trim() : "-",
+                    k1:   (c[6] && c[6].trim() !== "") ? c[6].trim() : "-"
+                });
+            }
+        }
+
+        if (lastUpdatePack === "-") {
+            lastUpdatePack = "Belum Diupdate";
         }
 
         // 6. RENDER DATA KE VIEW
