@@ -158,19 +158,25 @@ body{
     background:#cbd5e1 !important;
     color:#1e293b !important;
 }
-/* TINGGI DAN LEBAR KOLOM TANGGAL AGAR TIDAK KELEBARAN */
-#tableShip th:first-child,
-#tableShip td:first-child {
-    width: 80px !important;      /* Bisa disesuaikan 80-100px */
-    min-width: 80px !important;
-    white-space: nowrap !important;
-}
-
-/* Mengurangi padding agar tabel lebih padat */
+/* 1. Paksa tabel lebih ramping */
 #tableShip th,
 #tableShip td {
-    padding: 6px 8px !important; 
-    font-size: 12px;
+    font-size: 10px !important;    /* Font jadi lebih kecil & ramping */
+    padding: 3px 5px !important;   /* Jarak antar sel jadi sangat rapat */
+    white-space: nowrap !important; /* Mencegah teks turun ke bawah */
+    vertical-align: middle;
+}
+
+/* 2. Kunci kolom Tanggal agar paling kecil */
+#tableShip th:first-child,
+#tableShip td:first-child {
+    width: 60px !important;        /* Tanggal jadi lebih ramping lagi */
+    min-width: 60px !important;
+}
+
+/* 3. Pastikan container tidak memaksa lebar yang berlebihan */
+.shipping-wrapper {
+    overflow-x: auto !important;   /* Tetap bisa scroll kalau memang data banyak */
 }
 
 /* FREEZE HEADER PACKAGING */
