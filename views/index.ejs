@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>SARINA STORE | OPERASIONAL</title>
-    <link class="logo-tab" rel="icon" type="image/png" href="/barubaru.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght=400;600;700;800&display=swap');
@@ -16,17 +15,17 @@
         .card-main { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 15px; overflow: hidden; }
         .content-section { display: none; } .content-section.active { display: block; }
 
-        .head-stok th { background-color: #003153 !important; color: white !important; border: none !important; }
-        .head-ship th { background-color: #000000 !important; color: white !important; border: none !important; }
-        .head-kas-dark th { background-color: #cbd5e1 !important; color: #1e293b !important; border: none !important; }
-        .head-pack th { background-color: #003153 !important; color: white !important; border: none !important; }
+        .head-stok th { background-color: #003153 !important; color: white !important; }
+        .head-ship th { background-color: #000000 !important; color: white !important; }
+        .head-kas-dark th { background-color: #cbd5e1 !important; color: #1e293b !important; }
+        .head-pack th { background-color: #003153 !important; color: white !important; }
 
-        .cell-kosong { background-color: #f8fafc !important; color: #cbd5e1 !important; font-weight: 400; text-align: center; }
-        .cell-isi { background-color: #e0f2fe !important; color: #0369a1 !important; font-weight: 800; text-align: center; font-size: 0.75rem; }
+        .cell-kosong { background-color: #f8fafc !important; color: #cbd5e1 !important; text-align: center; }
+        .cell-isi { background-color: #e0f2fe !important; color: #0369a1 !important; font-weight: 800; text-align: center; }
 
         .bg-normal { background: linear-gradient(135deg, #1e293b, #475569); }
         .bg-minus { background: #dc2626 !important; } 
-        th { font-size: 0.65rem; padding: 12px !important; text-transform: uppercase; letter-spacing: 0.5px; }
+        th { font-size: 0.65rem; padding: 12px !important; text-transform: uppercase; }
         td { padding: 10px !important; vertical-align: middle; }
         
         .badge-status { padding: 4px 10px; border-radius: 50px; font-size: 0.6rem; font-weight: 800; display: inline-block; }
@@ -34,28 +33,22 @@
         .bg-low { background: #fef3c7; color: #d97706; }
         .bg-tersedia { background: #dcfce7; color: #16a34a; }
 
-        .text-debet { color: #dc2626; font-weight: 800; font-size: 0.8rem; } 
-        .text-kredit { color: #16a34a; font-weight: 800; font-size: 0.8rem; }
-        
-        .sisa-saldo { color: #0f172a !important; font-size: 0.65rem !important; font-weight: 800 !important; margin-top: 1px; }
+        .text-debet { color: #dc2626; font-weight: 800; } 
+        .text-kredit { color: #16a34a; font-weight: 800; }
         .btn-bukti { background: #2563eb; color: white; font-size: 0.55rem; font-weight: 800; padding: 5px 8px; border-radius: 4px; text-decoration: none; }
         .filter-box { background: #f8fafc; padding: 12px; border-radius: 10px; margin: 10px; border: 1px solid #e2e8f0; }
         .btn-toggle { font-size: 0.7rem; font-weight: 700; color: #2563eb; background: none; border: none; margin: 5px 10px; text-decoration: underline; }
-        .tgl-fix { white-space: nowrap !important; width: 75px !important; font-size: 0.65rem !important; font-weight: 700; }
-        .logo-sarina { width: 80px; height: auto; margin-bottom: 5px; border-radius: 10px; object-fit: contain; }
-
-        @media (max-width: 576px) { th, td { font-size: 0.65rem !important; } .logo-sarina { width: 70px; } }
+        .logo-sarina { width: 80px; height: auto; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="text-center py-3">
-        <div class="d-flex flex-column align-items-center mb-1">
-            <img src="/logo.png" onerror="this.style.display='none'" alt="Logo Sarina" class="logo-sarina">
-            <h1 style="font-weight: 800; font-size: 1.6rem; margin: 0; text-transform: uppercase;">SARINA STORE</h1>
-            <p style="font-size: 0.6rem; color: #64748b; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-top: -2px;">MANAJEMEN OPERASIONAL</p>
-        </div>
+        <img src="/logo.png" onerror="this.style.display='none'" alt="Logo Sarina" class="logo-sarina">
+        <h1 style="font-weight: 800; font-size: 1.6rem; margin: 0;">SARINA STORE</h1>
+        <p style="font-size: 0.6rem; color: #64748b; font-weight: 600; letter-spacing: 1px;">MANAJEMEN OPERASIONAL</p>
+        
         <ul class="nav nav-pills nav-custom mt-2">
             <li class="nav-item"><button class="nav-link" onclick="openMenu('stocks', this)">STOK</button></li>
             <li class="nav-item"><button class="nav-link" onclick="openMenu('shipping', this)">PENGIRIMAN</button></li>
@@ -67,7 +60,7 @@
     <div id="stocks" class="content-section">
         <div class="text-center mb-3"><small class="text-muted fw-bold">LAST UPDATED: <%= lastUpdate %></small></div>
         <div class="card-main">
-            <table class="table table-sm align-middle mb-0">
+            <table class="table table-sm mb-0">
                 <thead class="head-stok"><tr><th class="ps-3">PRODUK</th><th class="text-center">QUANTITY</th><th class="text-end pe-3">STATUS</th></tr></thead>
                 <tbody>
                     <% if (stocks && stocks.length > 0) { %>
@@ -81,7 +74,7 @@
                             </tr>
                         <% }) %>
                     <% } else { %>
-                        <tr><td colspan="3" class="text-center p-3 text-muted">Data stok tidak tersedia</td></tr>
+                        <tr><td colspan="3" class="text-center p-3 text-muted">Data stok kosong</td></tr>
                     <% } %>
                 </tbody>
             </table>
@@ -100,13 +93,11 @@
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table text-center table-sm align-middle mb-0" id="tableShip">
-                    <thead class="head-ship"><tr><th class="ps-3 text-start">Tanggal</th><th>SPX</th><th>JNE</th><th>J&T</th><th>Sameday/Instan</th><th>TOTAL</th></tr></thead>
+                <table class="table text-center table-sm mb-0" id="tableShip">
+                    <thead class="head-ship"><tr><th class="ps-3 text-start">Tanggal</th><th>SPX</th><th>JNE</th><th>J&T</th><th>Sameday</th><th>TOTAL</th></tr></thead>
                     <tbody>
                         <% if (shippingAll && shippingAll.length > 0) { %>
-                            <% shippingAll.forEach((k, i) => { %><tr class="row-data border-bottom" data-index="<%= i %>"><td class="text-start fw-bold tgl-fix ps-3"><%= k.tgl %></td><td><%= k.spx %></td><td><%= k.jne %></td><td><%= k.jnt %></td><td><%= k.sd %></td><td class="fw-bold text-primary pe-2"><%= k.tot %></td></tr><% }) %>
-                        <% } else { %>
-                            <tr><td colspan="6" class="text-center p-3 text-muted">Data pengiriman tidak tersedia</td></tr>
+                            <% shippingAll.forEach((k, i) => { %><tr class="row-data border-bottom" data-index="<%= i %>"><td class="text-start fw-bold ps-3"><%= k.tgl %></td><td><%= k.spx %></td><td><%= k.jne %></td><td><%= k.jnt %></td><td><%= k.sd %></td><td class="fw-bold text-primary"><%= k.tot %></td></tr><% }) %>
                         <% } %>
                     </tbody>
                 </table>
@@ -130,39 +121,28 @@
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table table-sm align-middle mb-0" id="tableKas">
+                <table class="table table-sm mb-0" id="tableKas">
                     <thead class="head-kas-dark">
-                        <tr>
-                            <th class="ps-2" style="width: 22%;">Tanggal</th>
-                            <th style="width: 38%;">KETERANGAN</th>
-                            <th class="text-end" style="width: 25%;">MUTASI</th>
-                            <th class="text-center" style="width: 15%;">BUKTI TRANSAKSI</th>
-                        </tr>
+                        <tr><th class="ps-2">Tanggal</th><th>KETERANGAN</th><th class="text-end">MUTASI</th><th class="text-center">BUKTI</th></tr>
                     </thead>
                     <tbody>
                         <% if (kasAll && kasAll.length > 0) { %>
                             <% kasAll.forEach((t, i) => { %>
                                 <tr class="row-data border-bottom" data-index="<%= i %>">
-                                    <td class="ps-2 py-3 tgl-fix" style="font-size: 0.6rem !important;"><%= t.tgl %></td>
-                                    <td style="line-height: 1.2;">
+                                    <td class="ps-2 py-3" style="font-size: 0.65rem;"><%= t.tgl %></td>
+                                    <td>
                                         <div class="fw-bold text-uppercase" style="font-size: 0.65rem;"><%= t.kat %></div>
                                         <div class="text-muted" style="font-size: 0.55rem;"><%= t.ket %></div>
                                     </td>
-                                    <td class="text-end" style="white-space: nowrap !important;">
-                                        <div class="<%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>" style="font-size: 0.75rem; font-weight: 800;">
-                                            <%= t.mutasi %>
-                                        </div>
-                                        <div class="sisa-saldo" style="font-size: 0.55rem; font-weight: 700;">Sisa: <%= t.saldo %></div>
+                                    <td class="text-end">
+                                        <div class="<%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>" style="font-size: 0.75rem;"><%= t.mutasi %></div>
+                                        <div style="font-size: 0.55rem; font-weight:700;">Sisa: <%= t.saldo %></div>
                                     </td>
-                                    <td class="text-center px-1">
-                                        <% if(t.bukti) { %>
-                                            <a href="<%= t.bukti %>" target="_blank" class="btn-bukti" style="white-space: nowrap; display: inline-block; padding: 4px 6px;">LIHAT BUKTI</a>
-                                        <% } else { %>-<% } %>
+                                    <td class="text-center">
+                                        <% if(t.bukti) { %><a href="<%= t.bukti %>" target="_blank" class="btn-bukti">LIHAT</a><% } else { %>-<% } %>
                                     </td>
                                 </tr>
                             <% }) %>
-                        <% } else { %>
-                            <tr><td colspan="4" class="text-center p-3 text-muted">Data transaksi kas kosong</td></tr>
                         <% } %>
                     </tbody>
                 </table>
@@ -173,17 +153,16 @@
     <div id="packaging" class="content-section active">
         <div class="card-main">
             <div class="table-responsive">
-                <table class="table table-bordered table-sm align-middle mb-0 text-center" style="border-color: #e2e8f0;">
+                <table class="table table-bordered table-sm text-center mb-0" style="border-color: #e2e8f0;">
                     <thead class="head-pack">
                         <tr>
                             <th class="ps-3 text-start">PRODUCT</th>
                             <th>100G</th>
                             <th>200G</th>
                             <th>250G</th>
-                            <th>350G</th>
                             <th>400G</th>
                             <th>500G</th>
-                            <th>1000G</th>
+                            <th>1KG</th>
                         </tr>
                     </thead>
                     <tbody style="font-size: 0.7rem;">
@@ -194,18 +173,13 @@
                                     <td class="<%= (p.u100 === '-' || p.u100 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.u100 %></td>
                                     <td class="<%= (p.u200 === '-' || p.u200 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.u200 %></td>
                                     <td class="<%= (p.u250 === '-' || p.u250 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.u250 %></td>
-                                    <td class="<%= (p.u350 === '-' || p.u350 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.u350 %></td>
                                     <td class="<%= (p.u400 === '-' || p.u400 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.u400 %></td>
                                     <td class="<%= (p.u500 === '-' || p.u500 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.u500 %></td>
                                     <td class="<%= (p.u1000 === '-' || p.u1000 === '') ? 'cell-kosong' : 'cell-isi' %>"><%= p.u1000 %></td>
                                 </tr>
                             <% }) %>
                         <% } else { %>
-                            <tr>
-                                <td colspan="8" class="text-center p-4 text-muted fw-bold">
-                                    Data matriks packaging tidak ditemukan atau kosong.
-                                </td>
-                            </tr>
+                            <tr><td colspan="7" class="text-center p-4 text-muted fw-bold">Data matriks packaging kosong.</td></tr>
                         <% } %>
                     </tbody>
                 </table>
