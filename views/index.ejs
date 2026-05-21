@@ -683,7 +683,7 @@ h1{
                         <% }) } %>
                     </tr>
                 </thead>
-                <tbody style="font-size:.65rem;">
+<tbody style="font-size:.65rem;">
 <% if (typeof packagingAll !== 'undefined' && packagingAll) { 
     packagingAll.forEach(p => { %>
         <tr class="border-bottom">
@@ -696,8 +696,14 @@ h1{
 
                 // Logika hanya jika bukan strip/kosong
                 if (strVal !== '-' && strVal !== '') {
-                    // Hapus karakter non-angka kecuali titik
-                    let cleanVal = strVal.replace(/[^0-9.]/g, ''); 
+                    // 1. Ubah pecahan Unicode jadi angka desimal agar bisa dibaca
+                    let parseVal = strVal
+                        .replace(/½/g, '.5')
+                        .replace(/¼/g, '.25')
+                        .replace(/¾/g, '.75');
+                    
+                    // 2. Hapus karakter non-angka kecuali titik
+                    let cleanVal = parseVal.replace(/[^0-9.]/g, ''); 
                     let angka = parseFloat(cleanVal);
 
                     if (!isNaN(angka)) {
@@ -718,6 +724,7 @@ h1{
         </tr>
     <% }); 
 } %>
+</tbody>
                 </tbody>
             </table>
         </div> </div>
