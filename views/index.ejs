@@ -700,17 +700,22 @@ h1{
                         <td class="ps-3 text-start fw-bold text-uppercase text-secondary">
                             <%= p.nama %>
                         </td>
-                        <% p.listVarian.forEach(val => {
-                            let angka = parseInt(val.replace(/\D/g, '')) || 0;
-                            let kelas = 'stok-ijo';
-                            if (angka === 0) kelas = 'stok-merah';
-                            else if (angka <= 2) kelas = 'stok-kuning';
-                            else if (angka === 3) kelas = 'stok-kuning-keras';
-                        %>
-                        <td class="<%= kelas %>"><%= val %></td>
-                        <% }) %>
-                    </tr>
-                    <% })} %>
+<% p.listVarian.forEach(val => {
+    let kelas = 'stok-netral'; // Defaultnya netral (putih)
+
+    // Cek apakah bukan strip/kosong, baru hitung angka
+    if (val.trim() !== '-' && val.trim() !== '') {
+        let cleanVal = val.replace(/[^0-9.]/g, ''); 
+        let angka = parseFloat(cleanVal) || 0;
+
+        if (angka === 0) kelas = 'stok-merah';
+        else if (angka <= 2.5) kelas = 'stok-merah';
+        else if (angka <= 3) kelas = 'stok-kuning';
+        else kelas = 'stok-ijo';
+    }
+%>
+    <td class="<%= kelas %>"><%= val %></td>
+<% }) %>
                 </tbody>
             </table>
         </div> </div>
