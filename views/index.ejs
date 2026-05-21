@@ -87,4 +87,133 @@
             <div id="filterShip" style="display:none;">
                 <div class="filter-box">
                     <div class="row g-2">
-                        <div class="col-6"><select id="sM" class="form-select form-select-sm" onchange="filterData('tableShip', 'sM', 'sY')"><option value="">Bulan</option><option value="Jan">Jan</option><option value="Feb">Feb</option><option value="Mar">Mar</option><option value="Apr">Apr</
+                        <div class="col-6"><select id="sM" class="form-select form-select-sm" onchange="filterData('tableShip', 'sM', 'sY')"><option value="">Bulan</option><option value="Jan">Jan</option><option value="Feb">Feb</option><option value="Mar">Mar</option><option value="Apr">Apr</option><option value="Mei">Mei</option><option value="Jun">Jun</option><option value="Jul">Jul</option><option value="Agu">Agu</option><option value="Sep">Sep</option><option value="Okt">Okt</option><option value="Nov">Nov</option><option value="Des">Des</option></select></div>
+                        <div class="col-6"><select id="sY" class="form-select form-select-sm" onchange="filterData('tableShip', 'sM', 'sY')"><option value="">Tahun</option><option value="2025">2025</option><option value="2026">2026</option></select></div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table text-center table-sm mb-0" id="tableShip">
+                    <thead class="head-ship"><tr><th class="ps-3 text-start">Tanggal</th><th>SPX</th><th>JNE</th><th>J&T</th><th>Sameday</th><th>TOTAL</th></tr></thead>
+                    <tbody>
+                        <% if (shippingAll && shippingAll.length > 0) { %>
+                            <% shippingAll.forEach((k, i) => { %><tr class="row-data border-bottom" data-index="<%= i %>"><td class="text-start fw-bold ps-3"><%= k.tgl %></td><td><%= k.spx %></td><td><%= k.jne %></td><td><%= k.jnt %></td><td><%= k.sd %></td><td class="fw-bold text-primary"><%= k.tot %></td></tr><% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="kas" class="content-section">
+        <div class="card-main">
+            <div class="p-4 text-center <%= isSaldoMinus ? 'bg-minus' : 'bg-normal' %>" style="color: white;">
+                <small class="fw-bold opacity-75">SALDO KAS</small>
+                <h2 class="fw-bold m-0" style="font-size: 1.5rem;"><%= saldoTotal %></h2>
+            </div>
+            <button class="btn-toggle" onclick="toggleFull('tableKas', this)">+ FILTER & LIHAT SEMUA</button>
+            <div id="filterKas" style="display:none;">
+                <div class="filter-box">
+                    <div class="row g-2">
+                        <div class="col-6"><select id="kM" class="form-select form-select-sm" onchange="filterData('tableKas', 'kM', 'kY')"><option value="">Bulan</option><option value="Jan">Jan</option><option value="Feb">Feb</option><option value="Mar">Mar</option><option value="Apr">Apr</option><option value="Mei">Mei</option><option value="Jun">Jun</option><option value="Jul">Jul</option><option value="Agu">Agu</option><option value="Sep">Sep</option><option value="Okt">Okt</option><option value="Nov">Nov</option><option value="Des">Des</option></select></div>
+                        <div class="col-6"><select id="kY" class="form-select form-select-sm" onchange="filterData('tableKas', 'kM', 'kY')"><option value="">Tahun</option><option value="2025">2025</option><option value="2026">2026</option></select></div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-sm mb-0" id="tableKas">
+                    <thead class="head-kas-dark">
+                        <tr><th class="ps-2">Tanggal</th><th>KETERANGAN</th><th class="text-end">MUTASI</th><th class="text-center">BUKTI</th></tr>
+                    </thead>
+                    <tbody>
+                        <% if (kasAll && kasAll.length > 0) { %>
+                            <% kasAll.forEach((t, i) => { %>
+                                <tr class="row-data border-bottom" data-index="<%= i %>">
+                                    <td class="ps-2 py-3" style="font-size: 0.65rem;"><%= t.tgl %></td>
+                                    <td>
+                                        <div class="fw-bold text-uppercase" style="font-size: 0.65rem;"><%= t.kat %></div>
+                                        <div class="text-muted" style="font-size: 0.55rem;"><%= t.ket %></div>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="<%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>" style="font-size: 0.75rem;"><%= t.mutasi %></div>
+                                        <div style="font-size: 0.55rem; font-weight:700;">Sisa: <%= t.saldo %></div>
+                                    </td>
+                                    <td class="text-center">
+                                        <% if(t.bukti) { %><a href="<%= t.bukti %>" target="_blank" class="btn-bukti">LIHAT</a><% } else { %>-<% } %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="packaging" class="content-section active">
+        <div class="text-center mb-3"><small class="text-muted fw-bold">LAST UPDATED: <%= lastUpdatePack %></small></div>
+        <div class="card-main">
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm text-center mb-0" style="border-color: #e2e8f0;">
+                    <thead class="head-pack">
+                        <tr>
+                            <th class="ps-3 text-start">PRODUCT</th>
+                            <% if (packHeaders && packHeaders.length > 0) { %>
+                                <% packHeaders.forEach(header => { %>
+                                    <th><%= header %></th>
+                                <% }) %>
+                            <% } %>
+                        </tr>
+                    </thead>
+                    <tbody style="font-size: 0.7rem;">
+                        <% if (packagingAll && packagingAll.length > 0) { %>
+                            <% packagingAll.forEach(p => { %>
+                                <tr class="border-bottom">
+                                    <td class="ps-3 py-2.5 text-start fw-bold text-uppercase text-secondary"><%= p.nama %></td>
+                                    <% p.listVarian.forEach(val => { %>
+                                        <td class="<%= (val === '-' || val === '') ? 'cell-kosong' : 'cell-isi' %>"><%= val %></td>
+                                    <% }) %>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr><td colspan="15" class="text-center p-4 text-muted fw-bold">Data matriks packaging kosong.</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openMenu(id, el) { 
+        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active')); 
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); 
+        document.getElementById(id).classList.add('active'); el.classList.add('active'); 
+    }
+    function toggleFull(tableId, btn) {
+        const filterId = tableId === 'tableShip' ? 'filterShip' : 'filterKas';
+        const filterEl = document.getElementById(filterId);
+        const rows = document.querySelectorAll(`#${tableId} .row-data`);
+        if (filterEl.style.display === "none") {
+            filterEl.style.display = "block"; rows.forEach(r => r.style.display = ""); btn.innerText = "- SEMBUNYIKAN";
+        } else {
+            filterEl.style.display = "none"; showDefault(tableId); btn.innerText = "+ FILTER & LIHAT SEMUA";
+        }
+    }
+    function showDefault(tableId) {
+        const rows = document.querySelectorAll(`#${tableId} .row-data`);
+        const total = rows.length;
+        rows.forEach((row, idx) => { row.style.display = (idx < total - 10) ? "none" : ""; });
+    }
+    function filterData(tableId, mId, yId) {
+        const m = document.getElementById(mId).value;
+        const y = document.getElementById(yId).value;
+        document.querySelectorAll(`#${tableId} .row-data`).forEach(row => {
+            const txt = row.innerText; row.style.display = (txt.includes(m) && txt.includes(y)) ? "" : "none";
+        });
+    }
+    window.onload = function() { showDefault('tableShip'); showDefault('tableKas'); };
+</script>
+</body>
+</html>
