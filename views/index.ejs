@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>SARINA STORE | OPERASIONAL</title>
-    <link rel="icon" type="image/png" href="/logo.png?v=1.8">
+    <link rel="icon" type="image/png" href="/logo.png?v=1.9">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght=400;600;700;800&display=swap');
         body { background: #f1f5f9; font-family: 'Inter', sans-serif; color: #1e293b; padding-bottom: 30px; }
         .container { max-width: 900px; padding: 10px; }
         .nav-custom { background: white; border-radius: 50px; padding: 4px; border: 1px solid #e2e8f0; display: inline-flex; }
@@ -16,20 +16,30 @@
         .card-main { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 15px; overflow: hidden; }
         .content-section { display: none; } .content-section.active { display: block; }
 
-        /* WARNA STOK DINAMIS */
+        /* WARNA STOK KEMASAN (DIPISAH BIAR GAK TABRAKAN) */
         .stok-merah { background-color: #fee2e2 !important; color: #dc2626 !important; font-weight: 800; }
         .stok-kuning { background-color: #fef3c7 !important; color: #d97706 !important; font-weight: 800; }
         .stok-kuning-keras { background-color: #fde68a !important; color: #92400e !important; font-weight: 800; }
         .stok-ijo { background-color: #dcfce7 !important; color: #16a34a !important; font-weight: 800; }
 
-        /* HEADER FREEZE */
-        .head-pack { position: sticky; top: 0; z-index: 10; background-color: #003153 !important; color: white !important; }
         .head-stok th { background-color: #003153 !important; color: white !important; }
         .head-ship th { background-color: #000000 !important; color: white !important; }
         .head-kas-dark th { background-color: #cbd5e1 !important; color: #1e293b !important; }
+        .head-pack { background-color: #003153 !important; color: white !important; position: sticky; top: 0; z-index: 10; }
 
+        .bg-normal { background: linear-gradient(135deg, #1e293b, #475569); }
+        .bg-minus { background: #dc2626 !important; } 
         th { font-size: 0.65rem; padding: 12px !important; text-transform: uppercase; }
         td { padding: 10px !important; vertical-align: middle; }
+        .badge-status { padding: 4px 10px; border-radius: 50px; font-size: 0.6rem; font-weight: 800; display: inline-block; }
+        .bg-out { background: #fee2e2; color: #dc2626; }
+        .bg-low { background: #fef3c7; color: #d97706; }
+        .bg-tersedia { background: #dcfce7; color: #16a34a; }
+        .text-debet { color: #dc2626; font-weight: 800; } 
+        .text-kredit { color: #16a34a; font-weight: 800; }
+        .btn-bukti { background: #2563eb; color: white; font-size: 0.55rem; font-weight: 800; padding: 5px 8px; border-radius: 4px; text-decoration: none; }
+        .filter-box { background: #f8fafc; padding: 12px; border-radius: 10px; margin: 10px; border: 1px solid #e2e8f0; }
+        .btn-toggle { font-size: 0.7rem; font-weight: 700; color: #2563eb; background: none; border: none; margin: 5px 10px; text-decoration: underline; }
         .logo-sarina { width: 80px; height: auto; margin-bottom: 5px; }
     </style>
 </head>
@@ -39,6 +49,7 @@
     <div class="text-center py-3">
         <img src="/logo.png" alt="Logo Sarina" class="logo-sarina">
         <h1 style="font-weight: 800; font-size: 1.6rem; margin: 0;">SARINA STORE</h1>
+        <p style="font-size: 0.6rem; color: #64748b; font-weight: 600; letter-spacing: 1px;">MANAJEMEN OPERASIONAL</p>
         <ul class="nav nav-pills nav-custom mt-2">
             <li class="nav-item"><button class="nav-link" onclick="openMenu('stocks', this)">STOK PRODUK</button></li>
             <li class="nav-item"><button class="nav-link" onclick="openMenu('shipping', this)">PENGIRIMAN</button></li>
@@ -48,61 +59,36 @@
     </div>
 
     <div id="stocks" class="content-section">
-        <div class="card-main"><table class="table table-sm mb-0"><thead class="head-stok"><tr><th>PRODUK</th><th>QTY</th><th>STATUS</th></tr></thead><tbody>
-        <% if (typeof stocks !== 'undefined') { stocks.forEach(s => { %><tr><td><%= s.nama %></td><td><%= s.display %></td><td><%= s.statusTxt %></td></tr><% })} %>
+        <div class="text-center mb-3"><small class="text-muted fw-bold">LAST UPDATED: <%= lastUpdate %></small></div>
+        <div class="card-main"><table class="table table-sm mb-0"><thead class="head-stok"><tr><th class="ps-3">PRODUK</th><th class="text-center">QUANTITY</th><th class="text-end pe-3">STATUS</th></tr></thead><tbody>
+        <% if (stocks) { stocks.forEach(s => { %><tr class="border-bottom"><td class="ps-3 py-3 fw-bold text-uppercase"><%= s.nama %></td><td class="text-center fw-bold"><%= s.display %></td><td class="text-end pe-3"><% if(s.statusTxt === 'OUT OF STOCK') { %><span class="badge-status bg-out">HABIS</span><% } else if(s.statusTxt === 'LOW') { %><span class="badge-status bg-low">LOW</span><% } else { %><span class="badge-status bg-tersedia">TERSEDIA</span><% } %></td></tr><% })} %>
         </tbody></table></div>
     </div>
 
     <div id="shipping" class="content-section">
-        <div class="card-main"><table class="table table-sm mb-0"><thead class="head-ship"><tr><th>Tanggal</th><th>TOTAL</th></tr></thead><tbody>
-        <% if (typeof shippingAll !== 'undefined') { shippingAll.forEach(k => { %><tr><td><%= k.tgl %></td><td><%= k.tot %></td></tr><% })} %>
+        <div class="card-main"><button class="btn-toggle" onclick="toggleFull('tableShip', this)">+ FILTER & LIHAT SEMUA</button><div id="filterShip" style="display:none;"><div class="filter-box"><div class="row g-2"><div class="col-6"><select id="sM" class="form-select form-select-sm" onchange="filterData('tableShip', 'sM', 'sY')"><option value="">Bulan</option><option value="Jan">Jan</option><option value="Feb">Feb</option><option value="Mar">Mar</option><option value="Apr">Apr</option><option value="Mei">Mei</option><option value="Jun">Jun</option><option value="Jul">Jul</option><option value="Agu">Agu</option><option value="Sep">Sep</option><option value="Okt">Okt</option><option value="Nov">Nov</option><option value="Des">Des</option></select></div><div class="col-6"><select id="sY" class="form-select form-select-sm" onchange="filterData('tableShip', 'sM', 'sY')"><option value="">Tahun</option><option value="2025">2025</option><option value="2026">2026</option></select></div></div></div></div><table class="table text-center table-sm mb-0" id="tableShip"><thead class="head-ship"><tr><th class="ps-3 text-start">Tanggal</th><th>SPX</th><th>JNE</th><th>J&T</th><th>Sameday</th><th>TOTAL</th></tr></thead><tbody>
+        <% if (shippingAll) { shippingAll.forEach((k, i) => { %><tr class="row-data border-bottom" data-index="<%= i %>"><td class="text-start fw-bold ps-3"><%= k.tgl %></td><td><%= k.spx %></td><td><%= k.jne %></td><td><%= k.jnt %></td><td><%= k.sd %></td><td class="fw-bold text-primary"><%= k.tot %></td></tr><% })} %>
         </tbody></table></div>
     </div>
 
     <div id="kas" class="content-section">
-        <div class="card-main"><table class="table table-sm mb-0"><thead class="head-kas-dark"><tr><th>Tgl</th><th>KET</th><th>MUTASI</th></tr></thead><tbody>
-        <% if (typeof kasAll !== 'undefined') { kasAll.forEach(t => { %><tr><td><%= t.tgl %></td><td><%= t.ket %></td><td><%= t.mutasi %></td></tr><% })} %>
+        <div class="card-main"><div class="p-4 text-center <%= isSaldoMinus ? 'bg-minus' : 'bg-normal' %>" style="color: white;"><small class="fw-bold opacity-75">SALDO KAS</small><h2 class="fw-bold m-0" style="font-size: 1.5rem;"><%= saldoTotal %></h2></div><button class="btn-toggle" onclick="toggleFull('tableKas', this)">+ FILTER & LIHAT SEMUA</button><div id="filterKas" style="display:none;"><div class="filter-box"><div class="row g-2"><div class="col-6"><select id="kM" class="form-select form-select-sm" onchange="filterData('tableKas', 'kM', 'kY')"><option value="">Bulan</option><option value="Jan">Jan</option><option value="Feb">Feb</option><option value="Mar">Mar</option><option value="Apr">Apr</option><option value="Mei">Mei</option><option value="Jun">Jun</option><option value="Jul">Jul</option><option value="Agu">Agu</option><option value="Sep">Sep</option><option value="Okt">Okt</option><option value="Nov">Nov</option><option value="Des">Des</option></select></div><div class="col-6"><select id="kY" class="form-select form-select-sm" onchange="filterData('tableKas', 'kM', 'kY')"><option value="">Tahun</option><option value="2025">2025</option><option value="2026">2026</option></select></div></div></div></div><table class="table table-sm mb-0" id="tableKas"><thead class="head-kas-dark"><tr><th class="ps-2">Tanggal</th><th>KETERANGAN</th><th class="text-end">MUTASI</th><th class="text-center">BUKTI</th></tr></thead><tbody>
+        <% if (kasAll) { kasAll.forEach((t, i) => { %><tr class="row-data border-bottom" data-index="<%= i %>"><td class="ps-2 py-3" style="font-size: 0.65rem;"><%= t.tgl %></td><td><div class="fw-bold text-uppercase" style="font-size: 0.65rem;"><%= t.kat %></div><div class="text-muted" style="font-size: 0.55rem;"><%= t.ket %></div></td><td class="text-end"><div class="<%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>" style="font-size: 0.75rem;"><%= t.mutasi %></div><div style="font-size: 0.55rem; font-weight:700;">Sisa: <%= t.saldo %></div></td><td class="text-center"><% if(t.bukti) { %><a href="<%= t.bukti %>" target="_blank" class="btn-bukti">LIHAT</a><% } else { %>-<% } %></td></tr><% })} %>
         </tbody></table></div>
     </div>
 
     <div id="packaging" class="content-section active">
-        <div class="card-main">
-            <div class="table-responsive" style="max-height: 60vh; overflow-y: auto;">
-                <table class="table table-bordered table-sm text-center mb-0">
-                    <thead class="head-pack">
-                        <tr>
-                            <th class="ps-3 text-start">PRODUCT</th>
-                            <% if (typeof packHeaders !== 'undefined') { packHeaders.forEach(h => { %><th><%= h %></th><% }) } %>
-                        </tr>
-                    </thead>
-                    <tbody style="font-size: 0.7rem;">
-                    <% if (typeof packagingAll !== 'undefined') { packagingAll.forEach(p => { %>
-                        <tr class="border-bottom">
-                            <td class="ps-3 py-2.5 text-start fw-bold text-uppercase text-secondary"><%= p.nama %></td>
-                            <% p.listVarian.forEach(val => { 
-                                let angka = parseInt(val.replace(/\D/g, '')) || 0;
-                                let kelas = 'stok-ijo';
-                                if (angka === 0) kelas = 'stok-merah';
-                                else if (angka <= 2) kelas = 'stok-kuning';
-                                else if (angka === 3) kelas = 'stok-kuning-keras';
-                            %>
-                            <td class="<%= kelas %>"><%= val %></td>
-                            <% }) %>
-                        </tr>
-                    <% })} %>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <div class="text-center mb-3"><small class="text-muted fw-bold">LAST UPDATED: <%= lastUpdatePack %></small></div>
+        <div class="card-main"><div class="table-responsive" style="max-height: 500px; overflow-y: auto;"><table class="table table-bordered table-sm text-center mb-0"><thead class="head-pack"><tr><th class="ps-3 text-start">PRODUCT</th><% packHeaders.forEach(h => { %><th><%= h %></th><% }) %></tr></thead><tbody style="font-size: 0.7rem;"><% packagingAll.forEach(p => { %><tr class="border-bottom"><td class="ps-3 py-2.5 text-start fw-bold text-uppercase text-secondary"><%= p.nama %></td><% p.listVarian.forEach(val => { let a = parseInt(val.replace(/\D/g, ''))||0; let k='stok-ijo'; if(a===0) k='stok-merah'; else if(a<=2) k='stok-kuning'; else if(a===3) k='stok-kuning-keras'; %><td class="<%= k %>"><%= val %></td><% }) %></tr><% }) %></tbody></table></div></div>
     </div>
 </div>
 
 <script>
-    function openMenu(id, el) { 
-        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active')); 
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); 
-        document.getElementById(id).classList.add('active'); el.classList.add('active'); 
-    }
+    function openMenu(id, el) { document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); document.getElementById(id).classList.add('active'); el.classList.add('active'); }
+    function toggleFull(t, b) { const f = document.getElementById(t === 'tableShip' ? 'filterShip' : 'filterKas'); const r = document.querySelectorAll(`#${t} .row-data`); if(f.style.display==="none") { f.style.display="block"; r.forEach(x => x.style.display=""); b.innerText="- SEMBUNYIKAN"; } else { f.style.display="none"; showDefault(t); b.innerText="+ FILTER & LIHAT SEMUA"; } }
+    function showDefault(t) { const r = document.querySelectorAll(`#${t} .row-data`); r.forEach((x, i) => x.style.display = (i < r.length - 10) ? "none" : ""); }
+    function filterData(t, m, y) { const vM = document.getElementById(m).value, vY = document.getElementById(y).value; document.querySelectorAll(`#${t} .row-data`).forEach(r => r.style.display = (r.innerText.includes(vM) && r.innerText.includes(vY)) ? "" : "none"); }
+    window.onload = () => { showDefault('tableShip'); showDefault('tableKas'); };
 </script>
 </body>
 </html>
