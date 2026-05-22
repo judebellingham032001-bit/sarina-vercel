@@ -825,11 +825,20 @@ function toggleFull(tableId, btn){
     const hidden =
         rows[0].style.display === "none";
 
+    // FILTER SHIPPING
+    const filterShip =
+        document.getElementById('filterShip');
+
     if(hidden){
 
         rows.forEach(r => r.style.display = "");
 
         btn.innerText = "- SEMBUNYIKAN";
+
+        // munculkan filter
+        if(filterShip && tableId === 'tableShip'){
+            filterShip.style.display = 'block';
+        }
 
     } else {
 
@@ -837,9 +846,13 @@ function toggleFull(tableId, btn){
 
         btn.innerText =
             "+ FILTER & LIHAT SEMUA";
+
+        // sembunyikan filter
+        if(filterShip && tableId === 'tableShip'){
+            filterShip.style.display = 'none';
+        }
     }
 }
-
 function showDefault(t){
 
     const r =
