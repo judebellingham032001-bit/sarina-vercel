@@ -795,6 +795,8 @@ h1{
 </div>
 <script>
 
+<script>
+
 function openMenu(id, el){
 
     document.querySelectorAll('.content-section')
@@ -809,14 +811,37 @@ function openMenu(id, el){
     el.classList.add('active');
 }
 
+/* DEFAULT TAMPIL 10 DATA TERAKHIR */
+function showDefault(tableId){
+
+    const rows =
+        document.querySelectorAll(`#${tableId} .row-data`);
+
+    rows.forEach((row, i) => {
+
+        row.style.display =
+            (i < rows.length - 10)
+            ? "none"
+            : "";
+    });
+}
+
+/* TOGGLE LIHAT SEMUA */
 function toggleFull(tableId, btn){
 
-    const rows = document.querySelectorAll(
-        `#${tableId} .row-data`
-    );
+    const rows =
+        document.querySelectorAll(`#${tableId} .row-data`);
+
+    if(rows.length === 0) return;
 
     const hidden =
         rows[0].style.display === "none";
+
+    const filterShip =
+        document.getElementById('filterShip');
+
+    const filterKas =
+        document.getElementById('filterKas');
 
     if(hidden){
 
@@ -824,30 +849,83 @@ function toggleFull(tableId, btn){
 
         btn.innerText = "- SEMBUNYIKAN";
 
+        /* MUNCULKAN FILTER */
+        if(tableId === 'tableShip' && filterShip){
+            filterShip.style.display = 'block';
+        }
+
+        if(tableId === 'tableKas' && filterKas){
+            filterKas.style.display = 'block';
+        }
+
     } else {
 
         showDefault(tableId);
 
         btn.innerText =
             "+ FILTER & LIHAT SEMUA";
+
+        /* SEMBUNYIKAN FILTER */
+        if(tableId === 'tableShip' && filterShip){
+            filterShip.style.display = 'none';
+        }
+
+        if(tableId === 'tableKas' && filterKas){
+            filterKas.style.display = 'none';
+        }
+
+        /* RESET FILTER */
+        if(document.getElementById('sM')){
+            document.getElementById('sM').value = "";
+        }
+
+        if(document.getElementById('sY')){
+            document.getElementById('sY').value = "";
+        }
+
+        if(document.getElementById('kM')){
+            document.getElementById('kM').value = "";
+        }
+
+        if(document.getElementById('kY')){
+            document.getElementById('kY').value = "";
+        }
     }
 }
 
-function showDefault(t){
+/* FILTER BULAN & TAHUN */
+function filterData(tableId, monthId, yearId){
 
-    const r =
-        document.querySelectorAll(`#${t} .row-data`);
+    const month =
+        document.getElementById(monthId).value;
 
-    r.forEach((x, i) => {
+    const year =
+        document.getElementById(yearId).value;
 
-        x.style.display =
-            (i < r.length - 10)
-            ? "none"
-            : "";
+    const rows =
+        document.querySelectorAll(`#${tableId} .row-data`);
+
+    rows.forEach(row => {
+
+        const text =
+            row.innerText;
+
+        const cocokBulan =
+            !month || text.includes(month);
+
+        const cocokTahun =
+            !year || text.includes(year);
+
+        row.style.display =
+            (cocokBulan && cocokTahun)
+            ? ""
+            : "none";
     });
 }
-// HIGHLIGHT ROW STOK PRODUK
-document.querySelectorAll('#stocks tbody tr').forEach(row => {
+
+/* EFEK KLIK STOK PRODUK */
+document.querySelectorAll('#stocks tbody tr')
+.forEach(row => {
 
     row.addEventListener('click', () => {
 
@@ -859,14 +937,16 @@ document.querySelectorAll('#stocks tbody tr').forEach(row => {
     });
 
 });
+
+/* LOAD AWAL */
 window.onload = () => {
 
     showDefault('tableShip');
 
     showDefault('tableKas');
+
 }
 
 </script>
-
 </body>
 </html>
