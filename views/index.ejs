@@ -104,14 +104,64 @@ body{
 }
 
 /* TABLE HEAD */
-.head-stok th{
-    background:#003153 !important;
-    color:white !important;
-}
+/* =========================================
+   SHIPPING TABLE
+========================================= */
 
 .head-ship th{
     background:#000 !important;
     color:white !important;
+
+    position:sticky;
+    top:0;
+    z-index:20;
+}
+
+#shipping .table-responsive{
+    max-height:500px;
+    overflow:auto;
+}
+
+#shipping tbody tr:nth-child(odd){
+    background:#f8fafc;
+}
+
+#shipping tbody tr:nth-child(even){
+    background:#eef2f7;
+}
+
+#shipping tbody tr:hover td{
+    background:#dbeafe !important;
+}
+
+/* =========================================
+   STOK PRODUK
+========================================= */
+
+.head-stok th{
+    background:#003153 !important;
+    color:white !important;
+
+    position:sticky;
+    top:0;
+    z-index:20;
+}
+
+#stocks .card-main{
+    max-height:500px;
+    overflow:auto;
+}
+
+#stocks tbody tr:nth-child(odd){
+    background:#f8fafc;
+}
+
+#stocks tbody tr:nth-child(even){
+    background:#eef2f7;
+}
+
+#stocks tbody tr:hover td{
+    background:#dbeafe !important;
 }
 
 .head-kas-dark th{
