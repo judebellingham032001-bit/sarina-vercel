@@ -828,14 +828,13 @@ h1{
 
                 <tr>
 
-                    <th class="ps-3 text-start">
-                        PRODUCT
-                    </th>
+<th class="text-center">
+    PRODUCT
+</th>
 
-                    <th class="text-start">
-                        STOK
-                    </th>
-
+<th class="text-center">
+    STOK
+</th>
                 </tr>
 
             </thead>
@@ -889,11 +888,11 @@ if (typeof packagingAll !== 'undefined' && packagingAll) {
                 isi += `
                     <span class="${kelas}"
                         style="
-                            padding:3px 7px;
+                            padding:2px 6px;
                             border-radius:6px;
                             font-size:.58rem;
                             display:inline-block;
-                            margin:2px;
+                            margin:1px;
                         ">
 
                         ${val} (${ukuran})
@@ -907,14 +906,17 @@ if (typeof packagingAll !== 'undefined' && packagingAll) {
 
 <tr class="border-bottom">
 
-    <td class="ps-3 fw-bold text-uppercase align-middle"
-        style="width:30%;">
+<td class="fw-bold text-uppercase align-middle text-center"
+    style="
+        width:28%;
+        vertical-align:middle;
+    ">
 
         <%= p.nama %>
 
     </td>
 
-    <td class="text-start">
+<td class="text-center">
 
         <%- isi %>
 
