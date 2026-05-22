@@ -818,8 +818,9 @@ h1{
 
 <div class="card-main mx-auto"
      style="
-        max-width:760px;
-        padding:0;
+    max-width:760px;
+    padding:0;
+    width:100%;
      ">
 
         <table class="table table-sm mb-0">
@@ -892,6 +893,7 @@ if (typeof packagingAll !== 'undefined' && packagingAll) {
                             border-radius:6px;
                             font-size:.58rem;
                             display:inline-block;
+                            white-space:nowrap;
                             margin:1px;
                         ">
 
@@ -907,16 +909,13 @@ if (typeof packagingAll !== 'undefined' && packagingAll) {
 <tr class="border-bottom">
 
 <td class="fw-bold text-uppercase align-middle text-center"
-    style="
-        width:28%;
-        vertical-align:middle;
-    ">
+    style="vertical-align:middle;">
 
         <%= p.nama %>
 
     </td>
 
-<td class="text-center">
+<td class="text-start">
 
         <%- isi %>
 
