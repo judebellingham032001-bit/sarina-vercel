@@ -814,25 +814,16 @@ h1{
         </small>
     </div>
 
-    <div class="card-main">
+    <div class="row g-3">
 
-        <table class="table table-sm mb-0">
+        <!-- KIRI -->
+        <div class="col-lg-8">
 
-            <thead class="head-pack">
+            <div class="card-main p-3">
 
-                <tr>
-                    <th class="ps-3 text-start">
-                        PRODUCT
-                    </th>
-
-                    <th class="text-start">
-                        STOK
-                    </th>
-                </tr>
-
-            </thead>
-
-            <tbody>
+                <h6 class="fw-bold mb-3">
+                    STOK KEMASAN
+                </h6>
 
 <%
 if (typeof packagingAll !== 'undefined' && packagingAll) {
@@ -881,47 +872,121 @@ if (typeof packagingAll !== 'undefined' && packagingAll) {
                 isi += `
                     <div class="${kelas}"
                         style="
-                            margin:2px 0;
-                            padding:4px 8px;
-                            border-radius:6px;
+                            margin:3px 0;
+                            padding:5px 8px;
+                            border-radius:7px;
                             display:inline-block;
                             font-size:.62rem;
+                            min-width:140px;
                         ">
 
                         ${val} (${ukuran})
 
-                    </div><br>
+                    </div>
                 `;
             }
 
         });
 %>
 
-<tr class="border-bottom">
+<div class="border rounded p-3 mb-3 bg-white">
 
-    <td class="ps-3 fw-bold text-uppercase align-middle"
-        style="width:35%;">
+    <div class="fw-bold text-uppercase mb-2"
+        style="font-size:.72rem;">
 
         <%= p.nama %>
 
-    </td>
+    </div>
 
-    <td class="text-start">
+    <div class="d-flex flex-wrap gap-2">
 
         <%- isi %>
 
-    </td>
+    </div>
 
-</tr>
+</div>
 
 <%
     });
 }
 %>
 
-            </tbody>
+            </div>
 
-        </table>
+        </div>
+
+        <!-- KANAN -->
+        <div class="col-lg-4">
+
+            <div class="card-main p-3">
+
+                <h6 class="fw-bold text-danger mb-3">
+                    ⚠ LOW STOCK
+                </h6>
+
+<%
+if (typeof packagingAll !== 'undefined' && packagingAll) {
+
+    packagingAll.forEach(p => {
+
+        p.listVarian.forEach((val, i) => {
+
+            let ukuran = packHeaders[i];
+
+            if(
+                val &&
+                val.toString().trim() !== '-' &&
+                val.toString().trim() !== ''
+            ){
+
+                let strVal = val.toString().trim();
+
+                let parseVal = strVal
+                    .replace(/½/g, '.5')
+                    .replace(/¼/g, '.25')
+                    .replace(/¾/g, '.75');
+
+                let cleanVal =
+                    parseVal.replace(/[^0-9.]/g, '');
+
+                let angka =
+                    parseFloat(cleanVal);
+
+                if (!isNaN(angka) && angka <= 3) {
+%>
+
+<div class="border rounded p-2 mb-2 bg-light">
+
+    <div class="fw-bold text-uppercase"
+        style="font-size:.63rem;">
+
+        <%= p.nama %>
+
+    </div>
+
+    <div class="text-danger fw-bold"
+        style="font-size:.6rem;">
+
+        <%= val %> (<%= ukuran %>)
+
+    </div>
+
+</div>
+
+<%
+                }
+            }
+
+        });
+
+    });
+
+}
+%>
+
+            </div>
+
+        </div>
 
     </div>
 
