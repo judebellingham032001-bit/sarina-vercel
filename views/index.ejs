@@ -1008,7 +1008,80 @@ isi += `
             min-width:58px;
             text-align:center;
         ">
-        ${val}
+isi += `
+<div style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    margin-bottom:5px;
+    padding:8px 10px;
+    border:2px solid #e2e8f0;
+    border-radius:10px;
+    background:#ffffff;
+">
+
+    <!-- GRAMASI -->
+    <div style="
+        font-size:.63rem;
+        font-weight:800;
+        color:#334155;
+        letter-spacing:.3px;
+    ">
+        ${ukuran}
+    </div>
+
+    <!-- CONTROL -->
+    <div style="
+        display:flex;
+        align-items:center;
+        gap:6px;
+    ">
+
+        <button
+            onclick="updateStock(this, -1)"
+            style="
+                border:none;
+                width:24px;
+                height:24px;
+                border-radius:6px;
+                background:#dc2626;
+                color:white;
+                font-weight:800;
+            ">
+            -
+        </button>
+
+        <span class="${kelas}"
+            style="
+                padding:3px 8px;
+                border-radius:999px;
+                font-size:.56rem;
+                font-weight:800;
+                min-width:70px;
+                text-align:center;
+            ">
+            ${val}
+        </span>
+
+        <button
+            onclick="updateStock(this, 1)"
+            style="
+                border:none;
+                width:24px;
+                height:24px;
+                border-radius:6px;
+                background:#16a34a;
+                color:white;
+                font-weight:800;
+            ">
+            +
+        </button>
+
+    </div>
+
+</div>
+`;
     </span>
 
 </div>
@@ -1063,6 +1136,47 @@ isi += `
     </div>
 
 </div>
+function updateStock(btn, change){
+
+    const badge =
+        btn.parentElement.querySelector('span');
+
+    let text =
+        badge.innerText;
+
+    let angka =
+        parseFloat(text);
+
+    if(isNaN(angka)) return;
+
+    angka += change;
+
+    if(angka < 0) angka = 0;
+
+    badge.innerText =
+        angka + ' ikat';
+
+    /* AUTO WARNA */
+
+    badge.classList.remove(
+        'stok-merah',
+        'stok-kuning',
+        'stok-ijo'
+    );
+
+    if(angka <= 2){
+
+        badge.classList.add('stok-merah');
+
+    } else if(angka <= 3){
+
+        badge.classList.add('stok-kuning');
+
+    } else {
+
+        badge.classList.add('stok-ijo');
+    }
+}
 <script>
 
 
