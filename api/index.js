@@ -1,5 +1,5 @@
 // ==========================================
-// WAJIB FULL SCRIPT - BACKEND EXPRESS (v23-CELL-M1-FIX)
+// WAJIB FULL SCRIPT - BACKEND EXPRESS (v23-CELL-M1-FIX-KEMASAN)
 // ==========================================
 
 const express = require('express');
@@ -36,6 +36,41 @@ function formatRP(angkaStr) {
     return isMinus ? "-" + formatted : "+ " + formatted;
 }
 
+// HELPER FUNCTION: Konversi Desimal ke Pecahan (1/4, 1/2, 3/4, dll) untuk Kemasan
+function formatPecahan(val) {
+    if (!val || val === "-" || val.trim() === "") return "-";
+    
+    // Ubah koma ke titik (misal "2,5" -> "2.5")
+    let rawStr = val.toString().replace(',', '.').trim();
+    let num = parseFloat(rawStr);
+    
+    // Jika bukan angka desimal murni, kembalikan teks aslinya
+    if (isNaN(num)) return val;
+    if (num === 0) return "0";
+
+    let utuh = Math.floor(Math.abs(num));
+    let sisa = Math.abs(num) - utuh;
+    let pecahanTxt = "";
+
+    // Toleransi pembulatan desimal
+    if (Math.abs(sisa - 0.25) < 0.05) pecahanTxt = "1/4";
+    else if (Math.abs(sisa - 0.5) < 0.05) pecahanTxt = "1/2";
+    else if (Math.abs(sisa - 0.75) < 0.05) pecahanTxt = "3/4";
+    else if (Math.abs(sisa - 0.33) < 0.05) pecahanTxt = "1/3";
+    else if (Math.abs(sisa - 0.66) < 0.05) pecahanTxt = "2/3";
+    else if (sisa >= 0.95) { utuh += 1; pecahanTxt = ""; }
+
+    let prefix = num < 0 ? "-" : "";
+
+    if (utuh === 0 && pecahanTxt !== "") {
+        return prefix + pecahanTxt;
+    } else if (pecahanTxt !== "") {
+        return prefix + utuh + " " + pecahanTxt;
+    } else {
+        return prefix + utuh;
+    }
+}
+
 app.get('/', async (req, res) => {
     try {
         // 1. DAFTAR URL SOURCE GOOGLE SHEETS
@@ -52,7 +87,7 @@ app.get('/', async (req, res) => {
             axios.get(urlP).catch(err => { console.error("Error Pack:", err.message); return { data: "" }; })
         ]);
 
-        // 2. PARSING DATA TAB STOK
+        // 2. PARSING DATA TAB STOK PRODUK
         let lastUpdate = "-";
         let stocks = [];
         if (resS.data) {
@@ -106,120 +141,65 @@ app.get('/', async (req, res) => {
             }
         }
 
-// 5. PARSING DATA TAB PACKAGING
-let packagingAll = [];
-let packHeaders = [];
-let lastUpdatePack = "-";
+        // 5. PARSING DATA TAB PACKAGING (STOK KEMASAN)
+        let packagingAll = [];
+        let packHeaders = [];
+        let lastUpdatePack = "-";
 
-if (resP.data && resP.data.trim() !== "") {
+        if (resP.data && resP.data.trim() !== "") {
 
-    const linesP =
-        resP.data
-        .split(/\r?\n/)
-        .filter(line => line.trim() !== "");
+            const linesP =
+                resP.data
+                .split(/\r?\n/)
+                .filter(line => line.trim() !== "");
 
-    // =========================
-    // AMBIL LAST UPDATE DARI M2
-    // =========================
-    if (linesP.length > 1) {
+            // AMBIL LAST UPDATE DARI M2
+            if (linesP.length > 1) {
+                const barisKedua = splitCSV(linesP[1]);
+                if (barisKedua[12] && barisKedua[12].trim() !== "") {
+                    lastUpdatePack = barisKedua[12].trim();
+                }
+            }
 
-        const barisKedua =
-            splitCSV(linesP[1]);
+            // AMBIL HEADER DARI ROW 1
+            if (linesP.length > 0) {
+                const barisPertama = splitCSV(linesP[0]);
+                for (let h = 1; h < barisPertama.length; h++) {
+                    let headName = barisPertama[h] ? barisPertama[h].trim() : "";
+                    if (!headName || h >= 12 || headName.toLowerCase().includes("update")) break;
+                    packHeaders.push(headName.toUpperCase());
+                }
+            }
 
-        // M = index 12
-        if (
-            barisKedua[12] &&
-            barisKedua[12].trim() !== ""
-        ) {
+            // LOOP DATA PRODUK KEMASAN
+            for (let i = 1; i < linesP.length; i++) {
+                const c = splitCSV(linesP[i]);
 
-            lastUpdatePack =
-                barisKedua[12].trim();
-        }
-    }
+                if (!c[0] || c[0].trim() === "" || c[0].toLowerCase() === "product") continue;
 
-    // =========================
-    // AMBIL HEADER DARI ROW 1
-    // =========================
-    if (linesP.length > 0) {
+                let listVarian = [];
 
-        const barisPertama =
-            splitCSV(linesP[0]);
+                for (let vIdx = 0; vIdx < packHeaders.length; vIdx++) {
+                    let nilaiKolom = c[vIdx + 1];
+                    let valClean = (nilaiKolom && nilaiKolom.trim() !== "") ? nilaiKolom.trim() : "-";
+                    
+                    // KONVERSI DESIMAL KE PECAHAN DI SINI (Misal 2.5 jadi 2 1/2)
+                    let formattedVal = formatPecahan(valClean);
 
-        // mulai dari kolom C
-        for (
-            let h = 1;
-            h < barisPertama.length;
-            h++
-        ) {
+                    listVarian.push(formattedVal);
+                }
 
-            let headName =
-                barisPertama[h]
-                ? barisPertama[h].trim()
-                : "";
-
-            if (
-                !headName ||
-                h >= 12 ||
-                headName.toLowerCase().includes("update")
-            ) break;
-
-            packHeaders.push(
-                headName.toUpperCase()
-            );
-        }
-    }
-
-    // =========================
-    // LOOP DATA PRODUK
-    // =========================
-    for (let i = 1; i < linesP.length; i++) {
-
-        const c = splitCSV(linesP[i]);
-
-        if (
-            !c[0] ||
-            c[0].trim() === "" ||
-            c[0].toLowerCase() === "product"
-        ) continue;
-
-        let listVarian = [];
-
-        // mulai dari kolom C
-        for (
-            let vIdx = 0;
-            vIdx < packHeaders.length;
-            vIdx++
-        ) {
-
-            let nilaiKolom =
-                c[vIdx + 1];
-
-            listVarian.push(
-                (
-                    nilaiKolom &&
-                    nilaiKolom.trim() !== ""
-                )
-                ? nilaiKolom.trim()
-                : "-"
-            );
+                packagingAll.push({
+                    nama: c[0].trim(),
+                    gramasi: c[1] || "-",
+                    listVarian
+                });
+            }
         }
 
-        packagingAll.push({
-
-            nama: c[0].trim(),
-
-            gramasi:
-                c[1] || "-",
-
-            listVarian
-
-        });
-    }
-}
-
-if (lastUpdatePack === "-") {
-    lastUpdatePack = "Belum Diupdate";
-}
+        if (lastUpdatePack === "-") {
+            lastUpdatePack = "Belum Diupdate";
+        }
 
         // 6. RENDER KE VIEW
         res.render('index', { 
