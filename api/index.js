@@ -1,5 +1,5 @@
 // ==========================================
-// WAJIB FULL SCRIPT - BACKEND EXPRESS (v23-CELL-M1-FIX-KEMASAN)
+// WAJIB FULL SCRIPT - BACKEND EXPRESS (v23-CELL-M1-FIX-KEMASAN-KECIL-MERAH)
 // ==========================================
 
 const express = require('express');
@@ -36,39 +36,60 @@ function formatRP(angkaStr) {
     return isMinus ? "-" + formatted : "+ " + formatted;
 }
 
-// HELPER FUNCTION: Konversi Desimal ke Pecahan (1/4, 1/2, 3/4, dll) untuk Kemasan
-function formatPecahan(val) {
-    if (!val || val === "-" || val.trim() === "") return "-";
+// HELPER FUNCTION: Konversi Desimal + Teks ("2,5 ikat") ke Pecahan Kecil ("2 ½ ikat") & Cek Merah (<3)
+function processKemasanCell(val) {
+    if (!val || val === "-" || val.trim() === "") {
+        return { displayTxt: "-", isLow: false };
+    }
     
-    // Ubah koma ke titik (misal "2,5" -> "2.5")
-    let rawStr = val.toString().replace(',', '.').trim();
-    let num = parseFloat(rawStr);
-    
-    // Jika bukan angka desimal murni, kembalikan teks aslinya
-    if (isNaN(num)) return val;
-    if (num === 0) return "0";
+    let rawStr = val.toString().trim();
+
+    // 1. Ekstrak kata satuan jika ada (seperti "ikat", "pcs", "pack")
+    let unitTxt = rawStr.replace(/[0-9.,-]/g, '').trim();
+
+    // 2. Ekstrak angka murni (ubah koma ke titik)
+    let angkaBersih = rawStr.replace(/,/g, '.').replace(/[^0-9.-]/g, '');
+    let num = parseFloat(angkaBersih);
+
+    // Jika tidak ada angka sama sekali
+    if (isNaN(num)) {
+        return { displayTxt: rawStr, isLow: false };
+    }
+
+    // 3. Cek Status Merah jika di bawah 3 (< 3)
+    let isLow = num < 3;
+
+    if (num === 0) {
+        return { displayTxt: "0" + (unitTxt ? " " + unitTxt : ""), isLow: true };
+    }
 
     let utuh = Math.floor(Math.abs(num));
     let sisa = Math.abs(num) - utuh;
     let pecahanTxt = "";
 
-    // Toleransi pembulatan desimal
-    if (Math.abs(sisa - 0.25) < 0.05) pecahanTxt = "1/4";
-    else if (Math.abs(sisa - 0.5) < 0.05) pecahanTxt = "1/2";
-    else if (Math.abs(sisa - 0.75) < 0.05) pecahanTxt = "3/4";
-    else if (Math.abs(sisa - 0.33) < 0.05) pecahanTxt = "1/3";
-    else if (Math.abs(sisa - 0.66) < 0.05) pecahanTxt = "2/3";
+    // Menggunakan Unicode Pecahan Kecil
+    if (Math.abs(sisa - 0.25) < 0.05) pecahanTxt = "¼";
+    else if (Math.abs(sisa - 0.5) < 0.05) pecahanTxt = "½";
+    else if (Math.abs(sisa - 0.75) < 0.05) pecahanTxt = "¾";
+    else if (Math.abs(sisa - 0.33) < 0.05) pecahanTxt = "⅓";
+    else if (Math.abs(sisa - 0.66) < 0.05) pecahanTxt = "⅔";
     else if (sisa >= 0.95) { utuh += 1; pecahanTxt = ""; }
 
     let prefix = num < 0 ? "-" : "";
+    let hasilAngka = "";
 
     if (utuh === 0 && pecahanTxt !== "") {
-        return prefix + pecahanTxt;
+        hasilAngka = prefix + pecahanTxt;
     } else if (pecahanTxt !== "") {
-        return prefix + utuh + " " + pecahanTxt;
+        hasilAngka = prefix + utuh + " " + pecahanTxt;
     } else {
-        return prefix + utuh;
+        hasilAngka = prefix + utuh;
     }
+
+    // Gabungkan angka pecahan dengan kata satuan asli (contoh: "2 ½ ikat")
+    let displayTxt = hasilAngka + (unitTxt ? " " + unitTxt : "");
+
+    return { displayTxt, isLow };
 }
 
 app.get('/', async (req, res) => {
@@ -183,10 +204,10 @@ app.get('/', async (req, res) => {
                     let nilaiKolom = c[vIdx + 1];
                     let valClean = (nilaiKolom && nilaiKolom.trim() !== "") ? nilaiKolom.trim() : "-";
                     
-                    // KONVERSI DESIMAL KE PECAHAN DI SINI (Misal 2.5 jadi 2 1/2)
-                    let formattedVal = formatPecahan(valClean);
+                    // PROSES CELL: Dapatkan Teks Pecahan Kecil + Flag Merah
+                    let cellData = processKemasanCell(valClean);
 
-                    listVarian.push(formattedVal);
+                    listVarian.push(cellData);
                 }
 
                 packagingAll.push({
