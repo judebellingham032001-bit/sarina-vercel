@@ -1,5 +1,5 @@
 // ==========================================
-// WAJIB FULL SCRIPT - BACKEND EXPRESS (v23-CELL-M1-FIX-OBJECT-OBJECT)
+// WAJIB FULL SCRIPT - BACKEND EXPRESS (v24-CELL-M1-FIX-PECAHAN-STR-MERAH)
 // ==========================================
 
 const express = require('express');
@@ -36,38 +36,30 @@ function formatRP(angkaStr) {
     return isMinus ? "-" + formatted : "+ " + formatted;
 }
 
-// HELPER FUNCTION: Konversi Desimal + Teks ("2,5 ikat") ke Pecahan Kecil ("2 ½ ikat") & Cek Merah (<3)
-function processKemasanCell(val) {
-    if (!val || val === "-" || val.trim() === "") {
-        return { displayTxt: "-", isLow: false };
+// HELPER FUNCTION: Ubah desimal ke pecahan ("2,5 ikat" -> "2 ½ ikat") & tambahkan penanda MERAH jika < 3
+function formatPecahanIkat(val) {
+    // 1. Kalau '-' atau kosong -> LEWATI (Kembalikan string kosong)
+    if (!val || val === "-" || val.trim() === "" || val.trim() === "0") {
+        return ""; 
     }
     
     let rawStr = val.toString().trim();
 
-    // 1. Ekstrak kata satuan jika ada (seperti "ikat", "pcs", "pack")
+    // Ambil kata satuan jika ada (contoh: "ikat", "pcs", "pack")
     let unitTxt = rawStr.replace(/[0-9.,-]/g, '').trim();
 
-    // 2. Ekstrak angka murni (ubah koma ke titik)
+    // Ambil angkanya saja
     let angkaBersih = rawStr.replace(/,/g, '.').replace(/[^0-9.-]/g, '');
     let num = parseFloat(angkaBersih);
 
-    // Jika tidak ada angka sama sekali
-    if (isNaN(num)) {
-        return { displayTxt: rawStr, isLow: false };
-    }
-
-    // 3. Cek Status Merah jika di bawah 3 (< 3)
-    let isLow = num < 3;
-
-    if (num === 0) {
-        return { displayTxt: "0" + (unitTxt ? " " + unitTxt : ""), isLow: true };
-    }
+    // Jika bukan angka, kembalikan string aslinya
+    if (isNaN(num)) return rawStr;
 
     let utuh = Math.floor(Math.abs(num));
     let sisa = Math.abs(num) - utuh;
     let pecahanTxt = "";
 
-    // Menggunakan Unicode Pecahan Kecil
+    // Ubah desimal ke pecahan kecil Unicode
     if (Math.abs(sisa - 0.25) < 0.05) pecahanTxt = "¼";
     else if (Math.abs(sisa - 0.5) < 0.05) pecahanTxt = "½";
     else if (Math.abs(sisa - 0.75) < 0.05) pecahanTxt = "¾";
@@ -86,10 +78,15 @@ function processKemasanCell(val) {
         hasilAngka = prefix + utuh;
     }
 
-    // Gabungkan angka pecahan dengan kata satuan asli (contoh: "2 ½ ikat")
-    let displayTxt = hasilAngka + (unitTxt ? " " + unitTxt : "");
+    // Gabungkan pecahan dengan kata satuan (Contoh: "2 ½ ikat")
+    let teksHasil = hasilAngka + (unitTxt ? " " + unitTxt : "");
 
-    return { displayTxt, isLow };
+    // Jika di bawah 3 (< 3), bungkus dengan tag span warna MERAH!
+    if (num < 3) {
+        return `<span class="text-merah-bold">${teksHasil}</span>`;
+    } else {
+        return `<span class="text-hijau-bold">${teksHasil}</span>`;
+    }
 }
 
 app.get('/', async (req, res) => {
@@ -204,10 +201,10 @@ app.get('/', async (req, res) => {
                     let nilaiKolom = c[vIdx + 1];
                     let valClean = (nilaiKolom && nilaiKolom.trim() !== "") ? nilaiKolom.trim() : "-";
                     
-                    // PROSES CELL: Dapatkan Teks Pecahan Kecil + Flag Merah
-                    let cellData = processKemasanCell(valClean);
+                    // Kembalikan STRING murni HTML (tanpa objek)
+                    let formattedHTML = formatPecahanIkat(valClean);
 
-                    listVarian.push(cellData);
+                    listVarian.push(formattedHTML);
                 }
 
                 packagingAll.push({
