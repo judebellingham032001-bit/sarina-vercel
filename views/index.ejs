@@ -103,7 +103,6 @@ body{
     font-weight:800;
 }
 
-/* TABLE HEAD */
 /* =========================================
    SHIPPING TABLE
 ========================================= */
@@ -162,11 +161,6 @@ body{
 
 #stocks tbody tr:hover td{
     background:#dbeafe !important;
-}
-
-.head-kas-dark th{
-    background:#cbd5e1 !important;
-    color:#1e293b !important;
 }
 
 /* =========================================
@@ -242,15 +236,6 @@ body{
     background:#dbeafe !important;
 }
 
-/* SALDO */
-.bg-normal{
-    background:linear-gradient(135deg,#1e293b,#475569);
-}
-
-.bg-minus{
-    background:#dc2626 !important;
-}
-
 /* TABLE */
 th{
     font-size:.55rem;
@@ -288,6 +273,7 @@ td{
     background:#dcfce7;
     color:#16a34a;
 }
+
 /* HOVER STOK PRODUK */
 #stocks tbody tr{
     transition:.15s;
@@ -301,28 +287,6 @@ td{
 /* EFEK SENTUH HP */
 #stocks tbody tr:active td{
     background:#dbeafe !important;
-}
-
-/* TEXT */
-.text-debet{
-    color:#dc2626;
-    font-weight:800;
-}
-
-.text-kredit{
-    color:#16a34a;
-    font-weight:800;
-}
-
-/* BUTTON */
-.btn-bukti{
-    background:#2563eb;
-    color:white;
-    font-size:.5rem;
-    font-weight:800;
-    padding:4px 6px;
-    border-radius:4px;
-    text-decoration:none;
 }
 
 .filter-box{
@@ -394,6 +358,7 @@ h1{
     }
 
 }
+
 /* =========================================
    SELANG SELING SHIPPING
 ========================================= */
@@ -463,13 +428,6 @@ h1{
 
             <li class="nav-item">
                 <button class="nav-link"
-                    onclick="openMenu('kas', this)">
-                    KAS
-                </button>
-            </li>
-
-            <li class="nav-item">
-                <button class="nav-link"
                     onclick="openMenu('packaging', this)">
                     STOK KEMASAN
                 </button>
@@ -480,7 +438,7 @@ h1{
     </div>
 
     <!-- STOCK -->
-<div id="stocks" class="content-section active">
+    <div id="stocks" class="content-section active">
 
         <div class="text-center mb-3">
             <small class="text-muted fw-bold">
@@ -528,46 +486,46 @@ h1{
                             <%= s.display %>
                         </td>
 
-<td class="text-end pe-3">
+                        <td class="text-end pe-3">
 
-<%
-    let rawQty = s.display ? s.display.toString().trim() : "0";
+                        <%
+                            let rawQty = s.display ? s.display.toString().trim() : "0";
 
-    // convert pecahan unicode
-    let qtyFix = rawQty
-        .replace(/½/g, '.5')
-        .replace(/¼/g, '.25')
-        .replace(/¾/g, '.75');
+                            // convert pecahan unicode
+                            let qtyFix = rawQty
+                                .replace(/½/g, '.5')
+                                .replace(/¼/g, '.25')
+                                .replace(/¾/g, '.75');
 
-    // ambil angka
-    qtyFix = qtyFix.replace(/[^0-9.]/g, '');
+                            // ambil angka
+                            qtyFix = qtyFix.replace(/[^0-9.]/g, '');
 
-    let qtyNum = parseFloat(qtyFix);
+                            let qtyNum = parseFloat(qtyFix);
 
-    if(isNaN(qtyNum)) qtyNum = 0;
-%>
+                            if(isNaN(qtyNum)) qtyNum = 0;
+                        %>
 
-<% if(qtyNum <= 0){ %>
+                        <% if(qtyNum <= 0){ %>
 
-    <span class="badge-status bg-out">
-        HABIS
-    </span>
+                            <span class="badge-status bg-out">
+                                HABIS
+                            </span>
 
-<% } else if(qtyNum <= 2.5){ %>
+                        <% } else if(qtyNum <= 2.5){ %>
 
-    <span class="badge-status bg-low">
-        LOW
-    </span>
+                            <span class="badge-status bg-low">
+                                LOW
+                            </span>
 
-<% } else { %>
+                        <% } else { %>
 
-    <span class="badge-status bg-tersedia">
-        READY
-    </span>
+                            <span class="badge-status bg-tersedia">
+                                READY
+                            </span>
 
-<% } %>
+                        <% } %>
 
-</td>
+                        </td>
 
                     </tr>
 
@@ -605,19 +563,19 @@ h1{
                                 class="form-select form-select-sm"
                                 onchange="filterData('tableShip', 'sM', 'sY')">
 
-<option value="">Bulan</option>
-<option value="Jan">Jan</option>
-<option value="Feb">Feb</option>
-<option value="Mar">Mar</option>
-<option value="Apr">Apr</option>
-<option value="Mei">Mei</option>
-<option value="Jun">Jun</option>
-<option value="Jul">Jul</option>
-<option value="Agu">Agu</option>
-<option value="Sep">Sep</option>
-<option value="Okt">Okt</option>
-<option value="Nov">Nov</option>
-<option value="Des">Des</option>
+                                <option value="">Bulan</option>
+                                <option value="Jan">Jan</option>
+                                <option value="Feb">Feb</option>
+                                <option value="Mar">Mar</option>
+                                <option value="Apr">Apr</option>
+                                <option value="Mei">Mei</option>
+                                <option value="Jun">Jun</option>
+                                <option value="Jul">Jul</option>
+                                <option value="Agu">Agu</option>
+                                <option value="Sep">Sep</option>
+                                <option value="Okt">Okt</option>
+                                <option value="Nov">Nov</option>
+                                <option value="Des">Des</option>
 
                             </select>
 
@@ -629,18 +587,18 @@ h1{
                                 class="form-select form-select-sm"
                                 onchange="filterData('tableShip', 'sM', 'sY')">
 
-<option value="">Tahun</option>
-<option value="2025">2025</option>
-<option value="2026">2026</option>
-<option value="2027">2027</option>
-<option value="2028">2028</option>
-<option value="2029">2029</option>
-<option value="2030">2030</option>
-<option value="2031">2031</option>
-<option value="2032">2032</option>
-<option value="2033">2033</option>
-<option value="2034">2034</option>
-<option value="2035">2035</option>
+                                <option value="">Tahun</option>
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>
+                                <option value="2029">2029</option>
+                                <option value="2030">2030</option>
+                                <option value="2031">2031</option>
+                                <option value="2032">2032</option>
+                                <option value="2033">2033</option>
+                                <option value="2034">2034</option>
+                                <option value="2035">2035</option>
 
                             </select>
 
@@ -710,361 +668,181 @@ h1{
 
     </div>
 
-    <!-- KAS -->
-    <div id="kas" class="content-section">
+    <!-- PACKAGING -->
+    <div id="packaging" class="content-section">
 
-        <div class="card-main">
-
-            <div class="p-4 text-center <%= (typeof isSaldoMinus !== 'undefined' && isSaldoMinus) ? 'bg-minus' : 'bg-normal' %>"
-                style="color:white;">
-
-                <small class="fw-bold opacity-75">
-                    SALDO KAS
-                </small>
-
-                <h2 class="fw-bold m-0"
-                    style="font-size:1.3rem;">
-
-                    <%= typeof saldoTotal !== 'undefined' ? saldoTotal : 'Rp 0' %>
-
-                </h2>
-
-            </div>
-
-            <button class="btn-toggle"
-                onclick="toggleFull('tableKas', this)">
-
-                + FILTER & LIHAT SEMUA
-
-            </button>
-<div id="filterKas" style="display:none;">
-
-    <div class="filter-box">
-
-        <div class="row g-2">
-
-            <div class="col-6">
-
-                <select id="kM"
-                    class="form-select form-select-sm"
-                    onchange="filterData('tableKas', 'kM', 'kY')">
-
-                    <option value="">Bulan</option>
-
-                    <option value="Jan">Jan</option>
-                    <option value="Feb">Feb</option>
-                    <option value="Mar">Mar</option>
-                    <option value="Apr">Apr</option>
-                    <option value="Mei">Mei</option>
-                    <option value="Jun">Jun</option>
-                    <option value="Jul">Jul</option>
-                    <option value="Agu">Agu</option>
-                    <option value="Sep">Sep</option>
-                    <option value="Okt">Okt</option>
-                    <option value="Nov">Nov</option>
-                    <option value="Des">Des</option>
-
-                </select>
-
-            </div>
-
-            <div class="col-6">
-
-                <select id="kY"
-                    class="form-select form-select-sm"
-                    onchange="filterData('tableKas', 'kM', 'kY')">
-
-                    <option value="">Tahun</option>
-
-                    <option value="2025">2025</option>
-                    <option value="2026">2026</option>
-                    <option value="2027">2027</option>
-                    <option value="2028">2028</option>
-                    <option value="2029">2029</option>
-                    <option value="2030">2030</option>
-                    <option value="2031">2031</option>
-                    <option value="2032">2032</option>
-                    <option value="2033">2033</option>
-                    <option value="2034">2034</option>
-                    <option value="2035">2035</option>
-
-                </select>
-
-            </div>
-
+        <div class="text-center mb-3">
+            <small class="text-muted fw-bold">
+                Last Updated:
+                <%= typeof lastUpdatePack !== 'undefined'
+                    ? lastUpdatePack
+                    : '-' %>
+            </small>
         </div>
 
-    </div>
+        <div class="card-main mx-auto"
+             style="
+            max-width:760px;
+            padding:0;
+            width:100%;
+             ">
 
-</div>
+            <table class="table table-sm mb-0">
 
-            <div class="table-responsive">
+                <thead class="head-pack">
 
-                <table class="table table-sm mb-0"
-                    id="tableKas">
+                    <tr>
 
-                    <thead class="head-kas-dark">
+                        <th class="text-center">
+                            PRODUCT
+                        </th>
 
-                        <tr>
+                        <th class="text-center">
+                            STOK
+                        </th>
 
-                            <th>Tanggal</th>
-                            <th>Keterangan</th>
-                            <th class="text-end">Mutasi</th>
-                            <th class="text-center">Bukti</th>
+                    </tr>
 
-                        </tr>
+                </thead>
 
-                    </thead>
+                <tbody>
 
-                    <tbody>
+                <%
+                if (typeof packagingAll !== 'undefined' && packagingAll) {
 
-                        <% if (typeof kasAll !== 'undefined' && kasAll) {
-                            kasAll.forEach((t, i) => { %>
+                    packagingAll.forEach(p => {
 
-                        <tr class="row-data border-bottom"
-                            data-index="<%= i %>">
+                        let isi = '';
 
-                            <td>
-                                <%= t.tgl %>
-                            </td>
+                        p.listVarian.forEach((val, i) => {
 
-                            <td>
+                            let ukuran = packHeaders[i];
 
-                                <div class="fw-bold text-uppercase">
-                                    <%= t.kat %>
+                            if(
+                                val &&
+                                val.toString().trim() !== '-' &&
+                                val.toString().trim() !== ''
+                            ){
+
+                                let kelas = 'stok-ijo';
+
+                                let strVal = val.toString().trim();
+
+                                let parseVal = strVal
+                                    .replace(/½/g, '.5')
+                                    .replace(/¼/g, '.25')
+                                    .replace(/¾/g, '.75');
+
+                                let cleanVal =
+                                    parseVal.replace(/[^0-9.]/g, '');
+
+                                let angka =
+                                    parseFloat(cleanVal);
+
+                                if (!isNaN(angka)) {
+
+                                    if (angka <= 2.5) {
+
+                                        kelas = 'stok-merah';
+
+                                    } else if (angka <= 3) {
+
+                                        kelas = 'stok-kuning';
+                                    }
+                                }
+
+                                isi += `
+                                <div style="
+                                    display:flex;
+                                    justify-content:space-between;
+                                    align-items:center;
+                                    gap:10px;
+                                    margin-bottom:8px;
+                                    padding:8px 10px;
+
+                                    border:2px solid #e2e8f0;
+                                    border-radius:10px;
+
+                                    background:#ffffff;
+                                ">
+
+                                    <div style="
+                                        font-size:.63rem;
+                                        font-weight:800;
+                                        color:#334155;
+                                        letter-spacing:.3px;
+                                    ">
+                                        ${ukuran}
+                                    </div>
+
+                                    <span class="${kelas}"
+                                        style="
+                                            padding:3px 8px;
+                                            border-radius:999px;
+                                            font-size:.56rem;
+                                            font-weight:800;
+                                            min-width:58px;
+                                            text-align:center;
+                                        ">
+                                        ${val}
+                                    </span>
+
                                 </div>
+                                `;
+                            }
 
-                                <div class="text-muted"
-                                    style="font-size:.52rem;">
-
-                                    <%= t.ket %>
-
-                                </div>
-
-                            </td>
-
-                            <td class="text-end">
-
-                                <div class="<%= t.tipeMutasi === 'debet' ? 'text-debet' : 'text-kredit' %>">
-
-                                    <%= t.mutasi %>
-
-                                </div>
-
-                                <div style="font-size:.5rem;">
-
-                                    Sisa:
-                                    <%= t.saldo %>
-
-                                </div>
-
-                            </td>
-
-                            <td class="text-center">
-
-                                <% if(t.bukti) { %>
-
-                                <a href="<%= t.bukti %>"
-                                    target="_blank"
-                                    class="btn-bukti">
-
-                                    LIHAT BUKTI
-
-                                </a>
-
-                                <% } else { %>
-
-                                -
-
-                                <% } %>
-
-                            </td>
-
-                        </tr>
-
-                        <% })} %>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-    </div>
-
-<div id="packaging" class="content-section">
-
-    <div class="text-center mb-3">
-        <small class="text-muted fw-bold">
-            Last Updated:
-            <%= typeof lastUpdatePack !== 'undefined'
-                ? lastUpdatePack
-                : '-' %>
-        </small>
-    </div>
-
-<div class="card-main mx-auto"
-     style="
-    max-width:760px;
-    padding:0;
-    width:100%;
-     ">
-
-        <table class="table table-sm mb-0">
-
-            <thead class="head-pack">
+                        });
+                %>
 
                 <tr>
 
-<th class="text-center">
-    PRODUCT
-</th>
+                    <td class="fw-bold text-uppercase align-middle text-center"
+                        style="
+                            border-top:3px solid #cbd5e1;
+                            border-bottom:3px solid #cbd5e1;
+                            border-left:3px solid #cbd5e1;
+                            border-radius:12px 0 0 12px;
+                            background:#f8fafc;
+                            padding:14px 12px !important;
+                            vertical-align:middle;
+                        ">
 
-<th class="text-center">
-    STOK
-</th>
+                        <%= p.nama %>
+
+                    </td>
+
+                    <td class="text-start"
+                        style="
+                            border-top:3px solid #cbd5e1;
+                            border-bottom:3px solid #cbd5e1;
+                            border-right:3px solid #cbd5e1;
+                            border-radius:0 12px 12px 0;
+                            background:white;
+                            padding:10px !important;
+                        ">
+
+                        <%- isi %>
+
+                    </td>
+
                 </tr>
 
-            </thead>
-
-            <tbody>
-
-<%
-if (typeof packagingAll !== 'undefined' && packagingAll) {
-
-    packagingAll.forEach(p => {
-
-        let isi = '';
-
-        p.listVarian.forEach((val, i) => {
-
-            let ukuran = packHeaders[i];
-
-            if(
-                val &&
-                val.toString().trim() !== '-' &&
-                val.toString().trim() !== ''
-            ){
-
-                let kelas = 'stok-ijo';
-
-                let strVal = val.toString().trim();
-
-                let parseVal = strVal
-                    .replace(/½/g, '.5')
-                    .replace(/¼/g, '.25')
-                    .replace(/¾/g, '.75');
-
-                let cleanVal =
-                    parseVal.replace(/[^0-9.]/g, '');
-
-                let angka =
-                    parseFloat(cleanVal);
-
-                if (!isNaN(angka)) {
-
-                    if (angka <= 2.5) {
-
-                        kelas = 'stok-merah';
-
-                    } else if (angka <= 3) {
-
-                        kelas = 'stok-kuning';
-                    }
+                <%
+                    });
                 }
+                %>
 
-isi += `
-<div style="
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-    margin-bottom:8px;
-    padding:8px 10px;
+                </tbody>
 
-    border:2px solid #e2e8f0;
-    border-radius:10px;
+            </table>
 
-    background:#ffffff;
-">
-
-    <div style="
-        font-size:.63rem;
-        font-weight:800;
-        color:#334155;
-        letter-spacing:.3px;
-    ">
-        ${ukuran}
-    </div>
-
-    <span class="${kelas}"
-        style="
-            padding:3px 8px;
-            border-radius:999px;
-            font-size:.56rem;
-            font-weight:800;
-            min-width:58px;
-            text-align:center;
-        ">
-        ${val}
-    </span>
-
-</div>
-`;
-            }
-
-        });
-%>
-
-<tr>
-
-<td class="fw-bold text-uppercase align-middle text-center"
-    style="
-        border-top:3px solid #cbd5e1;
-        border-bottom:3px solid #cbd5e1;
-        border-left:3px solid #cbd5e1;
-        border-radius:12px 0 0 12px;
-        background:#f8fafc;
-        padding:14px 12px !important;
-    "
-    style="vertical-align:middle;">
-
-        <%= p.nama %>
-
-    </td>
-
-<td class="text-start"
-    style="
-        border-top:3px solid #cbd5e1;
-        border-bottom:3px solid #cbd5e1;
-        border-right:3px solid #cbd5e1;
-        border-radius:0 12px 12px 0;
-        background:white;
-        padding:10px !important;
-    ">
-
-        <%- isi %>
-
-    </td>
-
-</tr>
-
-<%
-    });
-}
-%>
-
-            </tbody>
-
-        </table>
+        </div>
 
     </div>
 
 </div>
+
 <script>
-
 
 function openMenu(id, el){
 
@@ -1109,9 +887,6 @@ function toggleFull(tableId, btn){
     const filterShip =
         document.getElementById('filterShip');
 
-    const filterKas =
-        document.getElementById('filterKas');
-
     if(hidden){
 
         rows.forEach(r => r.style.display = "");
@@ -1121,10 +896,6 @@ function toggleFull(tableId, btn){
         /* MUNCULKAN FILTER */
         if(tableId === 'tableShip' && filterShip){
             filterShip.style.display = 'block';
-        }
-
-        if(tableId === 'tableKas' && filterKas){
-            filterKas.style.display = 'block';
         }
 
     } else {
@@ -1139,10 +910,6 @@ function toggleFull(tableId, btn){
             filterShip.style.display = 'none';
         }
 
-        if(tableId === 'tableKas' && filterKas){
-            filterKas.style.display = 'none';
-        }
-
         /* RESET FILTER */
         if(document.getElementById('sM')){
             document.getElementById('sM').value = "";
@@ -1150,14 +917,6 @@ function toggleFull(tableId, btn){
 
         if(document.getElementById('sY')){
             document.getElementById('sY').value = "";
-        }
-
-        if(document.getElementById('kM')){
-            document.getElementById('kM').value = "";
-        }
-
-        if(document.getElementById('kY')){
-            document.getElementById('kY').value = "";
         }
     }
 }
@@ -1211,8 +970,6 @@ document.querySelectorAll('#stocks tbody tr')
 window.onload = () => {
 
     showDefault('tableShip');
-
-    showDefault('tableKas');
 
 }
 
