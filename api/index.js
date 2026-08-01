@@ -1,5 +1,5 @@
 // ==========================================
-// WAJIB FULL SCRIPT - BACKEND EXPRESS (v24-CELL-M1-FIX-PECAHAN-STR-MERAH)
+// FULL SCRIPT - BACKEND EXPRESS (TANPA MENU KAS)
 // ==========================================
 
 const express = require('express');
@@ -91,17 +91,15 @@ function formatPecahanIkat(val) {
 
 app.get('/', async (req, res) => {
     try {
-        // 1. DAFTAR URL SOURCE GOOGLE SHEETS
+        // 1. DAFTAR URL SOURCE GOOGLE SHEETS (Tanpa Kas)
         const urlS = "https://docs.google.com/spreadsheets/d/1xTVwqw9a3BMrmHEir9wQEidVxIgUhvCP_qj8jHY0u7w/export?format=csv&gid=0";
         const urlR = "https://docs.google.com/spreadsheets/d/16N1Jpc11GUJyKqpyEvueKx0ccroVJfG-s6yP3DxxyX4/export?format=csv&gid=0";
-        const urlK = "https://docs.google.com/spreadsheets/d/1oT_uV104wNhTOmJjX_MOzvpkkX0_QAvMYOirsVFbTYo/export?format=csv&gid=0";
         const urlP = "https://docs.google.com/spreadsheets/d/1CmfqkuK2w9GDuohbFIandJGLnlZMrwR-19m5hMA7E4E/export?format=csv&gid=0";
 
         // Fetch data paralel kilat
-        const [resS, resR, resK, resP] = await Promise.all([
+        const [resS, resR, resP] = await Promise.all([
             axios.get(urlS).catch(err => { console.error("Error Stok:", err.message); return { data: "" }; }),
             axios.get(urlR).catch(err => { console.error("Error Ship:", err.message); return { data: "" }; }),
-            axios.get(urlK).catch(err => { console.error("Error Kas:", err.message); return { data: "" }; }),
             axios.get(urlP).catch(err => { console.error("Error Pack:", err.message); return { data: "" }; })
         ]);
 
@@ -131,35 +129,7 @@ app.get('/', async (req, res) => {
             }).filter(i => i.tgl && i.tgl !== "0");
         }
 
-        // 4. PARSING DATA TAB KAS
-        let kasAll = [];
-        let saldoTotalRaw = "0";
-        let isSaldoMinus = false;
-        if (resK.data) {
-            const linesK = resK.data.split(/\r?\n/);
-            let tempDate = ""; 
-            kasAll = linesK.slice(5).map(l => {
-                const c = splitCSV(l);
-                if (c[0] && c[0].trim() !== "") tempDate = c[0];
-                let linkBukti = (c[3] && c[3].toLowerCase().includes('http')) ? c[3].trim().replace(/^"|"$/g, '') : "";
-                let mutasiRaw = "0";
-                let tipe = "netral";
-                if (c[4] && c[4] !== "0" && c[4] !== "-") { mutasiRaw = "-" + c[4]; tipe = "debet"; }
-                else if (c[5] && c[5] !== "0" && c[5] !== "-") { mutasiRaw = c[5]; tipe = "kredit"; }
-
-                return { 
-                    tgl: tempDate, kat: c[1] || "", ket: c[2] || "", mutasi: formatRP(mutasiRaw),
-                    tipeMutasi: tipe, saldo: formatRP(c[6] || "0"), bukti: linkBukti 
-                };
-            }).filter(t => t.kat && t.kat !== "Kategori" && t.kat !== "");
-
-            if (kasAll.length > 0) {
-                saldoTotalRaw = kasAll[kasAll.length - 1].saldo.replace(/[^\d-]/g, "");
-                isSaldoMinus = saldoTotalRaw.startsWith("-");
-            }
-        }
-
-        // 5. PARSING DATA TAB PACKAGING (STOK KEMASAN)
+        // 4. PARSING DATA TAB PACKAGING (STOK KEMASAN)
         let packagingAll = [];
         let packHeaders = [];
         let lastUpdatePack = "-";
@@ -219,15 +189,12 @@ app.get('/', async (req, res) => {
             lastUpdatePack = "Belum Diupdate";
         }
 
-        // 6. RENDER KE VIEW
+        // 5. RENDER KE VIEW
         res.render('index', { 
             stocks, 
             shippingAll, 
-            kasAll, 
             packagingAll, 
             packHeaders, 
-            saldoTotal: formatRP(saldoTotalRaw).replace('+', ''), 
-            isSaldoMinus, 
             lastUpdate,
             lastUpdatePack
         });
